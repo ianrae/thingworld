@@ -37,7 +37,7 @@ import org.thingworld.util.SfxTrail;
 import testhelper.BaseMesfTest;
 import testhelper.FactoryGirl;
 import testhelper.LocalMockBinder;
-import tests.PresenterTests.UserInitializer;
+import testhelper.UserInitializer;
 import tests.UserTests.MyUserProc;
 import tests.UserTests.User;
 

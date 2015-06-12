@@ -1,5 +1,6 @@
 package tests;
 
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -19,7 +20,7 @@ import org.thingworld.readmodel.AllIdsRM;
 
 import testhelper.BaseMesfTest;
 import testhelper.FactoryGirl;
-import tests.PresenterTests.UserInitializer;
+import testhelper.UserInitializer;
 
 /*
  * TaskTests and add a UserTaskRM, cascading delete

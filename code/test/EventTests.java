@@ -1,4 +1,4 @@
-package tests;
+
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,6 +8,7 @@ import org.thingworld.event.Event;
 import org.thingworld.event.EventMgr;
 
 import testhelper.BaseMesfTest;
+import tests.PresenterTests;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,4 +1,4 @@
-package tests;
+
 
 import static org.junit.Assert.*;
 
@@ -8,7 +8,6 @@ public class ViewTests {
 
 	@Test
 	public void test() {
-		fail("Not yet implemented");
 	}
 
 }

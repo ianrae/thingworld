@@ -40,6 +40,7 @@ import org.thingworld.util.SfxTrail;
 import testhelper.BaseMesfTest;
 import testhelper.FactoryGirl;
 import testhelper.LocalMockBinder;
+import testhelper.UserInitializer;
 import tests.UserTests.MyUserPerm;
 import tests.UserTests.MyUserProc;
 import tests.UserTests.User;
@@ -348,25 +349,6 @@ public class PresenterTests extends BaseMesfTest
 				itx.haltProcessing = true;
 			}
 		}
-	}
-	public static class UserInitializer implements IDomainIntializer
-	{
-
-		@Override
-		public void init(Permanent perm)
-		{
-			//create long-running objects
-
-			EntityManagerRegistry registry = perm.getEntityManagerRegistry();
-			registry.register(User.class, new EntityMgr<User>(User.class));
-
-			ProcRegistry procRegistry = perm.getProcRegistry();
-			procRegistry.register(User.class, MyUserProc.class);
-
-			EventManagerRegistry evReg = perm.getEventManagerRegistry();
-			evReg.register(UserAddedEvent.class, new EventMgr<UserAddedEvent>(UserAddedEvent.class));
-		}
-
 	}
 
 	@Test
