@@ -1,4 +1,4 @@
-package mesf.persistence;
+package org.thingworld.persistence;
 
 public interface IDAO 
 {

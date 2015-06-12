@@ -4,20 +4,19 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import mesf.persistence.Commit;
-import mesf.persistence.ICommitDAO;
-import mesf.persistence.IEventRecordDAO;
-import mesf.persistence.IStreamDAO;
-import mesf.persistence.MockCommitDAO;
-import mesf.persistence.MockEventRecordDAO;
-import mesf.persistence.MockStreamDAO;
-import mesf.persistence.PersistenceContext;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.thingworld.CommitMgr;
 import org.thingworld.cache.CommitCache;
 import org.thingworld.cache.StreamCache;
+import org.thingworld.persistence.Commit;
+import org.thingworld.persistence.ICommitDAO;
+import org.thingworld.persistence.IEventRecordDAO;
+import org.thingworld.persistence.IStreamDAO;
+import org.thingworld.persistence.MockCommitDAO;
+import org.thingworld.persistence.MockEventRecordDAO;
+import org.thingworld.persistence.MockStreamDAO;
+import org.thingworld.persistence.PersistenceContext;
 
 public class CommitCacheTests extends BaseMesfTest 
 {

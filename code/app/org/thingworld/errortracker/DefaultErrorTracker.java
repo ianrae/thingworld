@@ -1,6 +1,6 @@
-package mesf.errortracker;
+package org.thingworld.errortracker;
 
-import mesf.log.Logger;
+import org.thingworld.log.Logger;
 
 public class DefaultErrorTracker implements IErrorTracker
 {

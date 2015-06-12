@@ -1,4 +1,4 @@
-package mesf.event;
+package org.thingworld.event;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

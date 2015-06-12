@@ -8,10 +8,6 @@ import java.util.TreeMap;
 import mesf.PresenterTests.UserInitializer;
 import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
-import mesf.event.EventManagerRegistry;
-import mesf.log.Logger;
-import mesf.persistence.Commit;
-import mesf.persistence.PersistenceContext;
 import mesf.presenter.BindingIntercept;
 import mesf.presenter.IFormBinder;
 import mesf.presenter.InterceptorContext;
@@ -39,6 +35,10 @@ import org.thingworld.entity.BaseEntity;
 import org.thingworld.entity.Entity;
 import org.thingworld.entity.EntityManagerRegistry;
 import org.thingworld.entity.EntityMgr;
+import org.thingworld.event.EventManagerRegistry;
+import org.thingworld.log.Logger;
+import org.thingworld.persistence.Commit;
+import org.thingworld.persistence.PersistenceContext;
 
 
 public class TaskTests extends BaseMesfTest 

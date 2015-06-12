@@ -1,8 +1,9 @@
 package mesf;
 
+import org.thingworld.log.LogLevel;
+import org.thingworld.log.Logger;
+
 import mef.framework.helpers.BaseTest;
-import mesf.log.LogLevel;
-import mesf.log.Logger;
 
 
 public class BaseMesfTest extends BaseTest

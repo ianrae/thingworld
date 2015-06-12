@@ -2,10 +2,10 @@ package mesf;
 
 import static org.junit.Assert.*;
 import mef.framework.helpers.BaseTest;
-import mesf.log.LogLevel;
-import mesf.log.Logger;
 
 import org.junit.Test;
+import org.thingworld.log.LogLevel;
+import org.thingworld.log.Logger;
 
 public class LoggerTests extends BaseTest
 {

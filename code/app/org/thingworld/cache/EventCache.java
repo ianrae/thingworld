@@ -4,10 +4,9 @@ import java.util.List;
 
 import org.thingworld.config.Config;
 import org.thingworld.config.IConfig;
-
-import mesf.log.Logger;
-import mesf.persistence.EventRecord;
-import mesf.persistence.IEventRecordDAO;
+import org.thingworld.log.Logger;
+import org.thingworld.persistence.EventRecord;
+import org.thingworld.persistence.IEventRecordDAO;
 
 //thread-safe long running cache of commit DTOs
 public class EventCache

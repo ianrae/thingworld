@@ -6,10 +6,9 @@ import java.util.List;
 import org.thingworld.CommitWriter;
 import org.thingworld.MContext;
 import org.thingworld.entity.Entity;
-
-import mesf.event.Event;
-import mesf.event.EventWriter;
-import mesf.log.Logger;
+import org.thingworld.event.Event;
+import org.thingworld.event.EventWriter;
+import org.thingworld.log.Logger;
 
 public abstract class Presenter //extends CommandProcessor
 	{

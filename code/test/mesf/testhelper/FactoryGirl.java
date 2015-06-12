@@ -1,12 +1,12 @@
 package mesf.testhelper;
 
-import mesf.persistence.ICommitDAO;
-import mesf.persistence.IEventRecordDAO;
-import mesf.persistence.IStreamDAO;
-import mesf.persistence.MockCommitDAO;
-import mesf.persistence.MockEventRecordDAO;
-import mesf.persistence.MockStreamDAO;
-import mesf.persistence.PersistenceContext;
+import org.thingworld.persistence.ICommitDAO;
+import org.thingworld.persistence.IEventRecordDAO;
+import org.thingworld.persistence.IStreamDAO;
+import org.thingworld.persistence.MockCommitDAO;
+import org.thingworld.persistence.MockEventRecordDAO;
+import org.thingworld.persistence.MockStreamDAO;
+import org.thingworld.persistence.PersistenceContext;
 
 public class FactoryGirl 
 {

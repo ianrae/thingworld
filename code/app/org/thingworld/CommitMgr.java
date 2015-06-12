@@ -7,13 +7,12 @@ import org.thingworld.cache.StreamCache;
 import org.thingworld.entity.Entity;
 import org.thingworld.entity.EntityLoader;
 import org.thingworld.entity.IEntityMgr;
-
-import mesf.log.Logger;
-import mesf.persistence.Commit;
-import mesf.persistence.ICommitDAO;
-import mesf.persistence.IStreamDAO;
-import mesf.persistence.PersistenceContext;
-import mesf.persistence.Stream;
+import org.thingworld.log.Logger;
+import org.thingworld.persistence.Commit;
+import org.thingworld.persistence.ICommitDAO;
+import org.thingworld.persistence.IStreamDAO;
+import org.thingworld.persistence.PersistenceContext;
+import org.thingworld.persistence.Stream;
 
 //will create one of these per web request, but all will share underlying thread-safe commit cache
 public class CommitMgr

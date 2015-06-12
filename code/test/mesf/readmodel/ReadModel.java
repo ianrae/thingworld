@@ -3,11 +3,10 @@ package mesf.readmodel;
 import org.thingworld.ICommitObserver;
 import org.thingworld.IEventObserver;
 import org.thingworld.MContext;
-
-import mesf.persistence.EventRecord;
-import mesf.event.Event;
-import mesf.persistence.Commit;
-import mesf.persistence.Stream;
+import org.thingworld.event.Event;
+import org.thingworld.persistence.Commit;
+import org.thingworld.persistence.EventRecord;
+import org.thingworld.persistence.Stream;
 
 public abstract class ReadModel implements ICommitObserver, IEventObserver, IReadModel
 {

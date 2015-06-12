@@ -1,7 +1,7 @@
 package org.thingworld;
 
-import mesf.persistence.Commit;
-import mesf.persistence.Stream;
+import org.thingworld.persistence.Commit;
+import org.thingworld.persistence.Stream;
 
 
 public interface ICommitObserver

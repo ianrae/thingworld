@@ -8,11 +8,11 @@ import java.util.TreeMap;
 import org.thingworld.MContext;
 import org.thingworld.Projector;
 import org.thingworld.entity.Entity;
+import org.thingworld.persistence.Commit;
+import org.thingworld.persistence.Stream;
 
 import mesf.UserTests;
 import mesf.UserTests.User;
-import mesf.persistence.Commit;
-import mesf.persistence.Stream;
 
 public class AllIdsRM<T> extends ReadModel
 {

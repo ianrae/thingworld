@@ -1,9 +1,8 @@
-package mesf.event;
+package org.thingworld.event;
 
 import org.thingworld.MContext;
-
-import mesf.log.Logger;
-import mesf.persistence.EventRecord;
+import org.thingworld.log.Logger;
+import org.thingworld.persistence.EventRecord;
 
 public class EventWriter 
 {

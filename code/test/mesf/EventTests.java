@@ -1,11 +1,11 @@
 package mesf;
 
 import static org.junit.Assert.assertEquals;
-import mesf.event.Event;
-import mesf.event.EventMgr;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.thingworld.event.Event;
+import org.thingworld.event.EventMgr;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

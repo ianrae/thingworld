@@ -10,11 +10,6 @@ import java.util.TreeMap;
 import mesf.UserTests.MyUserPerm;
 import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
-import mesf.event.Event;
-import mesf.event.EventManagerRegistry;
-import mesf.event.EventMgr;
-import mesf.log.Logger;
-import mesf.persistence.PersistenceContext;
 import mesf.presenter.BindingIntercept;
 import mesf.presenter.IFormBinder;
 import mesf.presenter.IReqquestInterceptor;
@@ -42,6 +37,11 @@ import org.thingworld.Permanent;
 import org.thingworld.cmd.ProcRegistry;
 import org.thingworld.entity.EntityManagerRegistry;
 import org.thingworld.entity.EntityMgr;
+import org.thingworld.event.Event;
+import org.thingworld.event.EventManagerRegistry;
+import org.thingworld.event.EventMgr;
+import org.thingworld.log.Logger;
+import org.thingworld.persistence.PersistenceContext;
 
 /*
  * done TaskTests and add a UserTaskRM, cascading delete

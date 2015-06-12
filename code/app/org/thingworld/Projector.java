@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.thingworld.cache.CommitCache;
 import org.thingworld.cache.StreamCache;
+import org.thingworld.persistence.Commit;
+import org.thingworld.persistence.Stream;
 
-import mesf.persistence.Commit;
-import mesf.persistence.Stream;
 import mesf.readmodel.IReadModel;
 
 public class Projector

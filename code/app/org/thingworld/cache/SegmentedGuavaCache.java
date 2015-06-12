@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.thingworld.log.Logger;
+
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
-import mesf.log.Logger;
 
 //use Google Guava caches to implement an LRU cache of segments
 

@@ -1,4 +1,4 @@
-package mesf.event;
+package org.thingworld.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

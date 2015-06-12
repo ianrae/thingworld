@@ -1,4 +1,4 @@
-package mesf.event;
+package org.thingworld.event;
 
 public interface IEventBus 
 {

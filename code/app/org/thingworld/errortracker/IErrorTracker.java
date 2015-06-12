@@ -1,4 +1,4 @@
-package mesf.errortracker;
+package org.thingworld.errortracker;
 
 public interface IErrorTracker
 {

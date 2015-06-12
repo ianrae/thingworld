@@ -1,8 +1,8 @@
 package org.thingworld;
 
-import mesf.event.Event;
-import mesf.persistence.EventRecord;
-import mesf.persistence.Stream;
+import org.thingworld.event.Event;
+import org.thingworld.persistence.EventRecord;
+import org.thingworld.persistence.Stream;
 
 
 public interface IEventObserver

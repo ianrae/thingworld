@@ -4,12 +4,11 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import mesf.persistence.Commit;
-import mesf.persistence.ICommitDAO;
-import mesf.persistence.MockCommitDAO;
-
 import org.junit.Before;
 import org.junit.Test;
+import org.thingworld.persistence.Commit;
+import org.thingworld.persistence.ICommitDAO;
+import org.thingworld.persistence.MockCommitDAO;
 
 public class CommitTblTests extends BaseMesfTest 
 {

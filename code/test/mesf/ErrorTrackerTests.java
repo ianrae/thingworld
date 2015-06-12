@@ -1,10 +1,10 @@
 package mesf;
 
 import static org.junit.Assert.*;
-import mesf.errortracker.DefaultErrorTracker;
-import mesf.errortracker.ErrorTracker;
 
 import org.junit.Test;
+import org.thingworld.errortracker.DefaultErrorTracker;
+import org.thingworld.errortracker.ErrorTracker;
 
 public class ErrorTrackerTests extends BaseMesfTest
 {

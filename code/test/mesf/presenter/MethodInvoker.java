@@ -3,7 +3,7 @@ package mesf.presenter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import mesf.log.Logger;
+import org.thingworld.log.Logger;
 
 
 public class MethodInvoker 

@@ -3,10 +3,9 @@ package org.thingworld.entity;
 import java.util.List;
 
 import org.thingworld.cache.StreamCache;
-
-import mesf.persistence.Commit;
-import mesf.persistence.ICommitDAO;
-import mesf.persistence.Stream;
+import org.thingworld.persistence.Commit;
+import org.thingworld.persistence.ICommitDAO;
+import org.thingworld.persistence.Stream;
 
 
 public class EntityLoader

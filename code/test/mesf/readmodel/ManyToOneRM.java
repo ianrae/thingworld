@@ -5,9 +5,8 @@ import java.util.TreeMap;
 
 import org.thingworld.MContext;
 import org.thingworld.Projector;
-
-import mesf.persistence.Commit;
-import mesf.persistence.Stream;
+import org.thingworld.persistence.Commit;
+import org.thingworld.persistence.Stream;
 
 public class ManyToOneRM extends ReadModel
 {

@@ -1,8 +1,7 @@
-package mesf.event;
+package org.thingworld.event;
 
 import org.thingworld.MContext;
-
-import mesf.persistence.EventRecord;
+import org.thingworld.persistence.EventRecord;
 
 public class BaseEventRehydrator
 {

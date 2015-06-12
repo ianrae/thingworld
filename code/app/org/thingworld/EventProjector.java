@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.thingworld.cache.EventCache;
+import org.thingworld.event.BaseEventRehydrator;
+import org.thingworld.event.Event;
+import org.thingworld.log.Logger;
+import org.thingworld.persistence.EventRecord;
+import org.thingworld.persistence.Stream;
 
-import mesf.event.Event;
-import mesf.event.BaseEventRehydrator;
-import mesf.log.Logger;
-import mesf.persistence.EventRecord;
-import mesf.persistence.Stream;
 import mesf.readmodel.IReadModel;
 
 public class EventProjector

@@ -4,10 +4,9 @@ import java.util.List;
 
 import org.thingworld.config.Config;
 import org.thingworld.config.IConfig;
-
-import mesf.log.Logger;
-import mesf.persistence.IStreamDAO;
-import mesf.persistence.Stream;
+import org.thingworld.log.Logger;
+import org.thingworld.persistence.IStreamDAO;
+import org.thingworld.persistence.Stream;
 
 //thread-safe long running cache of commit DTOs
 public class StreamCache

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mesf.log.Logger;
+import org.thingworld.log.Logger;
 
 public class SegmentedCache<T> implements ISegmentedCache<T>
 {

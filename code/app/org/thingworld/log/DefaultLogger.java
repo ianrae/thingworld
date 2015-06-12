@@ -1,4 +1,4 @@
-package mesf.log;
+package org.thingworld.log;
 
 public class DefaultLogger implements ILogger
 {
