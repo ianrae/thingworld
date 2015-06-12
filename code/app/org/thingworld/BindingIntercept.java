@@ -1,4 +1,4 @@
-package mesf.presenter;
+package org.thingworld;
 
 
 public class BindingIntercept implements IReqquestInterceptor

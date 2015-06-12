@@ -8,9 +8,8 @@ import org.thingworld.entity.EntityLoader;
 import org.thingworld.entity.EntityManagerRegistry;
 import org.thingworld.entity.EntityRepository;
 import org.thingworld.entity.IEntityMgr;
-
-import mesf.readmodel.ReadModelLoader;
-import mesf.readmodel.ReadModelRepository;
+import org.thingworld.readmodel.ReadModelLoader;
+import org.thingworld.readmodel.ReadModelRepository;
 
 public abstract class CommandProcessor
 {

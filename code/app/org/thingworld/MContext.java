@@ -14,10 +14,9 @@ import org.thingworld.event.EventManagerRegistry;
 import org.thingworld.event.IEventBus;
 import org.thingworld.persistence.IEventRecordDAO;
 import org.thingworld.persistence.PersistenceContext;
-
-import mesf.readmodel.IReadModel;
-import mesf.readmodel.ReadModelLoader;
-import mesf.readmodel.ReadModelRepository;
+import org.thingworld.readmodel.IReadModel;
+import org.thingworld.readmodel.ReadModelLoader;
+import org.thingworld.readmodel.ReadModelRepository;
 
 public class MContext 
 {

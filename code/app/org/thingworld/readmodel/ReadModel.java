@@ -1,4 +1,4 @@
-package mesf.readmodel;
+package org.thingworld.readmodel;
 
 import org.thingworld.ICommitObserver;
 import org.thingworld.IEventObserver;

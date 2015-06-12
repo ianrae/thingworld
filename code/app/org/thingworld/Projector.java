@@ -7,8 +7,7 @@ import org.thingworld.cache.CommitCache;
 import org.thingworld.cache.StreamCache;
 import org.thingworld.persistence.Commit;
 import org.thingworld.persistence.Stream;
-
-import mesf.readmodel.IReadModel;
+import org.thingworld.readmodel.IReadModel;
 
 public class Projector
 {

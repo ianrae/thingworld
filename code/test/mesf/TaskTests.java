@@ -8,16 +8,8 @@ import java.util.TreeMap;
 import mesf.PresenterTests.UserInitializer;
 import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
-import mesf.presenter.BindingIntercept;
-import mesf.presenter.IFormBinder;
-import mesf.presenter.InterceptorContext;
-import mesf.presenter.Presenter;
-import mesf.presenter.Reply;
-import mesf.presenter.Request;
-import mesf.readmodel.ManyToOneRM;
 import mesf.testhelper.FactoryGirl;
 import mesf.testhelper.LocalMockBinder;
-import mesf.util.SfxTrail;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,9 +19,15 @@ import org.mef.twixt.Value;
 import org.mef.twixt.binder.TwixtForm;
 import org.mef.twixt.validate.ValContext;
 import org.mef.twixt.validate.ValidationErrors;
+import org.thingworld.BindingIntercept;
 import org.thingworld.IDomainIntializer;
+import org.thingworld.IFormBinder;
+import org.thingworld.InterceptorContext;
 import org.thingworld.MContext;
 import org.thingworld.Permanent;
+import org.thingworld.Presenter;
+import org.thingworld.Reply;
+import org.thingworld.Request;
 import org.thingworld.cmd.CommandProcessor;
 import org.thingworld.entity.BaseEntity;
 import org.thingworld.entity.Entity;
@@ -39,6 +37,8 @@ import org.thingworld.event.EventManagerRegistry;
 import org.thingworld.log.Logger;
 import org.thingworld.persistence.Commit;
 import org.thingworld.persistence.PersistenceContext;
+import org.thingworld.readmodel.ManyToOneRM;
+import org.thingworld.util.SfxTrail;
 
 
 public class TaskTests extends BaseMesfTest 

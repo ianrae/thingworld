@@ -1,10 +1,8 @@
-package mesf.presenter;
+package org.thingworld;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.thingworld.CommitWriter;
-import org.thingworld.MContext;
 import org.thingworld.entity.Entity;
 import org.thingworld.event.Event;
 import org.thingworld.event.EventWriter;

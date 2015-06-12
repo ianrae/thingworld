@@ -16,10 +16,9 @@ import org.thingworld.event.IEventBus;
 import org.thingworld.persistence.ICommitDAO;
 import org.thingworld.persistence.IStreamDAO;
 import org.thingworld.persistence.PersistenceContext;
-
-import mesf.readmodel.ReadModel;
-import mesf.readmodel.ReadModelLoader;
-import mesf.readmodel.ReadModelRepository;
+import org.thingworld.readmodel.ReadModel;
+import org.thingworld.readmodel.ReadModelLoader;
+import org.thingworld.readmodel.ReadModelRepository;
 
 public class Permanent
 {

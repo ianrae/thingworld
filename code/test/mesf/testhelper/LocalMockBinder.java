@@ -2,11 +2,10 @@ package mesf.testhelper;
 
 import java.util.Map;
 
-import mesf.presenter.IFormBinder;
-
 import org.mef.twixt.ValueContainer;
 import org.mef.twixt.binder.MockTwixtBinder;
 import org.mef.twixt.binder.TwixtBinder;
+import org.thingworld.IFormBinder;
 
 import play.data.Form;
 

@@ -9,8 +9,7 @@ import org.thingworld.event.Event;
 import org.thingworld.log.Logger;
 import org.thingworld.persistence.EventRecord;
 import org.thingworld.persistence.Stream;
-
-import mesf.readmodel.IReadModel;
+import org.thingworld.readmodel.IReadModel;
 
 public class EventProjector
 {

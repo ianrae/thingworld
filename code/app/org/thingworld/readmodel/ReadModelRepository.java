@@ -1,4 +1,4 @@
-package mesf.readmodel;
+package org.thingworld.readmodel;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package mesf.presenter;
+package org.thingworld;
 
 import org.thingworld.auth.AuthUser;
 

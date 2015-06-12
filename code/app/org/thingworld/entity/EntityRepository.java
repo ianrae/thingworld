@@ -10,8 +10,7 @@ import org.thingworld.log.Logger;
 import org.thingworld.persistence.Commit;
 import org.thingworld.persistence.IStreamDAO;
 import org.thingworld.persistence.Stream;
-
-import mesf.util.SfxTrail;
+import org.thingworld.util.SfxTrail;
 
 
 public class EntityRepository implements ICommitObserver

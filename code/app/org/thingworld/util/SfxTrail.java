@@ -1,4 +1,4 @@
-package mesf.util;
+package org.thingworld.util;
 
 
 /**
