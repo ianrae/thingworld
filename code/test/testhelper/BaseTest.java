@@ -1,4 +1,4 @@
-package mef.framework.helpers;
+package testhelper;
 
 import static org.junit.Assert.assertEquals;
 

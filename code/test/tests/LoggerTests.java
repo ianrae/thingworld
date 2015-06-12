@@ -1,11 +1,12 @@
 package tests;
 
 import static org.junit.Assert.*;
-import mef.framework.helpers.BaseTest;
 
 import org.junit.Test;
 import org.thingworld.log.LogLevel;
 import org.thingworld.log.Logger;
+
+import testhelper.BaseTest;
 
 public class LoggerTests extends BaseTest
 {

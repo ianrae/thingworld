@@ -1,3 +1,4 @@
+package other;
 //package mef.framework;
 //
 //import static org.junit.Assert.assertEquals;

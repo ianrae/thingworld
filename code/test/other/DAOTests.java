@@ -1,4 +1,4 @@
-package mef.framework;
+package other;
 
 import static org.junit.Assert.*;
 
@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mef.framework.helpers.BaseTest;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import testhelper.BaseTest;
 
 public class DAOTests extends BaseTest
 {
