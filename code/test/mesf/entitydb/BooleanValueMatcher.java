@@ -1,6 +1,6 @@
 package mesf.entitydb;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 public class BooleanValueMatcher implements IValueMatcher
 {
@@ -24,7 +24,7 @@ public class BooleanValueMatcher implements IValueMatcher
 //			return ilike(s1, s2);
 				
 		default:
-			throw new NotImplementedException();
+			throw new NotImplementedException("not implemented");
 		}
 	}
 
@@ -58,7 +58,7 @@ public class BooleanValueMatcher implements IValueMatcher
 		}
 		else
 		{
-			throw new NotImplementedException();
+			throw new NotImplementedException("not implemented");
 		}
 	}
 

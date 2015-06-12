@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 //Whole idea is we don't need a fully emulated sql db like H2.
 //(a)we are dealing with objects (which can be assumed to be fully eagerly loaded)
@@ -132,7 +132,7 @@ public class EntityDB<T>
 			}
 			else
 			{
-				throw new NotImplementedException();
+				throw new NotImplementedException("not implemented");
 			}
 		}
 		
