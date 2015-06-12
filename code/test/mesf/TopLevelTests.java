@@ -9,13 +9,6 @@ import mesf.CommitMgrTests.InsertScooterCmd;
 import mesf.CommitMgrTests.MyCmdProc;
 import mesf.CommitMgrTests.UpdateScooterCmd;
 import mesf.ObjManagerTests.Scooter;
-import mesf.cmd.CommandProcessor;
-import mesf.cmd.ProcRegistry;
-import mesf.core.IDomainIntializer;
-import mesf.core.MContext;
-import mesf.core.Permanent;
-import mesf.entity.EntityManagerRegistry;
-import mesf.entity.EntityMgr;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.PersistenceContext;
@@ -26,6 +19,13 @@ import mesf.testhelper.FactoryGirl;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.thingworld.IDomainIntializer;
+import org.thingworld.MContext;
+import org.thingworld.Permanent;
+import org.thingworld.cmd.CommandProcessor;
+import org.thingworld.cmd.ProcRegistry;
+import org.thingworld.entity.EntityManagerRegistry;
+import org.thingworld.entity.EntityMgr;
 
 public class TopLevelTests extends BaseMesfTest 
 {

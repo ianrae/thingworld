@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import mesf.cache.CommitCache;
-import mesf.cache.StreamCache;
-import mesf.core.CommitMgr;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IEventRecordDAO;
@@ -18,6 +15,9 @@ import mesf.persistence.PersistenceContext;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.thingworld.CommitMgr;
+import org.thingworld.cache.CommitCache;
+import org.thingworld.cache.StreamCache;
 
 public class CommitCacheTests extends BaseMesfTest 
 {

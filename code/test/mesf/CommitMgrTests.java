@@ -6,19 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mesf.ObjManagerTests.Scooter;
-import mesf.cache.CommitCache;
-import mesf.cache.StreamCache;
-import mesf.cmd.BaseCommand;
-import mesf.cmd.CommandProcessor;
-import mesf.cmd.ICommand;
-import mesf.core.CommitMgr;
-import mesf.core.ICommitObserver;
-import mesf.core.MContext;
-import mesf.entity.Entity;
-import mesf.entity.EntityLoader;
-import mesf.entity.EntityManagerRegistry;
-import mesf.entity.EntityMgr;
-import mesf.entity.EntityRepository;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IEventRecordDAO;
@@ -30,6 +17,19 @@ import mesf.testhelper.FactoryGirl;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.thingworld.CommitMgr;
+import org.thingworld.ICommitObserver;
+import org.thingworld.MContext;
+import org.thingworld.cache.CommitCache;
+import org.thingworld.cache.StreamCache;
+import org.thingworld.cmd.BaseCommand;
+import org.thingworld.cmd.CommandProcessor;
+import org.thingworld.cmd.ICommand;
+import org.thingworld.entity.Entity;
+import org.thingworld.entity.EntityLoader;
+import org.thingworld.entity.EntityManagerRegistry;
+import org.thingworld.entity.EntityMgr;
+import org.thingworld.entity.EntityRepository;
 
 public class CommitMgrTests extends BaseMesfTest 
 {

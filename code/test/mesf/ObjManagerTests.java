@@ -1,11 +1,11 @@
 package mesf;
 
 import static org.junit.Assert.assertEquals;
-import mesf.entity.Entity;
-import mesf.entity.EntityMgr;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.thingworld.entity.Entity;
+import org.thingworld.entity.EntityMgr;
 
 public class ObjManagerTests extends BaseMesfTest 
 {

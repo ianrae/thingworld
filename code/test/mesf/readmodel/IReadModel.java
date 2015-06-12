@@ -1,6 +1,6 @@
 package mesf.readmodel;
 
-import mesf.core.MContext;
+import org.thingworld.MContext;
 
 public interface IReadModel {
 

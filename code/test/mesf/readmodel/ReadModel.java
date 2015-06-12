@@ -1,9 +1,10 @@
 package mesf.readmodel;
 
-import mesf.core.ICommitObserver;
-import mesf.core.IEventObserver;
+import org.thingworld.ICommitObserver;
+import org.thingworld.IEventObserver;
+import org.thingworld.MContext;
+
 import mesf.persistence.EventRecord;
-import mesf.core.MContext;
 import mesf.event.Event;
 import mesf.persistence.Commit;
 import mesf.persistence.Stream;

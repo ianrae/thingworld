@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.thingworld.MContext;
+import org.thingworld.Projector;
+import org.thingworld.entity.Entity;
+
 import mesf.UserTests;
 import mesf.UserTests.User;
-import mesf.core.MContext;
-import mesf.core.Projector;
-import mesf.entity.Entity;
 import mesf.persistence.Commit;
 import mesf.persistence.Stream;
 

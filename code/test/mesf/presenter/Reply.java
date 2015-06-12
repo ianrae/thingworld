@@ -1,6 +1,6 @@
 package mesf.presenter;
 
-import mesf.auth.AuthUser;
+import org.thingworld.auth.AuthUser;
 
 public class Reply 
 {

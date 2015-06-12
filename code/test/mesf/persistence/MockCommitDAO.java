@@ -3,8 +3,7 @@ package mesf.persistence;
 import java.util.ArrayList;
 import java.util.List;
 
-import mesf.entitydb.EntityDB;
-//import mesf.fluent.QueryContext;
+import org.thingworld.entitydb.EntityDB;
 
 
 public class MockCommitDAO implements ICommitDAO

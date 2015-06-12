@@ -8,14 +8,6 @@ import java.util.TreeMap;
 import mesf.PresenterTests.UserInitializer;
 import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
-import mesf.cmd.CommandProcessor;
-import mesf.core.IDomainIntializer;
-import mesf.core.MContext;
-import mesf.core.Permanent;
-import mesf.entity.BaseEntity;
-import mesf.entity.Entity;
-import mesf.entity.EntityManagerRegistry;
-import mesf.entity.EntityMgr;
 import mesf.event.EventManagerRegistry;
 import mesf.log.Logger;
 import mesf.persistence.Commit;
@@ -39,6 +31,14 @@ import org.mef.twixt.Value;
 import org.mef.twixt.binder.TwixtForm;
 import org.mef.twixt.validate.ValContext;
 import org.mef.twixt.validate.ValidationErrors;
+import org.thingworld.IDomainIntializer;
+import org.thingworld.MContext;
+import org.thingworld.Permanent;
+import org.thingworld.cmd.CommandProcessor;
+import org.thingworld.entity.BaseEntity;
+import org.thingworld.entity.Entity;
+import org.thingworld.entity.EntityManagerRegistry;
+import org.thingworld.entity.EntityMgr;
 
 
 public class TaskTests extends BaseMesfTest 

@@ -1,13 +1,13 @@
 package mesf;
 
 import static org.junit.Assert.assertEquals;
-import mesf.cache.StreamCache;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.MockStreamDAO;
 import mesf.persistence.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.thingworld.cache.StreamCache;
 
 public class StreamCacheTests extends BaseMesfTest
 {

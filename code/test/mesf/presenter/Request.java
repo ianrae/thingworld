@@ -2,8 +2,8 @@ package mesf.presenter;
 
 import java.util.Map;
 
-import mesf.auth.AuthUser;
-import mesf.cmd.ICommand;
+import org.thingworld.auth.AuthUser;
+import org.thingworld.cmd.ICommand;
 
 
 public class Request implements ICommand 

@@ -3,9 +3,10 @@ package mesf.readmodel;
 import java.util.ArrayList;
 import java.util.List;
 
-import mesf.cache.StreamCache;
-import mesf.core.ICommitObserver;
-import mesf.core.MContext;
+import org.thingworld.ICommitObserver;
+import org.thingworld.MContext;
+import org.thingworld.cache.StreamCache;
+
 import mesf.persistence.Commit;
 import mesf.persistence.Stream;
 

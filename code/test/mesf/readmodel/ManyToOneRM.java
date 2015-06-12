@@ -3,8 +3,9 @@ package mesf.readmodel;
 import java.util.Map;
 import java.util.TreeMap;
 
-import mesf.core.MContext;
-import mesf.core.Projector;
+import org.thingworld.MContext;
+import org.thingworld.Projector;
+
 import mesf.persistence.Commit;
 import mesf.persistence.Stream;
 

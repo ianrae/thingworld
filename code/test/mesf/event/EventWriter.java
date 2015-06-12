@@ -1,6 +1,7 @@
 package mesf.event;
 
-import mesf.core.MContext;
+import org.thingworld.MContext;
+
 import mesf.log.Logger;
 import mesf.persistence.EventRecord;
 

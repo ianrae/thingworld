@@ -6,19 +6,19 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import mesf.PresenterTests.UserInitializer;
-import mesf.cmd.BaseCommand;
-import mesf.cmd.CommandProcessor;
-import mesf.cmd.ICommand;
-import mesf.core.MContext;
-import mesf.core.Permanent;
-import mesf.entity.BaseEntity;
-import mesf.entity.Entity;
 import mesf.persistence.PersistenceContext;
 import mesf.readmodel.AllIdsRM;
 import mesf.testhelper.FactoryGirl;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.thingworld.MContext;
+import org.thingworld.Permanent;
+import org.thingworld.cmd.BaseCommand;
+import org.thingworld.cmd.CommandProcessor;
+import org.thingworld.cmd.ICommand;
+import org.thingworld.entity.BaseEntity;
+import org.thingworld.entity.Entity;
 
 /*
  * TaskTests and add a UserTaskRM, cascading delete

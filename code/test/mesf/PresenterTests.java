@@ -10,13 +10,6 @@ import java.util.TreeMap;
 import mesf.UserTests.MyUserPerm;
 import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
-import mesf.cmd.ProcRegistry;
-import mesf.core.EventProjector;
-import mesf.core.IDomainIntializer;
-import mesf.core.MContext;
-import mesf.core.Permanent;
-import mesf.entity.EntityManagerRegistry;
-import mesf.entity.EntityMgr;
 import mesf.event.Event;
 import mesf.event.EventManagerRegistry;
 import mesf.event.EventMgr;
@@ -42,6 +35,13 @@ import org.mef.twixt.Value;
 import org.mef.twixt.binder.TwixtForm;
 import org.mef.twixt.validate.ValContext;
 import org.mef.twixt.validate.ValidationErrors;
+import org.thingworld.EventProjector;
+import org.thingworld.IDomainIntializer;
+import org.thingworld.MContext;
+import org.thingworld.Permanent;
+import org.thingworld.cmd.ProcRegistry;
+import org.thingworld.entity.EntityManagerRegistry;
+import org.thingworld.entity.EntityMgr;
 
 /*
  * done TaskTests and add a UserTaskRM, cascading delete
