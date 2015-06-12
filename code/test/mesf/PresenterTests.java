@@ -34,12 +34,14 @@ import mesf.testhelper.FactoryGirl;
 import mesf.testhelper.LocalMockBinder;
 import mesf.util.SfxTrail;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mef.twixt.StringValue;
 import org.mef.twixt.Value;
 import org.mef.twixt.binder.TwixtForm;
 import org.mef.twixt.validate.ValContext;
+import org.mef.twixt.validate.ValidationErrors;
 
 /*
  * done TaskTests and add a UserTaskRM, cascading delete
@@ -67,7 +69,7 @@ public class PresenterTests extends BaseMesfTest
 		public UserTwixt()
 		{
 			s = new StringValue();
-			
+
 			s.setValidator( (ValContext valctx, Value obj) -> {
 				StringValue val = (StringValue) obj;
 				if (! val.get().contains("a"))
@@ -76,20 +78,20 @@ public class PresenterTests extends BaseMesfTest
 				}
 			});
 		}
-//		private class MyValidator implements Validator
-//		{
-//
-//			@Override
-//			public void validate(ValContext valctx, Value obj) 
-//			{
-//				StringValue val = (StringValue) obj;
-//				String s = val.get();
-//				if (! s.contains("a"))
-//				{
-//					valctx.addError("sdfdfs");
-//				}
-//			}
-//		}
+		//		private class MyValidator implements Validator
+		//		{
+		//
+		//			@Override
+		//			public void validate(ValContext valctx, Value obj) 
+		//			{
+		//				StringValue val = (StringValue) obj;
+		//				String s = val.get();
+		//				if (! s.contains("a"))
+		//				{
+		//					valctx.addError("sdfdfs");
+		//				}
+		//			}
+		//		}
 	}
 
 	public static class UserAddedEvent extends Event
@@ -151,25 +153,25 @@ public class PresenterTests extends BaseMesfTest
 			publishEvent(new UserAddedEvent(scooter.getId()));
 			reply.setDestination(Reply.VIEW_INDEX);
 		}
-//		public void onUpdateCmd(UpdateCmd cmd) throws Exception
-//		{
-//			Logger.log("update");
-//			trail.add("update");
-//
-//			if (cmd.getFormBinder().bind())
-//			{
-//				UserTwixt twixt = (UserTwixt) cmd.getFormBinder().get();
-//				Logger.log("twixt a=%s", twixt.s);
-//				User scooter = (User) mtx.loadEntity(User.class, cmd.getEntityId());
-//				twixt.copyTo(scooter);
-//				updateObject(scooter);
-//				reply.setDestination(Reply.VIEW_INDEX);
-//			}
-//			else
-//			{
-//				reply.setDestination(Reply.VIEW_EDIT);
-//			}
-//		}
+		//		public void onUpdateCmd(UpdateCmd cmd) throws Exception
+		//		{
+		//			Logger.log("update");
+		//			trail.add("update");
+		//
+		//			if (cmd.getFormBinder().bind())
+		//			{
+		//				UserTwixt twixt = (UserTwixt) cmd.getFormBinder().get();
+		//				Logger.log("twixt a=%s", twixt.s);
+		//				User scooter = (User) mtx.loadEntity(User.class, cmd.getEntityId());
+		//				twixt.copyTo(scooter);
+		//				updateObject(scooter);
+		//				reply.setDestination(Reply.VIEW_INDEX);
+		//			}
+		//			else
+		//			{
+		//				reply.setDestination(Reply.VIEW_EDIT);
+		//			}
+		//		}
 
 		public void onUpdateCmd(UpdateCmd cmd) throws Exception 
 		{
@@ -183,14 +185,14 @@ public class PresenterTests extends BaseMesfTest
 			updateEntity(scooter);
 			reply.setDestination(Reply.VIEW_INDEX);
 		}
-		
+
 		private User loadEntity(Request cmd) throws Exception
 		{
 			User scooter = null;
 			scooter = (User) mtx.loadEntity(User.class, cmd.getEntityId());
 			return scooter;
 		}
-		
+
 		protected void beforeRequest(Request request, InterceptorContext itx)
 		{
 			trail.add("before");
@@ -440,5 +442,12 @@ public class PresenterTests extends BaseMesfTest
 	public void init()
 	{
 		super.init();
+		ValidationErrors.inUnitTest = true;
+	}
+
+	@After
+	public void shutdown()
+	{
+		ValidationErrors.inUnitTest = false;
 	}
 }

@@ -1,18 +1,11 @@
 package mesf;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import static org.junit.Assert.assertEquals;
 import mesf.TaskTests.Task;
 import mesf.UserTests.User;
 
 import org.junit.Test;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rits.cloning.Cloner;
 
 public class CloningTests extends BaseMesfTest
