@@ -320,7 +320,7 @@ public class DAOTests extends BaseTest
 		car.setFooId(foo.getId());
 		daocar.save(car);
 	}
-	
+
 	@Test
 	public void testCarAR() 
 	{
