@@ -28,6 +28,7 @@ import org.thingworld.persistence.MockEventRecordDAO;
 import org.thingworld.persistence.PersistenceContext;
 import org.thingworld.persistence.Stream;
 
+import testhelper.BaseMesfTest;
 import testhelper.FactoryGirl;
 import tests.ObjManagerTests.Scooter;
 

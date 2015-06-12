@@ -18,6 +18,8 @@ import org.thingworld.persistence.MockEventRecordDAO;
 import org.thingworld.persistence.MockStreamDAO;
 import org.thingworld.persistence.PersistenceContext;
 
+import testhelper.BaseMesfTest;
+
 public class CommitCacheTests extends BaseMesfTest 
 {
 	@Test

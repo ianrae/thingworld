@@ -10,6 +10,8 @@ import org.thingworld.persistence.Commit;
 import org.thingworld.persistence.ICommitDAO;
 import org.thingworld.persistence.MockCommitDAO;
 
+import testhelper.BaseMesfTest;
+
 public class CommitTblTests extends BaseMesfTest 
 {
 	@Test

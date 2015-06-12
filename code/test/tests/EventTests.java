@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.thingworld.event.Event;
 import org.thingworld.event.EventMgr;
 
+import testhelper.BaseMesfTest;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

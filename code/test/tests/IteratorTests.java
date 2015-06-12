@@ -12,6 +12,8 @@ import org.junit.Test;
 import org.thingworld.cache.ISegCacheLoader;
 import org.thingworld.cache.SegmentedCache;
 
+import testhelper.BaseMesfTest;
+
 public class IteratorTests extends BaseMesfTest
 {
 	public static class MyIter implements Iterable<String>{

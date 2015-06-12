@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.thingworld.errortracker.DefaultErrorTracker;
 import org.thingworld.errortracker.ErrorTracker;
 
+import testhelper.BaseMesfTest;
+
 public class ErrorTrackerTests extends BaseMesfTest
 {
 	@Test

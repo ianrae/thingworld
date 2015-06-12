@@ -17,6 +17,7 @@ import org.thingworld.entity.Entity;
 import org.thingworld.persistence.PersistenceContext;
 import org.thingworld.readmodel.AllIdsRM;
 
+import testhelper.BaseMesfTest;
 import testhelper.FactoryGirl;
 import tests.PresenterTests.UserInitializer;
 

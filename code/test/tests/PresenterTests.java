@@ -37,6 +37,7 @@ import org.thingworld.persistence.PersistenceContext;
 import org.thingworld.readmodel.ReadModel;
 import org.thingworld.util.SfxTrail;
 
+import testhelper.BaseMesfTest;
 import testhelper.FactoryGirl;
 import testhelper.LocalMockBinder;
 import tests.UserTests.MyUserPerm;

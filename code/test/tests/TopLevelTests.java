@@ -21,6 +21,7 @@ import org.thingworld.persistence.Stream;
 import org.thingworld.readmodel.ReadModel;
 import org.thingworld.readmodel.ReadModelRepository;
 
+import testhelper.BaseMesfTest;
 import testhelper.FactoryGirl;
 import tests.CommitMgrTests.InsertScooterCmd;
 import tests.CommitMgrTests.MyCmdProc;

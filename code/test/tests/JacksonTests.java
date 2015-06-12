@@ -8,6 +8,8 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import testhelper.BaseMesfTest;
+
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;

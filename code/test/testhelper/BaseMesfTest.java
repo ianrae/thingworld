@@ -1,9 +1,7 @@
-package tests;
+package testhelper;
 
 import org.thingworld.log.LogLevel;
 import org.thingworld.log.Logger;
-
-import testhelper.BaseTest;
 
 
 public class BaseMesfTest extends BaseTest

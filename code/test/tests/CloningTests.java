@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import testhelper.BaseMesfTest;
 import tests.TaskTests.Task;
 import tests.UserTests.User;
 

@@ -10,6 +10,8 @@ import org.thingworld.persistence.IStreamDAO;
 import org.thingworld.persistence.MockStreamDAO;
 import org.thingworld.persistence.Stream;
 
+import testhelper.BaseMesfTest;
+
 public class ObjTableTests extends BaseMesfTest 
 {
 

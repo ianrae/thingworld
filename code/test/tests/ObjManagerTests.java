@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.thingworld.entity.Entity;
 import org.thingworld.entity.EntityMgr;
 
+import testhelper.BaseMesfTest;
+
 public class ObjManagerTests extends BaseMesfTest 
 {
 	public static class Scooter extends Entity
