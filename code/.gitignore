@@ -18,3 +18,4 @@ dist
 /project/*-shim.sbt
 /bin2/
 /bin/
+/thingworld/
