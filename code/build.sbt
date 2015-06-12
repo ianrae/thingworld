@@ -10,7 +10,8 @@ scalaVersion := "2.11.6"
 libraryDependencies ++= Seq(
   javaJdbc,
   cache,
-  javaWs
+  javaWs,
+  "twixt" % "twixt_2.11" % "0.2.0-SNAPSHOT"
 )
 
 // Play provides two styles of routers, one expects its actions to be injected, the
