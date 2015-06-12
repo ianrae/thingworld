@@ -1,10 +1,11 @@
-package mesf;
+package tests;
 
 import static org.junit.Assert.assertEquals;
-import mesf.TaskTests.Task;
-import mesf.UserTests.User;
 
 import org.junit.Test;
+
+import tests.TaskTests.Task;
+import tests.UserTests.User;
 
 import com.rits.cloning.Cloner;
 

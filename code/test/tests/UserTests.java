@@ -1,12 +1,9 @@
-package mesf;
+package tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
-
-import mesf.PresenterTests.UserInitializer;
-import mesf.testhelper.FactoryGirl;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +16,9 @@ import org.thingworld.entity.BaseEntity;
 import org.thingworld.entity.Entity;
 import org.thingworld.persistence.PersistenceContext;
 import org.thingworld.readmodel.AllIdsRM;
+
+import testhelper.FactoryGirl;
+import tests.PresenterTests.UserInitializer;
 
 /*
  * TaskTests and add a UserTaskRM, cascading delete

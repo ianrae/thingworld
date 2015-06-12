@@ -1,4 +1,4 @@
-package mesf.testhelper;
+package testhelper;
 
 import org.thingworld.persistence.ICommitDAO;
 import org.thingworld.persistence.IEventRecordDAO;

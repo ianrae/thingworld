@@ -11,8 +11,8 @@ import org.thingworld.entity.Entity;
 import org.thingworld.persistence.Commit;
 import org.thingworld.persistence.Stream;
 
-import mesf.UserTests;
-import mesf.UserTests.User;
+import tests.UserTests;
+import tests.UserTests.User;
 
 public class AllIdsRM<T> extends ReadModel
 {

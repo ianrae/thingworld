@@ -1,4 +1,4 @@
-package mesf;
+package tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -6,12 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 import java.util.TreeMap;
-
-import mesf.UserTests.MyUserPerm;
-import mesf.UserTests.MyUserProc;
-import mesf.UserTests.User;
-import mesf.testhelper.FactoryGirl;
-import mesf.testhelper.LocalMockBinder;
 
 import org.junit.After;
 import org.junit.Before;
@@ -42,6 +36,12 @@ import org.thingworld.log.Logger;
 import org.thingworld.persistence.PersistenceContext;
 import org.thingworld.readmodel.ReadModel;
 import org.thingworld.util.SfxTrail;
+
+import testhelper.FactoryGirl;
+import testhelper.LocalMockBinder;
+import tests.UserTests.MyUserPerm;
+import tests.UserTests.MyUserProc;
+import tests.UserTests.User;
 
 /*
  * done TaskTests and add a UserTaskRM, cascading delete

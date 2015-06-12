@@ -1,15 +1,9 @@
-package mesf;
+package tests;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 import java.util.TreeMap;
-
-import mesf.PresenterTests.UserInitializer;
-import mesf.UserTests.MyUserProc;
-import mesf.UserTests.User;
-import mesf.testhelper.FactoryGirl;
-import mesf.testhelper.LocalMockBinder;
 
 import org.junit.After;
 import org.junit.Before;
@@ -39,6 +33,12 @@ import org.thingworld.persistence.Commit;
 import org.thingworld.persistence.PersistenceContext;
 import org.thingworld.readmodel.ManyToOneRM;
 import org.thingworld.util.SfxTrail;
+
+import testhelper.FactoryGirl;
+import testhelper.LocalMockBinder;
+import tests.PresenterTests.UserInitializer;
+import tests.UserTests.MyUserProc;
+import tests.UserTests.User;
 
 
 public class TaskTests extends BaseMesfTest 

@@ -1,4 +1,4 @@
-package mesf.testhelper;
+package testhelper;
 
 import java.util.Map;
 

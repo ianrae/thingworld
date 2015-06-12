@@ -1,4 +1,4 @@
-package mesf;
+package tests;
 
 import org.thingworld.log.LogLevel;
 import org.thingworld.log.Logger;

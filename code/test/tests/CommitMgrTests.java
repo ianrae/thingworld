@@ -1,12 +1,9 @@
-package mesf;
+package tests;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import mesf.ObjManagerTests.Scooter;
-import mesf.testhelper.FactoryGirl;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +27,9 @@ import org.thingworld.persistence.IStreamDAO;
 import org.thingworld.persistence.MockEventRecordDAO;
 import org.thingworld.persistence.PersistenceContext;
 import org.thingworld.persistence.Stream;
+
+import testhelper.FactoryGirl;
+import tests.ObjManagerTests.Scooter;
 
 public class CommitMgrTests extends BaseMesfTest 
 {

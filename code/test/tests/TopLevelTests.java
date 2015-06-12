@@ -1,15 +1,9 @@
-package mesf;
+package tests;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import mesf.CommitMgrTests.InsertScooterCmd;
-import mesf.CommitMgrTests.MyCmdProc;
-import mesf.CommitMgrTests.UpdateScooterCmd;
-import mesf.ObjManagerTests.Scooter;
-import mesf.testhelper.FactoryGirl;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +20,12 @@ import org.thingworld.persistence.PersistenceContext;
 import org.thingworld.persistence.Stream;
 import org.thingworld.readmodel.ReadModel;
 import org.thingworld.readmodel.ReadModelRepository;
+
+import testhelper.FactoryGirl;
+import tests.CommitMgrTests.InsertScooterCmd;
+import tests.CommitMgrTests.MyCmdProc;
+import tests.CommitMgrTests.UpdateScooterCmd;
+import tests.ObjManagerTests.Scooter;
 
 public class TopLevelTests extends BaseMesfTest 
 {
