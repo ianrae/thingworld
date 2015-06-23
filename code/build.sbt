@@ -11,7 +11,7 @@ libraryDependencies ++= Seq(
   javaJdbc,
   cache,
   javaWs,
-  "twixt" % "twixt_2.11" % "0.2.0-SNAPSHOT",
+  "twixt" % "twixt_2.11" % "0.2.0",
   "uk.com.robust-it" % "cloning" % "1.9.2"  
 )
 
