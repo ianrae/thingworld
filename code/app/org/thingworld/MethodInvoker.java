@@ -20,7 +20,6 @@ public class MethodInvoker
 			_methodName = methodName;
 			try {
 			  _method = target.getClass().getMethod(methodName, param1);
-			  
 			} catch (SecurityException e) {
 			  // ...
 			} catch (NoSuchMethodException e) {
@@ -30,7 +29,7 @@ public class MethodInvoker
 			{
 				if (_method == null)
 				{
-					Method[] ar = target.getClass().getDeclaredMethods();
+					Method[] ar = target.getClass().getMethods(); //declared or inherited
 					for(int i = 0; i < ar.length; i++)
 					{
 						Method method = ar[i];
@@ -47,6 +46,7 @@ public class MethodInvoker
 							else
 							{
 								_methodParam1 = arParams[0]; //1st one. not needed actually
+								break;
 							}
 						}
 					}
