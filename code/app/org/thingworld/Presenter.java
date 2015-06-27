@@ -125,6 +125,10 @@ public abstract class Presenter //extends CommandProcessor
 		{
 			this.commitWriter.updateEntity(obj);
 		}
+		protected void deleteEntity(Entity obj)
+		{
+			this.commitWriter.deleteEntity(obj);
+		}
 		protected void publishEvent(Event ev)
 		{
 			this.eventWriter.insertEvent(ev);

@@ -60,6 +60,10 @@ public class MContext
 	{
 		return this.persistenceCtx.getEventDAO();
 	}
+	public PersistenceContext getPersistenceContext()
+	{
+		return this.persistenceCtx;
+	}
 	
 	//is optional
 	public void setProcRegistry(ProcRegistry procRegistry)

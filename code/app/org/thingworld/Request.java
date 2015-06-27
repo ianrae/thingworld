@@ -41,8 +41,8 @@ public class Request implements ICommand
 //	{
 //		return binder;
 //	}
-//	public void setFormBinder(IFormBinder binder)
-//	{
-//		this.binder = binder;
-//	}
+	public void setFormBinder(IFormBinder binder)
+	{
+		this.binder = binder;
+	}
 }

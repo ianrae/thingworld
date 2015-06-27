@@ -24,6 +24,13 @@ public class CommitWriter
 		
 		mtx.getCommitMgr().updateEntity(mgr, obj);
 	}
+	public void deleteEntity(Entity obj)
+	{
+		String type = this.getEntityType(obj);
+		IEntityMgr mgr = mtx.getRegistry().findByType(type);
+		
+		mtx.getCommitMgr().deleteEntity(mgr, obj);
+	}
 	
 	public String getEntityType(Entity obj)
 	{
