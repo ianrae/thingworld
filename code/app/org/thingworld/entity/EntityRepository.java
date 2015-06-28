@@ -65,6 +65,12 @@ public class EntityRepository implements ICommitObserver
 		{
 			L = oloader.loadPartialStream(entityId, startId);
 		}
+		
+		if (L == null)
+		{
+			return null;
+		}
+		
 		IEntityMgr mgr = registry.findByType(type);
 
 		for(Commit commit : L)
