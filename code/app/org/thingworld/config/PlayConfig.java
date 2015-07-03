@@ -1,4 +1,6 @@
 package org.thingworld.config;
+import org.thingworld.config.IConfig.ConfigItem;
+
 import play.Configuration;
 
 public class PlayConfig implements IConfig
@@ -31,6 +33,20 @@ public class PlayConfig implements IConfig
 		return (val != 0);
 	}
 	
+	@Override
+	public String getStringValue(ConfigItem item) 
+	{
+		String name = makeName(item);
+		String s = null;
+		
+		try {
+			s = config.getString(name);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return s;
+	}	
 	
 	private String makeName(ConfigItem item)
 	{

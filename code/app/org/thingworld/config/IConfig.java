@@ -10,10 +10,19 @@ public interface IConfig {
 		STREAM_CACHE_SEGMENT_SIZE,
 
 		//--bool values
-		CLONE_ENTITY_WHEN_HYDRATE
+		CLONE_ENTITY_WHEN_HYDRATE,
+		APP_PLATFORM_IS_LINUX,
+		
+		//--string values
+		DEPLOY_MODE
 	};
+	
+	//STEPS when adding new config value
+	//-add to enum above
+	//-add to dev.conf, prod.conf, etc
 	
 	
 	int getIntValue(ConfigItem item);
 	boolean getBoolValue(ConfigItem item);
+	String getStringValue(ConfigItem item);
 }

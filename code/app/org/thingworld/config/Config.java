@@ -30,14 +30,21 @@ public class Config
 	{
 		initIfNeeded();
 		int n = theSingleton.getIntValue(item);
-		Logger.logDebug("Config.%s: %d", item.name(), n);
+		Logger.logDebug("Config.%s = %d", item.name(), n);
 		return n;
 	}
 	public static boolean getBoolValue(ConfigItem item) 
 	{
 		initIfNeeded();
 		boolean b = theSingleton.getBoolValue(item);
-		Logger.logDebug("bConfig.%s: %b", item.name(), b);
+		Logger.logDebug("Config.%s = %b", item.name(), b);
 		return b;
+	}
+	public static String getStringValue(ConfigItem item) 
+	{
+		initIfNeeded();
+		String s = theSingleton.getStringValue(item);
+		Logger.logDebug("Config.%s = '%s'", item.name(), s);
+		return s;
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 public class DefaultConfig implements IConfig
 {
 	private Map<String, Integer> intMap = new HashMap<>();
+	private Map<String, String> stringMap = new HashMap<>();
 	
 	public DefaultConfig()
 	{
@@ -15,6 +16,8 @@ public class DefaultConfig implements IConfig
 		
 		//bools stored here as 0=false,1=true
 		intMap.put(ConfigItem.CLONE_ENTITY_WHEN_HYDRATE.name(), 1); //default true
+		
+		stringMap.put(ConfigItem.DEPLOY_MODE.name(), "prod");
 	}
 
 	@Override
@@ -39,5 +42,13 @@ public class DefaultConfig implements IConfig
 			return false;
 		}
 		return (n != 0);
+	}
+	
+	@Override
+	public String getStringValue(ConfigItem item) 
+	{
+		String key = item.name();
+		String s = stringMap.get(key);
+		return s;
 	}
 }
