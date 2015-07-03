@@ -28,23 +28,46 @@ public class Config
 	
 	public static int getIntValue(ConfigItem item) 
 	{
+		return getIntValue(item, true);
+	}
+	public static int getIntValue(ConfigItem item, boolean logIt) 
+	{
 		initIfNeeded();
 		int n = theSingleton.getIntValue(item);
-		Logger.logDebug("Config.%s = %d", item.name(), n);
+		if (logIt)
+		{
+			Logger.logDebug("Config.%s = %d", item.name(), n);
+		}
 		return n;
 	}
-	public static boolean getBoolValue(ConfigItem item) 
+	
+	public static boolean getBoolValue(ConfigItem item)
+	{
+		return getBoolValue(item, true);
+	}
+	public static boolean getBoolValue(ConfigItem item, boolean logIt) 
 	{
 		initIfNeeded();
 		boolean b = theSingleton.getBoolValue(item);
-		Logger.logDebug("Config.%s = %b", item.name(), b);
+		if (logIt)
+		{
+			Logger.logDebug("Config.%s = %b", item.name(), b);
+		}
 		return b;
 	}
+	
 	public static String getStringValue(ConfigItem item) 
+	{
+		return getStringValue(item, true);
+	}
+	public static String getStringValue(ConfigItem item, boolean logIt) 
 	{
 		initIfNeeded();
 		String s = theSingleton.getStringValue(item);
-		Logger.logDebug("Config.%s = '%s'", item.name(), s);
+		if (logIt)
+		{
+			Logger.logDebug("Config.%s = '%s'", item.name(), s);
+		}
 		return s;
 	}
 }
