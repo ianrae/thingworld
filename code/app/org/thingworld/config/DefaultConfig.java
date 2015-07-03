@@ -12,6 +12,7 @@ public class DefaultConfig implements IConfig
 		intMap.put(ConfigItem.COMMIT_CACHE_SEGMENT_SIZE.name(), 4);
 		intMap.put(ConfigItem.EVENT_CACHE_SEGMENT_SIZE.name(), 4);
 		intMap.put(ConfigItem.STREAM_CACHE_SEGMENT_SIZE.name(), 4);
+		intMap.put(ConfigItem.CLONE_ENTITY_SKIP.name(), 0);
 	}
 
 	@Override
