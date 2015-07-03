@@ -30,4 +30,9 @@ public class Config
 		initIfNeeded();
 		return theSingleton.getIntValue(item);
 	}
+	public static boolean getBoolValue(ConfigItem item) 
+	{
+		initIfNeeded();
+		return theSingleton.getBoolValue(item);
+	}
 }
