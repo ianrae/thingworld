@@ -1,6 +1,7 @@
 package org.thingworld.config;
 
 import org.thingworld.config.IConfig.ConfigItem;
+import org.thingworld.log.Logger;
 
 
 public class Config
@@ -28,11 +29,15 @@ public class Config
 	public static int getIntValue(ConfigItem item) 
 	{
 		initIfNeeded();
-		return theSingleton.getIntValue(item);
+		int n = theSingleton.getIntValue(item);
+		Logger.logDebug("Config.%s: %d", item.name(), n);
+		return n;
 	}
 	public static boolean getBoolValue(ConfigItem item) 
 	{
 		initIfNeeded();
-		return theSingleton.getBoolValue(item);
+		boolean b = theSingleton.getBoolValue(item);
+		Logger.logDebug("bConfig.%s: %b", item.name(), b);
+		return b;
 	}
 }

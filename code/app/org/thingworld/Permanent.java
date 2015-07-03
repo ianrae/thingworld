@@ -8,6 +8,8 @@ import org.thingworld.cache.EventCache;
 import org.thingworld.cache.StreamCache;
 import org.thingworld.cmd.CommandProcessor;
 import org.thingworld.cmd.ProcRegistry;
+import org.thingworld.config.Config;
+import org.thingworld.config.IConfig;
 import org.thingworld.entity.Entity;
 import org.thingworld.entity.EntityManagerRegistry;
 import org.thingworld.entity.EntityRepository;
@@ -41,11 +43,17 @@ public class Permanent
 	 */
 	public Permanent(PersistenceContext persistenceCtx)
 	{
-		this(persistenceCtx, null);
+		this(persistenceCtx, null, null);
 	}
 
-	public Permanent(PersistenceContext persistenceCtx, IEventBus eventBus)
+	public Permanent(PersistenceContext persistenceCtx, IConfig config, IEventBus eventBus)
 	{
+		//set config first in case the constructors below need it.
+		if (config != null)
+		{
+			Config.setConfig(config);
+		}
+		
 		this.persistenceCtx = persistenceCtx;
 		this.registry = new EntityManagerRegistry();
 		this.procRegistry = new ProcRegistry();
