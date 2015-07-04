@@ -97,7 +97,22 @@ public class SegmentedGuavaCache<T> implements ISegmentedCache<T>
 			long k = index % segSize;
 			if (k >= L.size())
 			{
-				return null;
+				//for now reload entire seg. later only reload missing ones!!
+				List<T> newL = loader.loadRange(seg, segSize);
+				if (newL == null)
+				{
+					return null;
+				}
+				else if (newL != null)
+				{
+					segmentMap.put(new Long(seg), newL);
+				}
+				L = newL;
+				
+				if (k >= L.size())
+				{
+					return null;
+				}
 			}
 			return L.get((int) k);
 		}

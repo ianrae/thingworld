@@ -17,7 +17,7 @@ public class StreamCacheTests extends BaseMesfTest
 	public void test() 
 	{
 		IStreamDAO streamDAO = new MockStreamDAO();
-		buildObjects(streamDAO);
+		buildObjects(streamDAO, 5);
 		assertEquals(5, streamDAO.size());
 		
 		StreamCache cache = new StreamCache(streamDAO);
@@ -30,9 +30,9 @@ public class StreamCacheTests extends BaseMesfTest
 		assertEquals(14, str.getSnapshotId().longValue());
 	}
 
-	private void buildObjects(IStreamDAO streamDAO) 
+	private void buildObjects(IStreamDAO streamDAO, int n) 
 	{
-		for(int i = 0; i < 5; i++)
+		for(int i = 0; i < n; i++)
 		{
 			Stream stream = new Stream();
 			stream.setSnapshotId(10L + i);
@@ -41,6 +41,24 @@ public class StreamCacheTests extends BaseMesfTest
 		}
 	}
 	
+	@Test
+	public void testBug() 
+	{
+		IStreamDAO streamDAO = new MockStreamDAO();
+		buildObjects(streamDAO, 2);
+		assertEquals(2, streamDAO.size());
+		
+		StreamCache cache = new StreamCache(streamDAO);
+		long streamId = cache.findSnapshotId(2);
+		assertEquals(11, streamId);
+		
+		//now simulate adding a new object. gets written to dao but not to cache
+		buildObjects(streamDAO, 1);
+		assertEquals(3, streamDAO.size());
+		
+		Stream str = cache.findStream(3);
+		assertEquals(10, str.getSnapshotId().longValue());
+	}
 
 	@Before
 	public void init()
