@@ -1,7 +1,7 @@
 package org.thingworld;
 
 
-public interface IReqquestInterceptor
+public interface IRequestInterceptor
 {
 	void process(Request request, Reply reply, InterceptorContext itx);
 }

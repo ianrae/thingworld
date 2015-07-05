@@ -14,7 +14,7 @@ public abstract class Presenter //extends CommandProcessor
 		protected MContext mtx;
 		protected CommitWriter commitWriter;
 		protected EventWriter eventWriter;
-		protected List<IReqquestInterceptor> interceptL = new ArrayList<>();
+		protected List<IRequestInterceptor> interceptL = new ArrayList<>();
 		
 		public Presenter(MContext mtx)
 		{
@@ -23,7 +23,7 @@ public abstract class Presenter //extends CommandProcessor
 			this.eventWriter = new EventWriter(mtx);
 		}
 		
-		public void addInterceptor(IReqquestInterceptor intercept)
+		public void addInterceptor(IRequestInterceptor intercept)
 		{
 			interceptL.add(intercept);
 		}
@@ -78,7 +78,7 @@ public abstract class Presenter //extends CommandProcessor
 		private boolean processInterceptors(Request request, Reply reply) 
 		{
 			InterceptorContext itx = new InterceptorContext();
-			for(IReqquestInterceptor interceptor : this.interceptL)
+			for(IRequestInterceptor interceptor : this.interceptL)
 			{
 				interceptor.process(request, reply, itx);
 				if (itx.haltProcessing)

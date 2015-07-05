@@ -19,7 +19,7 @@ import org.thingworld.BindingIntercept;
 import org.thingworld.EventProjector;
 import org.thingworld.IDomainIntializer;
 import org.thingworld.IFormBinder;
-import org.thingworld.IReqquestInterceptor;
+import org.thingworld.IRequestInterceptor;
 import org.thingworld.InterceptorContext;
 import org.thingworld.MContext;
 import org.thingworld.Permanent;
@@ -335,7 +335,7 @@ public class PresenterTests extends BaseMesfTest
 		return map;
 	}
 
-	private static class MyIntercept implements IReqquestInterceptor
+	private static class MyIntercept implements IRequestInterceptor
 	{
 		public SfxTrail trail;
 		public int interceptorType;

@@ -1,7 +1,7 @@
 package org.thingworld;
 
 
-public class BindingIntercept implements IReqquestInterceptor
+public class BindingIntercept implements IRequestInterceptor
 {
 	private int failureDestination;
 	public BindingIntercept(int failureDestination)
