@@ -22,6 +22,8 @@ public class SegmentedGuavaCache<T> implements ISegmentedCache<T>
 	@Override
 	public void init(long segSize, ISegCacheLoader<T> loader)
 	{
+		segSize = (segSize <= 0) ? 4 : segSize; //avoid divide by zero error
+		
 		this.segSize = segSize;
 		this.loader = loader;
 

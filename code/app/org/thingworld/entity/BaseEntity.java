@@ -15,7 +15,7 @@ public class BaseEntity extends Entity
 		//Cloner has strange error when play does automatic recompile in Dev mode
 		//java.lang.IllegalArgumentException: Can not set java.lang.String field tw.entities.Defect.s to tw.entities.Defect
 		//avoid this by setting CLONE_ENTITY_SKIP to 1 but is dangerous!
-		boolean flag = Config.getBoolValue(IConfig.ConfigItem.CLONE_ENTITY_WHEN_HYDRATE);
+		boolean flag = Config.getBoolValue(IConfig.ConfigItem.CLONE_ENTITY_WHEN_HYDRATE, false);
 		if (! flag) //don't clone?
 		{
 			return this;

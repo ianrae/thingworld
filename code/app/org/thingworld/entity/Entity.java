@@ -23,6 +23,11 @@ public abstract class Entity
 		}
 		return L;
 	}
+	@JsonIgnore
+	public boolean entityHasChanged()
+	{
+		return setlist.size() > 0;
+	}
 	public void clearSetList()
 	{
 		setlist.clear();
