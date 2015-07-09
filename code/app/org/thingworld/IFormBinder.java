@@ -13,4 +13,7 @@ public interface IFormBinder<T>
 	Form<T> getForm();
 	
 	Form<T> fillForm(T input);
+	
+	int getFailDestination();
+	void setFailDestination(int failureDestination);
 }

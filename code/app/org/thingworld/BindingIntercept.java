@@ -1,5 +1,6 @@
 package org.thingworld;
 
+//!!remove this. can't do binding in an interceptor. need presenter to do it so validation errors returned
 
 public class BindingIntercept implements IRequestInterceptor
 {

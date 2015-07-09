@@ -13,6 +13,7 @@ import play.data.Form;
 public class LocalMockBinder<T extends ValueContainer> implements IFormBinder<T>
 {
 	MockTwixtBinder<T> inner;
+	int failureDestination;
 	
 	public LocalMockBinder(Class<T> clazz, Map<String,String> anyData)
 	{
@@ -44,6 +45,16 @@ public class LocalMockBinder<T extends ValueContainer> implements IFormBinder<T>
 	public Form<T> fillForm(T input) 
 	{
 		return inner.fillForm(input);
+	}
+
+	@Override
+	public int getFailDestination() {
+		return this.failureDestination;
+	}
+
+	@Override
+	public void setFailDestination(int failureDestination) {
+		this.failureDestination = failureDestination;
 	}
 
 }
