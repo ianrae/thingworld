@@ -73,4 +73,13 @@ public class AllIdsRM<T> extends ReadModel
 		}
 		return L;
 	}
+	public T queryById(MContext mtx, long id) throws Exception
+	{
+		if (map.containsKey(id))
+		{
+			Entity obj = mtx.loadEntity(clazz, id);
+			return (T) obj;
+		}
+		return null;
+	}
 }

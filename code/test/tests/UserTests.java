@@ -1,8 +1,7 @@
 package tests;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -246,12 +245,37 @@ public class UserTests extends BaseMesfTest
 		perm.readModel1.freshen(mtx);
 	}
 
-	
-//	private void chkUserStr(MyPerm perm, long entityId, String string) 
-//	{
-//		User scooter = (User) perm.loadObjectFromRepo(entityId);
-//		assertEquals(string, scooter.getS());
-//	}
+	@Test
+	public void testQueryById() throws Exception
+	{
+		MyUserPerm perm = this.createPerm();
+		
+		int n = 5; 
+		for(int i = 0; i < n; i++)
+		{
+			log(String.format("%d..	", i));
+			MContext mtx = perm.createMContext();
+			MyUserProc.InsertCmd cmd = new MyUserProc.InsertCmd();
+			cmd.a = 101+i;
+			cmd.s = String.format("bob%d", i+1);
+			CommandProcessor proc = mtx.findProc(User.class);
+			proc.process(cmd);
+			assertEquals(i+1, cmd.entityId); //!! we set this in proc (only on insert)
+		}
+		
+		MContext mtx = perm.createMContext();
+		mtx.acquire(perm.readModel1.getClass());
+		List<User> L = perm.readModel1.queryAll(mtx);
+		assertEquals(5, L.size());
+		
+		User tmp = perm.readModel1.queryById(mtx, 1);
+		assertNotNull(tmp);
+		assertEquals(1L, tmp.getId().longValue());
+		
+		tmp = perm.readModel1.queryById(mtx, 111); //not exist
+		assertNull(tmp);
+	}	
+
 
 
 	//-----------------------
