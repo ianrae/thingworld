@@ -2,6 +2,7 @@
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,6 +27,13 @@ public class JacksonTests extends BaseMesfTest
 		public int b;
 		public String s;
 	}
+	
+	public static class Uber
+	{
+		public int a;
+		public Object obj;
+	}
+	
 
 	@Test
 	public void test() throws Exception
@@ -93,6 +101,55 @@ public class JacksonTests extends BaseMesfTest
 		String s = fix("{'a':15,'s':'abc'}");
 		assertEquals(s, json2);
 	}
+	
+	@Test
+	public void testUber() throws Exception
+	{
+		log("string");
+		String json = "{'a':15,'obj':'abc'}";
+		ObjectMapper mapper = new ObjectMapper();
+		Uber taxi = mapper.readValue(fix(json), Uber.class);	
+		assertEquals(15, taxi.a);
+		assertEquals("abc", taxi.obj.toString());
+		assertEquals(true, taxi.obj instanceof String);
+		
+		log("integer");
+		json = "{'a':15,'obj':1503}";
+		mapper = new ObjectMapper();
+		taxi = mapper.readValue(fix(json), Uber.class);	
+		assertEquals(15, taxi.a);
+		assertEquals(1503, taxi.obj);
+		assertEquals(true, taxi.obj instanceof Integer);
+		
+		log("long");
+		Long lval = Long.MAX_VALUE - 20;
+		json = String.format("{'a':15,'obj':%s}", lval);
+		mapper = new ObjectMapper();
+		taxi = mapper.readValue(fix(json), Uber.class);	
+		assertEquals(15, taxi.a);
+		assertEquals(lval.longValue(), taxi.obj);
+		assertEquals(true, taxi.obj instanceof Long);
+		
+		log("boolean");
+		json = String.format("{'a':15,'obj':false}");
+		mapper = new ObjectMapper();
+		taxi = mapper.readValue(fix(json), Uber.class);	
+		assertEquals(15, taxi.a);
+		assertEquals(false, taxi.obj);
+		assertEquals(true, taxi.obj instanceof Boolean);
+		
+		log("date");
+		Date dt = new Date();
+		json = String.format("{'a':15,'obj':%d}", dt.getTime());
+		mapper = new ObjectMapper();
+		taxi = mapper.readValue(fix(json), Uber.class);	
+		assertEquals(15, taxi.a);
+		assertEquals(dt.getTime(), taxi.obj);
+		assertEquals(true, taxi.obj instanceof Long);
+	}
+
+	
+	
 
 	//-----------------------------
 	private void chkTaxi(Taxi taxi, int expectedA, int expectedB, String expectedStr)
