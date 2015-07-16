@@ -22,6 +22,10 @@ public class Request implements ICommand
 	{
 		return entityId;
 	}
+	public void setEntityId(Long id)
+	{
+		this.entityId = id;
+	}
 	
 	public IFormBinder getFormBinder()
 	{
