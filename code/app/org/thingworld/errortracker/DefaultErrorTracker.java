@@ -1,5 +1,7 @@
 package org.thingworld.errortracker;
 
+import org.thingworld.log.DefaultLogger;
+import org.thingworld.log.ILogger;
 import org.thingworld.log.Logger;
 
 public class DefaultErrorTracker implements IErrorTracker
@@ -7,6 +9,12 @@ public class DefaultErrorTracker implements IErrorTracker
 	private int errorCount;
 	private String lastError;
 	private IErrorListener listener;
+	private ILogger logger;
+	
+	public DefaultErrorTracker()
+	{
+		this.logger = new DefaultLogger();
+	}
 
 	@Override
 	public synchronized void setListener(IErrorListener listener) 
@@ -36,6 +44,12 @@ public class DefaultErrorTracker implements IErrorTracker
 	public synchronized String getLastError() 
 	{
 		return this.lastError;
+	}
+
+	@Override
+	public void setLogger(ILogger logger) 
+	{
+		this.logger = logger;
 	}
 	
 }
