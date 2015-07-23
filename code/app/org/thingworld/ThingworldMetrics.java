@@ -10,5 +10,9 @@ public class ThingworldMetrics
 	{
 		numFailedPresenterMethodCalls.incrementAndGet();
 	}
+	public static long getFailedMethodCallCount()
+	{
+		return numFailedPresenterMethodCalls.get();
+	}
 	
 }
