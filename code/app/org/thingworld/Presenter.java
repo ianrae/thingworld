@@ -48,6 +48,7 @@ public abstract class Presenter //extends CommandProcessor
 			catch(Exception ex)
 			{
 				ex.printStackTrace();
+				ThingworldMetrics.incFailedPresenterMethodCalls();
 				Logger.log("cont-after-except");
 //				this.addErrorException(e, "formatter");
 				baseReply.setFailed(true);
@@ -56,7 +57,7 @@ public abstract class Presenter //extends CommandProcessor
 			return reply;
 		}
 		
-		private Reply doProcess(Request request) 
+		private Reply doProcess(Request request)  throws Exception
 		{
 			this.baseReply = this.createReply();
 			String methodName = getMethodName(request);
@@ -75,7 +76,7 @@ public abstract class Presenter //extends CommandProcessor
 			return baseReply;
 		}
 		
-		private boolean processInterceptors(Request request, Reply reply) 
+		private boolean processInterceptors(Request request, Reply reply)  throws Exception
 		{
 			InterceptorContext itx = new InterceptorContext();
 			for(IRequestInterceptor interceptor : this.interceptL)
@@ -112,9 +113,9 @@ public abstract class Presenter //extends CommandProcessor
 			return methodName;
 		}
 		
-		protected void beforeRequest(Request request, InterceptorContext itx)
+		protected void beforeRequest(Request request, InterceptorContext itx) throws Exception
 		{}
-		protected void afterRequest(Request request)
+		protected void afterRequest(Request request) throws Exception
 		{}
 		
 		protected void insertEntity(Entity obj)

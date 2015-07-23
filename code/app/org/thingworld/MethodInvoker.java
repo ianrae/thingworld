@@ -70,9 +70,11 @@ public class MethodInvoker
 			} catch (IllegalArgumentException e) 
 			{
 				e.printStackTrace();
+				ThingworldMetrics.incFailedPresenterMethodCalls();
 			} catch (IllegalAccessException e) 
 			{
 				e.printStackTrace();
+				ThingworldMetrics.incFailedPresenterMethodCalls();
 			} catch (InvocationTargetException e) 
 			{
 				Logger.log("EXCEPTION in presenter!");
@@ -85,6 +87,7 @@ public class MethodInvoker
 				else
 				{
 					e.getCause().printStackTrace();
+					ThingworldMetrics.incFailedPresenterMethodCalls();
 				}
 			}	
 			return result;
