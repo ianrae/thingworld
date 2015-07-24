@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.thingworld.cache.CommitCache;
 import org.thingworld.cache.StreamCache;
+import org.thingworld.log.Logger;
 import org.thingworld.persistence.Commit;
 import org.thingworld.persistence.Stream;
 import org.thingworld.readmodel.IReadModel;
@@ -26,6 +27,7 @@ public class Projector
 		{
 			return; //nothing to do
 		}
+		Logger.log("Projector %d,start %d", mtx.getEventMaxId(), startId);
 		cache.clearLastSegment(mtx.getMaxId());
 		scache.clearLastSegment(mtx.getMaxId());
 		List<ICommitObserver> obsL = new ArrayList<>();

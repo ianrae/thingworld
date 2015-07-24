@@ -15,6 +15,7 @@ import org.thingworld.entity.EntityManagerRegistry;
 import org.thingworld.entity.EntityRepository;
 import org.thingworld.event.EventManagerRegistry;
 import org.thingworld.event.IEventBus;
+import org.thingworld.log.Logger;
 import org.thingworld.persistence.ICommitDAO;
 import org.thingworld.persistence.IStreamDAO;
 import org.thingworld.persistence.PersistenceContext;
@@ -108,6 +109,7 @@ public class Permanent
 		mgr.setMtx(mtx); //!!yuck
 		
 		mtx.getEventMaxId(); //freshen event's maxid
+		Logger.log("--EPOCH %d--", mtx.getEventMaxId());
 		return mtx;
 	}
 	

@@ -29,10 +29,12 @@ public class EntityRepository implements ICommitObserver
 		this.registry = registry;
 	}
 
-	public synchronized void dumpStats()
+	public synchronized String dumpStats()
 	{
-		Logger.log("OVC: hits:%d, misses:%d", numHits, numMisses);
+		String s = String.format("OVC: hits:%d, misses:%d", numHits, numMisses);
+		Logger.log(s);
 		Logger.log(trail.getTrail());
+		return s;
 	}
 
 	public synchronized Entity loadEntity(String type, Long entityId, EntityLoader oloader) throws Exception
