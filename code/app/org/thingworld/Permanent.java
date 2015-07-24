@@ -109,7 +109,7 @@ public class Permanent
 		mgr.setMtx(mtx); //!!yuck
 		
 		mtx.getEventMaxId(); //freshen event's maxid
-		Logger.log("--EPOCH %d--", mtx.getEventMaxId());
+		Logger.log("--EPOCH %d --", mtx.getMaxId());
 		return mtx;
 	}
 	
