@@ -42,11 +42,12 @@ public class EntityRepository implements ICommitObserver
 	{
 		Entity obj = map.get(entityId);
 		Long startId = null;
+		long epoch = 0L;
 		if (obj != null)
 		{
 			long when = whenMap.get(entityId);
-			long current = oloader.getMaxId();
-			if(when >= current)
+			epoch = oloader.getMaxId(); //epoch
+			if(when >= epoch)
 			{
 				Logger.logDebug("ER(%d) hit!", entityId);
 				numHits++;
@@ -56,10 +57,10 @@ public class EntityRepository implements ICommitObserver
 			//Logger.logDebug("ER(%d) stale!", entityId);
 		}
 
-		obj = doLoadEntity(type, entityId, oloader, startId, obj);
+		obj = doLoadEntity(type, entityId, oloader, startId, obj, epoch);
 		return obj;
 	}
-	private Entity doLoadEntity(String type, Long entityId, EntityLoader oloader, Long startId, Entity obj) throws Exception
+	private Entity doLoadEntity(String type, Long entityId, EntityLoader oloader, Long startId, Entity obj, long epoch) throws Exception
 	{
 		List<Commit> L = null;
 		if (startId == null)
@@ -79,8 +80,8 @@ public class EntityRepository implements ICommitObserver
 		//if no changes have occurred then update the when map because obj is up-to-date
 		if (L.size() == 0)
 		{
-			whenMap.put(entityId, startId); 
-			Logger.logDebug("ER(%d) hitd!", entityId);
+			whenMap.put(entityId, epoch); //we're up to date wrt to epoch
+			Logger.logDebug("ER(%d) hitd! epoch=%d", entityId, epoch);
 			numHits++;
 			return obj;
 		}
