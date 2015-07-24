@@ -45,18 +45,17 @@ public class EntityRepository implements ICommitObserver
 		if (obj != null)
 		{
 			long when = whenMap.get(entityId);
-			if(when >= oloader.getMaxId())
+			long current = oloader.getMaxId();
+			if(when >= current)
 			{
 				Logger.logDebug("ER(%d) hit!", entityId);
 				numHits++;
 				return obj;
 			}
 			startId = when + 1L;
-			Logger.logDebug("ER(%d) stale!", entityId);
+			//Logger.logDebug("ER(%d) stale!", entityId);
 		}
 
-		numMisses++;
-		Logger.logDebug("ER(%d) miss startId=%d", entityId, startId);
 		obj = doLoadEntity(type, entityId, oloader, startId, obj);
 		return obj;
 	}
@@ -76,6 +75,18 @@ public class EntityRepository implements ICommitObserver
 		{
 			return null;
 		}
+
+		//if no changes have occurred then update the when map because obj is up-to-date
+		if (L.size() == 0)
+		{
+			whenMap.put(entityId, startId); 
+			Logger.logDebug("ER(%d) hitd!", entityId);
+			numHits++;
+			return obj;
+		}
+		numMisses++;
+		Logger.logDebug("ER(%d) miss startId=%d", entityId, startId);
+		
 		
 		IEntityMgr mgr = registry.findByType(type);
 
@@ -150,7 +161,8 @@ public class EntityRepository implements ICommitObserver
 		if (obj != null)
 		{
 			obj.clearSetList();
-			whenMap.put(entityId, commit.getId()); 
+			long current = commit.getId();
+			whenMap.put(entityId, current); 
 		}
 		return obj;
 	}

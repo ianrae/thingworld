@@ -20,6 +20,7 @@ import org.thingworld.entity.EntityLoader;
 import org.thingworld.entity.EntityManagerRegistry;
 import org.thingworld.entity.EntityMgr;
 import org.thingworld.entity.EntityRepository;
+import org.thingworld.log.Logger;
 import org.thingworld.persistence.Commit;
 import org.thingworld.persistence.ICommitDAO;
 import org.thingworld.persistence.IEventRecordDAO;
@@ -110,6 +111,9 @@ public class CommitMgrTests extends BaseMesfTest
 	public static class DeleteScooterCmd extends BaseCommand
 	{
 	}
+	public static class ShowScooterCmd extends BaseCommand
+	{
+	}
 	
 	public static class MyCmdProc extends CommandProcessor
 	{
@@ -133,12 +137,25 @@ public class CommitMgrTests extends BaseMesfTest
 				{
 					doDeleteScooterCmd((DeleteScooterCmd)cmd);
 				}
+				else if (cmd instanceof ShowScooterCmd)
+				{
+					doShowScooterCmd((ShowScooterCmd)cmd);
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 
+		private void doShowScooterCmd(ShowScooterCmd cmd) throws Exception 
+		{
+			Scooter scooter = loadEntity(cmd.getEntityId());
+			if (scooter == null)
+			{
+				return; //!!
+			}
+			Logger.log("loaded 'er");
+		}
 		private void doDeleteScooterCmd(DeleteScooterCmd cmd) throws Exception 
 		{
 			Scooter scooter = loadEntity(cmd.getEntityId());
