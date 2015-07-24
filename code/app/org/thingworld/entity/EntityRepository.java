@@ -3,6 +3,7 @@ package org.thingworld.entity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.thingworld.ICommitObserver;
 import org.thingworld.MContext;
@@ -15,8 +16,8 @@ import org.thingworld.util.SfxTrail;
 
 public class EntityRepository implements ICommitObserver
 {
-	Map<Long, Entity> map = new HashMap<>(); //!!needs to be thread-safe
-	Map<Long, Long> whenMap = new HashMap<>(); 
+	Map<Long, Entity> map = new ConcurrentHashMap<>(); //!!needs to be thread-safe
+	Map<Long, Long> whenMap = new ConcurrentHashMap<>(); 
 	private IStreamDAO streamDAO;
 	private EntityManagerRegistry registry;
 	private long numHits;
@@ -46,13 +47,16 @@ public class EntityRepository implements ICommitObserver
 			long when = whenMap.get(entityId);
 			if(when >= oloader.getMaxId())
 			{
+				Logger.logDebug("ER(%d) hit!", entityId);
 				numHits++;
 				return obj;
 			}
 			startId = when + 1L;
+			Logger.logDebug("ER(%d) stale!", entityId);
 		}
 
 		numMisses++;
+		Logger.logDebug("ER(%d) miss startId=%d", entityId, startId);
 		obj = doLoadEntity(type, entityId, oloader, startId, obj);
 		return obj;
 	}
@@ -134,6 +138,7 @@ public class EntityRepository implements ICommitObserver
 			break;
 		case 'U':
 			mgr.mergeHydrate(obj, commit.getJson());
+			map.put(entityId, obj); //update object in cache
 			break;
 		case 'D':
 			obj = null;
