@@ -1,5 +1,6 @@
 import static org.junit.Assert.*;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.thingworld.MContext;
@@ -145,4 +146,9 @@ public class IdTests extends BaseMesfTest
 		super.init();
 	}
 	
+	@After
+	public void shutdown()
+	{
+		MockStreamDAO.useNonContiguousIds = false;
+	}
 }

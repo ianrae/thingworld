@@ -149,7 +149,7 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 		if (L == null) //not in cache?
 		{
 			L = loader.loadRange(seg, segSize);
-			if (L != null)
+			if (L != null && L.size() > 0)
 			{
 				segmentMap.put(new Long(seg), L);
 			}
@@ -167,14 +167,14 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 		{
 			//for now reload entire seg. later only reload missing ones!!
 			List<T> newL = loader.loadRange(seg, segSize);
-			if (newL == null)
+			if (L != null && L.size() > 0)
 			{
-				Logger.log("UNEXPECTED loadRange FAIL seg %d", seg);
-				return null;
+				segmentMap.put(new Long(seg), newL);
 			}
 			else 
 			{
-				segmentMap.put(new Long(seg), newL);
+				Logger.log("UNEXPECTED loadRange FAIL seg %d", seg);
+				return null;
 			}
 			L = newL;
 		}
@@ -210,7 +210,7 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 	}
 
 	@Override
-	public List<T> getRange(long startIndex, long n)
+	public List<T> getRange(long startId, long n)
 	{
 		List<T> resultL = new ArrayList<>();
 
@@ -224,10 +224,17 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 //			resultL.add(val);
 //		}
 		
-		long i = startIndex;
+		//we don't support ids of 0 so 0 means start at 1
+		if (startId == 0L)
+		{
+			startId = 1;
+		}
+		
+		
+		long id = startId;
 		while(resultL.size() < n)
 		{
-			T entity = getOne(i);
+			T entity = getOne(id);
 			if (entity != null)
 			{
 				resultL.add(entity);
@@ -236,7 +243,7 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 			{
 				break;
 			}
-			i++;
+			id++;
 		}
 		
 		return resultL;

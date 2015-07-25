@@ -95,7 +95,7 @@ public class ManyToOneRM extends ReadModel
 	public void freshen(MContext mtx, ICommitObserver extraObserver)
 	{
 		Projector projector = mtx.createProjector();
-		projector.run(mtx, this, this.lastCommitId, extraObserver);
+		projector.run(mtx, this, this.lastCommitId + 1, extraObserver);
 	}
 	
 	public Map<Long,Long> queryAll(MContext mtx, Long targetId) throws Exception

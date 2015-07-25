@@ -23,29 +23,26 @@ public class Projector
 	
 	public void run(MContext mtx, ICommitObserver observer, long startId, ICommitObserver extraObserver)
 	{
-		if (startId >= mtx.getMaxId())
+		if (startId > mtx.getMaxId())
 		{
 			return; //nothing to do
 		}
-		Logger.log("Projector %d,start %d", mtx.getMaxId(), startId);
+		Logger.log("Projector start %d (max %d)", startId, mtx.getMaxId());
 		cache.clearLastSegment(mtx.getMaxId());
 		scache.clearLastSegment(mtx.getMaxId());
 		List<ICommitObserver> obsL = new ArrayList<>();
-		obsL.add(observer);
+		
+		//extraObs first because its the EntityRepository, and improves performance if its fresh
 		if (extraObserver != null)
 		{
 			obsL.add(extraObserver);
 		}
+		obsL.add(observer);
 		run(mtx, obsL, startId);
 	}
 	public void run(MContext mtx, List<ICommitObserver> observerL, long startId)
 	{
-		long startIndex = startId;
-//		if (startIndex > 0)
-//		{
-//			startIndex--; //yuck!!
-//		}
-		List<Commit> L = cache.loadRange(startIndex, mtx.getMaxId() - startIndex);
+		List<Commit> L = cache.loadRange(startId, mtx.getMaxId() - startId + 1);
 		for(Commit commit : L)	
 		{
 			doObserve(mtx, commit, observerL);
