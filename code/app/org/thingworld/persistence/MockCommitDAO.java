@@ -10,6 +10,9 @@ public class MockCommitDAO implements ICommitDAO
 	{
 		protected List<Commit> _L = new ArrayList<Commit>();
 		protected EntityDB<Commit> _entityDB = new EntityDB<Commit>();
+
+		public static boolean useNonContiguousIds;
+
 //		public QueryContext<Commit> queryctx; 
 
 //		@Override
@@ -103,7 +106,15 @@ public class MockCommitDAO implements ICommitDAO
 
 		private Long nextAvailIdNumber() 
 		{
-			long used = 0;
+			int start = 0;
+			int increment = 1;
+			if (useNonContiguousIds)
+			{
+				start = 30;
+				increment = 2;
+			}
+			
+			long used = start;
 			for(Commit entity : _L)
 			{
 				if (entity.getId() > used)
@@ -111,8 +122,9 @@ public class MockCommitDAO implements ICommitDAO
 					used = entity.getId();
 				}
 			}
-			return used + 1;
+			return used + increment;
 		}
+		
 
 		@Override
 		public void update(Commit entity) 

@@ -43,7 +43,7 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 	private Cache<Long, List<T>> segmentMap;
 	private long segSize;
 	private ISegCacheLoader<T> loader;
-	private boolean getOneDiscoveredNoMore; //totally not-thread-safe. fix later!1
+//	private boolean getOneDiscoveredNoMore; //totally not-thread-safe. fix later!!
 	
 	@Override
 	public void init(long segSize, ISegCacheLoader<T> loader)
@@ -68,44 +68,45 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 	@Override
 	public void clearLastSegment(long maxId)
 	{
-		long max = -1;
-		List<T> finalSegmentL = null;
-		for(Long segmentId : segmentMap.asMap().keySet())
-		{
-			if (segmentId > max)
-			{
-				max = segmentId; //max is entityId of first element in last segment
-				finalSegmentL = segmentMap.asMap().get(segmentId);
-			}
-		}
-
-		//max=4  5,6,7 so n=3
-		//maxId=8 (we added one commit)
-
-		if (max >= 0) //found last segment
-		{
-			long startId = max; //if of L[0] in last segment
-			int n = finalSegmentL.size();
-			Range range = calcRange(finalSegmentL);
-			if (maxId >= startId && ! range.inRange(maxId))
-			{
-				Logger.logDebug("LAST %d.%d", startId, n);
-				//				map.remove(max);
-
-				//calculate # new commits we haven't yet loaded and load them
-//				long missing = maxId - (startId + n);
-				long numMissing = this.segSize - n; //if segment not full this will be >  0
-
-//				if (missing + n <= this.segSize)
-				if (numMissing > 0)
-				{
-					List<T> newL = loader.loadRange(range.lastId + 1, numMissing); //should get at least one
-					finalSegmentL.addAll(newL);
-					//not sure if guava returns copy so let's explicitly put it back
-					segmentMap.put(new Long(max), finalSegmentL);					
-				}
-			}
-		}
+//		long max = -1;
+//		List<T> finalSegmentL = null;
+//		for(Long segmentId : segmentMap.asMap().keySet())
+//		{
+//			if (segmentId > max)
+//			{
+//				max = segmentId; //max is entityId of first element in last segment
+//				finalSegmentL = segmentMap.asMap().get(segmentId);
+//			}
+//		}
+//
+//		//max=4  5,6,7 so n=3
+//		//maxId=8 (we added one commit)
+//
+//		if (max >= 0) //found last segment
+//		{
+//			long startId = max; //if of L[0] in last segment
+//			int n = finalSegmentL.size();
+//			Range range = calcRange(finalSegmentL);
+//			if (maxId >= startId && ! range.inRange(maxId))
+//			{
+//				Logger.logDebug("LAST %d.%d", startId, n);
+//				//				map.remove(max);
+//
+//				//calculate # new commits we haven't yet loaded and load them
+////				long missing = maxId - (startId + n);
+//				long numMissing = this.segSize - n; //if segment not full this will be >  0
+//
+////				if (missing + n <= this.segSize)
+//				if (numMissing > 0)
+//				{
+//					List<T> newL = loader.loadRange(range.lastId + 1, numMissing); //should get at least one
+//					finalSegmentL.addAll(newL);
+//					//not sure if guava returns copy so let's explicitly put it back
+////					segmentMap.put(new Long(max), finalSegmentL);					
+//					addRangeToCache(max, newL);
+//				}
+//			}
+//		}
 	}
 	private Range calcRange(List<T> segmentL) 
 	{
@@ -120,19 +121,6 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 	
 	private Long findSegmentToLiveIn(long entityId)
 	{
-//		List<T> L = null;
-//		for(Long segmentId : segmentMap.asMap().keySet())
-//		{
-//			L = segmentMap.asMap().get(segmentId);
-//			Range range = calcRange(L);
-//			
-//			if (range.willFit(entityId))
-//			{
-//				return segmentId;
-//			}
-//		}
-//		return -1L;
-		
 		long segFirstId = ((entityId) / segSize) * segSize; //eg. first seg (0 but no entity has id 0),1,2,3 2nd: 4,5,6,7
 		return segFirstId;
 	}
@@ -140,7 +128,7 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 	@Override
 	public T getOne(long entityId)
 	{
-		getOneDiscoveredNoMore = false;
+//		getOneDiscoveredNoMore = false;
 //		long seg = (index / segSize) * segSize;
 		long seg = findSegmentToLiveIn(entityId);
 //		if (seg < 0) //not found?
@@ -154,11 +142,11 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 			L = loader.loadRange(seg, segSize);
 			if (L != null && L.size() > 0)
 			{
-				addRangeToCache(seg, L);
+				L = addRangeToCache(seg, L);
 			}
 			else //not in db?
 			{
-				getOneDiscoveredNoMore = true;
+//				getOneDiscoveredNoMore = true;
 				return null;
 			}
 		}
@@ -172,7 +160,7 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 			List<T> newL = loader.loadRange(seg, segSize);
 			if (L != null && L.size() > 0)
 			{
-				addRangeToCache(seg, newL);
+				L = addRangeToCache(seg, newL);
 			}
 			else 
 			{
@@ -185,7 +173,7 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 		Range range = calcRange(L);
 		if (! range.inRange(entityId)) //entity not in segment?
 		{
-			getOneDiscoveredNoMore = true;
+//			getOneDiscoveredNoMore = true;
 			return null;
 		}
 		
@@ -200,7 +188,7 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 		throw new IllegalStateException(String.format("Entity %d not in segment %d (size:%d!)", entityId, seg, segSize));
 	}
 	
-	private void addRangeToCache(long seg, List<T> L)
+	private List<T> addRangeToCache(long seg, List<T> L)
 	{
 		Range range = new Range(segSize);
 		range.firstId = seg;
@@ -216,7 +204,7 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 		}
 		
 		segmentMap.put(new Long(seg), newL);
-
+		return newL;
 	}
 
 	private boolean isInSegment(List<T> L, long entityId) 
@@ -236,36 +224,39 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 	{
 		List<T> resultL = new ArrayList<>();
 
-//		for(long i = startIndex; i < (startIndex + n); i++)
-//		{
-//			T val = getOne(i);
-//			if (val == null)
-//			{
-//				return resultL;
-//			}
-//			resultL.add(val);
-//		}
-		
 		//we don't support ids of 0 so 0 means start at 1
 		if (startId == 0L)
 		{
 			startId = 1;
 		}
 		
-		
-		long id = startId;
-		while(resultL.size() < n)
+//		long id = startId;
+//		while(resultL.size() < n)
+//		{
+//			T entity = getOne(id);
+//			if (entity != null)
+//			{
+//				resultL.add(entity);
+//			}
+//			else if (getOneDiscoveredNoMore)
+//			{
+//				break;
+//			}
+//			id++;
+//		}
+
+		long endId = startId + n - 1;
+		for(long id = startId; id <= endId; id++)
 		{
 			T entity = getOne(id);
 			if (entity != null)
 			{
 				resultL.add(entity);
+				if (resultL.size() >= n)
+				{
+					break;
+				}
 			}
-			else if (getOneDiscoveredNoMore)
-			{
-				break;
-			}
-			id++;
 		}
 		
 		return resultL;
