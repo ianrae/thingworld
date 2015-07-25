@@ -21,7 +21,7 @@ public class Projector
 		this.scache = scache;
 	}
 	
-	public void run(MContext mtx, ICommitObserver observer, long startId)
+	public void run(MContext mtx, ICommitObserver observer, long startId, ICommitObserver extraObserver)
 	{
 		if (startId >= mtx.getMaxId())
 		{
@@ -32,6 +32,10 @@ public class Projector
 		scache.clearLastSegment(mtx.getMaxId());
 		List<ICommitObserver> obsL = new ArrayList<>();
 		obsL.add(observer);
+		if (extraObserver != null)
+		{
+			obsL.add(extraObserver);
+		}
 		run(mtx, obsL, startId);
 	}
 	public void run(MContext mtx, List<ICommitObserver> observerL, long startId)

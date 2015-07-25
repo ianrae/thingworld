@@ -54,5 +54,5 @@ public abstract class ReadModel implements ICommitObserver, IEventObserver, IRea
 	
 	
 	@Override
-	public abstract void freshen(MContext mtx);
+	public abstract void freshen(MContext mtx, ICommitObserver extraObserver);
 }

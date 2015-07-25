@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.thingworld.ICommitObserver;
 import org.thingworld.MContext;
 import org.thingworld.Projector;
 import org.thingworld.entity.Entity;
@@ -57,10 +58,11 @@ public class AllIdsRM<T> extends ReadModel
 		}
 	}
 	
-	public void freshen(MContext mtx)
+	@Override
+	public void freshen(MContext mtx, ICommitObserver extraObserver)
 	{
 		Projector projector = mtx.createProjector();
-		projector.run(mtx, this, this.lastCommitId);
+		projector.run(mtx, this, this.lastCommitId, extraObserver);
 	}
 	
 	public List<T> queryAll(MContext mtx) throws Exception

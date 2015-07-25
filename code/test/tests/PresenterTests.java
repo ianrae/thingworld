@@ -17,6 +17,7 @@ import org.mef.twixt.validate.ValContext;
 import org.mef.twixt.validate.ValidationErrors;
 import org.thingworld.BindingIntercept;
 import org.thingworld.EventProjector;
+import org.thingworld.ICommitObserver;
 import org.thingworld.IDomainIntializer;
 import org.thingworld.IFormBinder;
 import org.thingworld.IRequestInterceptor;
@@ -224,10 +225,10 @@ public class PresenterTests extends BaseMesfTest
 		}
 
 		@Override
-		public void freshen(MContext mtx) 
+		public void freshen(MContext mtx, ICommitObserver extraObserver) 
 		{
 			EventProjector projector = mtx.createEventProjector();
-			projector.run(mtx, this, this.lastEventId);
+			projector.run(mtx, this, this.lastEventId); //extraObserver not used here
 		}
 	}
 
@@ -270,7 +271,7 @@ public class PresenterTests extends BaseMesfTest
 			assertEquals(i+1, id); 
 
 			mtx = perm.createMContext();
-			eventSub.freshen(mtx); //run event publishing 
+			eventSub.freshen(mtx, null); //run event publishing 
 		}
 	}
 

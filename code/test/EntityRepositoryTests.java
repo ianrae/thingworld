@@ -124,6 +124,10 @@ public class EntityRepositoryTests extends BaseMesfTest
 		ReadModelRepository readmodelMgr = perm.getreadmodelMgr();
 //		Object obj = readmodelMgr.loadReadModel(perm.readModel1, mtx.getVloader());
 //		assertEquals(1, perm.readModel1.size()); 
+		
+		log("acquire");
+		mtx.acquire(TopLevelTests.MyReadModel.class);
+		log("done");
 	}
 
 	

@@ -242,7 +242,7 @@ public class UserTests extends BaseMesfTest
 			log(u.getId().toString());
 		}
 		
-		perm.readModel1.freshen(mtx);
+		perm.readModel1.freshen(mtx, null);
 	}
 
 	@Test

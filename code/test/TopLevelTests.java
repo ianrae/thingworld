@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.thingworld.ICommitObserver;
 import org.thingworld.IDomainIntializer;
 import org.thingworld.MContext;
 import org.thingworld.Permanent;
@@ -69,7 +70,7 @@ public class TopLevelTests extends BaseMesfTest
 		}
 
 		@Override
-		public void freshen(MContext mtx) {
+		public void freshen(MContext mtx, ICommitObserver extraObserver) {
 			// TODO Auto-generated method stub
 			
 		}

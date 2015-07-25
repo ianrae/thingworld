@@ -141,7 +141,7 @@ public class MContext
 	
 	public IReadModel acquire(Class clazz)
 	{
-		return readmodelMgr.acquire(this, clazz);
+		return readmodelMgr.acquire(this, clazz, this.objcache);
 	}
 
 	public EventProjector createEventProjector() 

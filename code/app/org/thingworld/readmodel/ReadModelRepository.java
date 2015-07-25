@@ -51,13 +51,13 @@ public class ReadModelRepository implements ICommitObserver, IReadModel
 		}
 	}
 	
-	public synchronized IReadModel acquire(MContext mtx, Class clazz) 
+	public synchronized IReadModel acquire(MContext mtx, Class clazz, ICommitObserver extraObserver) 
 	{
 		for(IReadModel readModel : this.readModelL)
 		{
 			if (readModel.getClass() == clazz)
 			{
-				readModel.freshen(mtx);
+				readModel.freshen(mtx, extraObserver);
 				return readModel;
 			}
 		}
@@ -88,14 +88,14 @@ public class ReadModelRepository implements ICommitObserver, IReadModel
 //	}
 
 	@Override
-	public void freshen(MContext mtx) 
+	public void freshen(MContext mtx, ICommitObserver extraObserver) 
 	{
 		for(ReadModel readModel : this.readModelL)
 		{
 			if (readModel instanceof IReadModel)
 			{
 				IReadModel rm = readModel;
-				rm.freshen(mtx);
+				rm.freshen(mtx, extraObserver);
 			}
 		}
 	}

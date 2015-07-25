@@ -1,6 +1,5 @@
 package org.thingworld.entity;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,7 +62,6 @@ public class EntityRepository implements ICommitObserver
 	private Entity doLoadEntity(String type, Long entityId, EntityLoader oloader, Long startId, Entity obj, long epoch) throws Exception
 	{
 		//we can't use commit cache here because we are searching for whole stream of commits. !!later could use commit cache with
-		//if we have from startid..epoch in cache
 		List<Commit> L = null;
 		if (startId == null)
 		{

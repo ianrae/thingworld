@@ -3,6 +3,7 @@ package org.thingworld.readmodel;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.thingworld.ICommitObserver;
 import org.thingworld.MContext;
 import org.thingworld.Projector;
 import org.thingworld.persistence.Commit;
@@ -91,10 +92,10 @@ public class ManyToOneRM extends ReadModel
 		}
 	}
 	
-	public void freshen(MContext mtx)
+	public void freshen(MContext mtx, ICommitObserver extraObserver)
 	{
 		Projector projector = mtx.createProjector();
-		projector.run(mtx, this, this.lastCommitId);
+		projector.run(mtx, this, this.lastCommitId, extraObserver);
 	}
 	
 	public Map<Long,Long> queryAll(MContext mtx, Long targetId) throws Exception
