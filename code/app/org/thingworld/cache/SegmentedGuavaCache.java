@@ -167,7 +167,6 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 				Logger.log("UNEXPECTED loadRange FAIL seg %d", seg);
 				return null;
 			}
-			L = newL;
 		}
 		
 		Range range = calcRange(L);
