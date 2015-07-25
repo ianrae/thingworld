@@ -10,7 +10,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.thingworld.cache.ISegCacheLoader;
-import org.thingworld.cache.SegmentedCache;
+import org.thingworld.cache.SegmentedGuavaCache;
+import org.thingworld.persistence.HasId;
 
 import testhelper.BaseMesfTest;
 
@@ -44,14 +45,14 @@ public class IteratorTests extends BaseMesfTest
 	    }
 	}
 	
-	public static class MyLoader implements ISegCacheLoader<String>
+	public static class MyLoader implements ISegCacheLoader<MyString>
 	{
-		public List<String> list = new ArrayList<>();
+		public List<MyString> list = new ArrayList<>();
 		
-		public List<String> loadRange(long startIndex, long n)
+		public List<MyString> loadRange(long startIndex, long n)
 		{
 			System.out.println(String.format("LD %d.%d", startIndex,n));
-			List<String> resultL = new ArrayList<>();
+			List<MyString> resultL = new ArrayList<>();
 			
 			for(long i = 0; i < list.size(); i++)
 			{
@@ -80,16 +81,27 @@ public class IteratorTests extends BaseMesfTest
 		
 	}
 	
+	public static class MyString implements HasId
+	{
+		public String s;
+		public long id;
+		@Override
+		public Long getId() {
+			return id;
+		}
+	}
+	
 	@Test
 	public void testSeg() 
 	{
 		MyLoader loader = new MyLoader();
-		SegmentedCache<String> cache = new SegmentedCache<String>();
+		SegmentedGuavaCache<MyString> cache = new SegmentedGuavaCache<MyString>();
 		cache.init(4, loader);
 		String[] ar = new String[] { "0", "1", "2", "3"};
-		cache.putList(0, Arrays.asList(ar));
+		List<MyString> ssL = buildList(ar);
+		cache.putList(0, ssL);
 		
-		String s = cache.getOne(0);
+		MyString s = cache.getOne(0);
 		chkCache(cache, "0", 0);
 		chkCache(cache, "1", 1);
 		chkCache(cache, "2", 2);
@@ -97,7 +109,8 @@ public class IteratorTests extends BaseMesfTest
 		chkCache(cache, null, 4);
 
 		String[] ar2 = new String[] { "4", "5", "6", "7"};
-		cache.putList(4, Arrays.asList(ar2));
+		ssL = buildList(ar2);
+		cache.putList(4, ssL);
 		
 		for(long i = 4; i < 8; i++)
 		{
@@ -107,7 +120,8 @@ public class IteratorTests extends BaseMesfTest
 		chkCache(cache, null, 8);
 		
 		String[] ar3 = new String[] { "8"};
-		cache.putList(8, Arrays.asList(ar3));
+		ssL = buildList(ar3);
+		cache.putList(8, ssL);
 		
 		for(long i = 8; i < 9; i++)
 		{
@@ -116,21 +130,34 @@ public class IteratorTests extends BaseMesfTest
 		}
 		chkCache(cache, null, 9);
 		
-		List<String> tmpL = cache.getRange(6, 5);
-		for(String ss : tmpL)
+		List<MyString> tmpL = cache.getRange(6, 5);
+		for(MyString ss : tmpL)
 		{
-			log(ss);
+			log(ss.s);
 		}
+	}
+	
+	private List<MyString> buildList(String[] ar)
+	{
+		List<MyString> ssL = new ArrayList<>();
+		for(int i = 0; i < ar.length; i++)
+		{
+			MyString ss = new MyString();
+			ss.id = i;
+			ss.s = ar[i];
+		}
+		return ssL;
 	}
 	
 	@Test
 	public void testSeg2() 
 	{
 		MyLoader loader = new MyLoader();
-		SegmentedCache<String> cache = new SegmentedCache<String>();
+		SegmentedGuavaCache<MyString> cache = new SegmentedGuavaCache<MyString>();
 		cache.init(4, loader);
 		String[] ar = new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-		loader.list = Arrays.asList(ar);
+		List<MyString> ssL = buildList(ar);
+		loader.list = ssL;
 		
 		for(long i = 0; i < 10; i++)
 		{
@@ -139,17 +166,18 @@ public class IteratorTests extends BaseMesfTest
 		}
 		chkCache(cache, null, 10);
 		
-		List<String> tmpL = cache.getRange(6, 5);
-		for(String ss : tmpL)
+		List<MyString> tmpL = cache.getRange(6, 5);
+		for(MyString ss : tmpL)
 		{
-			log(ss);
+			log(ss.s);
 		}
 	}
 	
 	//--helpers--
-	private void chkCache(SegmentedCache<String> cache, String expected, long index)
+	private void chkCache(SegmentedGuavaCache<MyString> cache, String expected, long index)
 	{
-		assertEquals(expected, cache.getOne(index));
+		MyString ss = cache.getOne(index);
+		assertEquals(expected, ss.s);
 		
 	}
 

@@ -7,136 +7,146 @@ import org.thingworld.entitydb.EntityDB;
 
 
 public class MockStreamDAO implements IStreamDAO
+{
+	protected List<Stream> _L = new ArrayList<Stream>();
+	protected EntityDB<Stream> _entityDB = new EntityDB<Stream>();
+	
+	public static boolean useNonContiguousIds;
+
+	//		@Override
+	//		public void init(SfxContext ctx)
+	//		{
+	//			this.queryctx = new QueryContext<Stream>(ctx, Stream.class);
+	//
+	////			ProcRegistry registry = (ProcRegistry) ctx.getServiceLocator().getInstance(ProcRegistry.class);
+	////			EntityDBQueryProcessor<ObjectStream> proc = new EntityDBQueryProcessor<ObjectStream>(ctx, _L);
+	////			registry.registerDao(ObjectStream.class, proc);
+	//		}
+	//
+	//		@Override
+	//		public Query1<Stream> query() 
+	//		{
+	//			queryctx.queryL = new ArrayList<QStep>();
+	//			return new Query1<Stream>(queryctx);
+	//		}
+	//
+
+	@Override
+	public int size() 
 	{
-		protected List<Stream> _L = new ArrayList<Stream>();
-		protected EntityDB<Stream> _entityDB = new EntityDB<Stream>();
+		return _L.size();
+	}
 
-//		@Override
-//		public void init(SfxContext ctx)
-//		{
-//			this.queryctx = new QueryContext<Stream>(ctx, Stream.class);
-//
-////			ProcRegistry registry = (ProcRegistry) ctx.getServiceLocator().getInstance(ProcRegistry.class);
-////			EntityDBQueryProcessor<ObjectStream> proc = new EntityDBQueryProcessor<ObjectStream>(ctx, _L);
-////			registry.registerDao(ObjectStream.class, proc);
-//		}
-//
-//		@Override
-//		public Query1<Stream> query() 
-//		{
-//			queryctx.queryL = new ArrayList<QStep>();
-//			return new Query1<Stream>(queryctx);
-//		}
-//
-
-		@Override
-		public int size() 
+	@Override
+	public Stream findById(long id) 
+	{
+		Stream entity = this.findActualById(id);
+		if (entity != null)
 		{
-			return _L.size();
+			return entity; //!!new ObjectStream(entity); //return copy
 		}
+		return null; //not found
+	}
 
-		@Override
-		public Stream findById(long id) 
+	protected Stream findActualById(long id) 
+	{
+		for(Stream entity : _L)
 		{
-			Stream entity = this.findActualById(id);
-			if (entity != null)
+			if (entity.getId() == id)
 			{
-				return entity; //!!new ObjectStream(entity); //return copy
-			}
-			return null; //not found
-		}
-
-		protected Stream findActualById(long id) 
-		{
-			for(Stream entity : _L)
-			{
-				if (entity.getId() == id)
-				{
-					return entity;
-				}
-			}
-			return null; //not found
-		}
-
-		@Override
-		public List<Stream> all() 
-		{
-			return _L; //ret copy??!!
-		}
-
-		@Override
-		public void delete(long id) 
-		{
-			Stream entity = this.findActualById(id);
-			if (entity != null)
-			{
-				_L.remove(entity);
+				return entity;
 			}
 		}
+		return null; //not found
+	}
 
-		@Override
-		public void save(Stream entity) 
+	@Override
+	public List<Stream> all() 
+	{
+		return _L; //ret copy??!!
+	}
+
+	@Override
+	public void delete(long id) 
+	{
+		Stream entity = this.findActualById(id);
+		if (entity != null)
 		{
-			if (entity.getId() == null)
-			{
-				entity.setId(new Long(0L));
-			}
+			_L.remove(entity);
+		}
+	}
 
-			if (findActualById(entity.getId()) != null)
-			{
-				throw new RuntimeException(String.format("save: id %d already exists", entity.getId()));
-			}
-
-
-			if (entity.getId() == 0)
-			{
-				entity.setId(nextAvailIdNumber());
-			}
-			else
-			{
-				delete(entity.getId()); //remove existing
-			}
-
-			_L.add(entity);
+	@Override
+	public void save(Stream entity) 
+	{
+		if (entity.getId() == null)
+		{
+			entity.setId(new Long(0L));
 		}
 
-		private Long nextAvailIdNumber() 
+		if (findActualById(entity.getId()) != null)
 		{
-			long used = 0;
-			for(Stream entity : _L)
-			{
-				if (entity.getId() > used)
-				{
-					used = entity.getId();
-				}
-			}
-			return used + 1;
+			throw new RuntimeException(String.format("save: id %d already exists", entity.getId()));
 		}
 
-		@Override
-		public void update(Stream entity) 
+
+		if (entity.getId() == 0)
 		{
-			this.delete(entity.getId());
-			this.save(entity);
+			entity.setId(nextAvailIdNumber());
+		}
+		else
+		{
+			delete(entity.getId()); //remove existing
+		}
+
+		_L.add(entity);
+	}
+
+	private Long nextAvailIdNumber() 
+	{
+		int start = 0;
+		int increment = 1;
+		if (useNonContiguousIds)
+		{
+			start = 10;
+			increment = 2;
 		}
 		
-		@Override
-		public List<Stream> loadRange(long startId, long n) 
+		long used = start;
+		for(Stream entity : _L)
 		{
-			List<Stream> resultL = new ArrayList<>();
-			
-			for(Stream entity : _L)
+			if (entity.getId() > used)
 			{
-				if (entity.getId() >= startId)
+				used = entity.getId();
+			}
+		}
+		return used + increment;
+	}
+
+	@Override
+	public void update(Stream entity) 
+	{
+		this.delete(entity.getId());
+		this.save(entity);
+	}
+
+	@Override
+	public List<Stream> loadRange(long startId, long n) 
+	{
+		List<Stream> resultL = new ArrayList<>();
+
+		for(Stream entity : _L)
+		{
+			if (entity.getId() >= startId)
+			{
+				resultL.add(entity);
+				if (resultL.size() >= n)
 				{
-					resultL.add(entity);
-					if (resultL.size() >= n)
-					{
-						return resultL;
-					}
+					return resultL;
 				}
 			}
-			return resultL;
 		}
-
+		return resultL;
 	}
+
+}

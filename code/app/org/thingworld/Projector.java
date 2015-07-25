@@ -41,10 +41,10 @@ public class Projector
 	public void run(MContext mtx, List<ICommitObserver> observerL, long startId)
 	{
 		long startIndex = startId;
-		if (startIndex > 0)
-		{
-			startIndex--; //yuck!!
-		}
+//		if (startIndex > 0)
+//		{
+//			startIndex--; //yuck!!
+//		}
 		List<Commit> L = cache.loadRange(startIndex, mtx.getMaxId() - startIndex);
 		for(Commit commit : L)	
 		{

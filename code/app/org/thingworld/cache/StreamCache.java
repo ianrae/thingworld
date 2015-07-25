@@ -18,10 +18,11 @@ public class StreamCache
 		}
 
 		@Override
-		public List<Stream> loadRange(long startIndex, long n) 
+		public List<Stream> loadRange(long startId, long n) 
 		{
-			List<Stream> L = dao.loadRange(startIndex + 1, n);
-			Logger.logDebug("SLD %d.%d (got %d)", startIndex,n, L.size());
+//			List<Stream> L = dao.loadRange(startId + 1, n);
+			List<Stream> L = dao.loadRange(startId, n);
+			Logger.logDebug("SLD %d.%d (got %d)", startId,n, L.size());
 			return L;
 		}
 		
@@ -40,7 +41,7 @@ public class StreamCache
 	
 	public synchronized long findSnapshotId(long entityId) 
 	{
-		List<Stream> L = segcache.getRange(entityId - 1, 1);
+		List<Stream> L = segcache.getRange(entityId, 1);
 		if (L == null || L.size() < 1)
 		{
 			return 0L;
@@ -49,7 +50,7 @@ public class StreamCache
 	}
 	public synchronized Stream findStream(long entityId) 
 	{
-		List<Stream> L = segcache.getRange(entityId - 1, 1);
+		List<Stream> L = segcache.getRange(entityId, 1);
 		if (L == null || L.size() < 1)
 		{
 			return null;

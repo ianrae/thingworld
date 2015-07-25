@@ -20,9 +20,7 @@ public class CommitCache
 		@Override
 		public List<Commit> loadRange(long startIndex, long n) 
 		{
-			//there is no el[0] so shift down
-			//0,4 means load records 1..4
-			List<Commit> L = dao.loadRange(startIndex + 1, n);
+			List<Commit> L = dao.loadRange(startIndex, n);
 			Logger.logDebug("LD [%d..%d] (got %d) %d", startIndex,startIndex + n, L.size(), n);
 			return L;
 		}

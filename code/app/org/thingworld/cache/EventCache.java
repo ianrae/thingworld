@@ -22,7 +22,7 @@ public class EventCache
 		{
 			//there is no el[0] so shift down
 			//0,4 means load records 1..4
-			List<EventRecord> L = dao.loadRange(startIndex + 1, n);
+			List<EventRecord> L = dao.loadRange(startIndex, n);
 			Logger.logDebug("LD %d.%d (got %d)", startIndex,n, L.size());
 			return L;
 		}

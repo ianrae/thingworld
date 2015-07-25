@@ -1,6 +1,6 @@
 package org.thingworld.persistence;
 
-public class Commit 
+public class Commit implements HasId
 {
 	private Long id;
 	private Long streamId;

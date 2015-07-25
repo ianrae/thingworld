@@ -1,7 +1,7 @@
 package org.thingworld.persistence;
 
 
-public class Stream 
+public class Stream  implements HasId
 {
 	private Long id;
 	private String type;

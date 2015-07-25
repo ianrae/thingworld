@@ -2,7 +2,9 @@ package org.thingworld.cache;
 
 import java.util.List;
 
-public interface ISegmentedCache<T> 
+import org.thingworld.persistence.HasId;
+
+public interface ISegmentedCache<T extends HasId> 
 {
 	void init(long segSize, ISegCacheLoader<T> loader);
 	public void putList(long startIndex, List<T> L);

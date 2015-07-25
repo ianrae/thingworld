@@ -1,6 +1,6 @@
 package org.thingworld.persistence;
 
-public class EventRecord 
+public class EventRecord implements HasId
 {
 	private Long id;
 	private Long streamId;
