@@ -1,8 +1,6 @@
 package org.thingworld.entity;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.thingworld.ICommitObserver;
 import org.thingworld.MContext;
@@ -15,9 +13,10 @@ import org.thingworld.util.SfxTrail;
 
 public class EntityRepository implements ICommitObserver
 {
-	Map<Long, Entity> map = new ConcurrentHashMap<>(); //!!needs to be thread-safe
-	Map<Long, Long> whenMap = new ConcurrentHashMap<>(); 
-	private IStreamDAO streamDAO;
+//	Map<Long, Entity> map = new ConcurrentHashMap<>(); //!!needs to be thread-safe
+//	Map<Long, Long> whenMap = new ConcurrentHashMap<>(); 
+	EntityCache cache;
+//	private IStreamDAO streamDAO;
 	private EntityManagerRegistry registry;
 	private long numHits;
 	private long numMisses;
@@ -25,8 +24,10 @@ public class EntityRepository implements ICommitObserver
 
 	public EntityRepository(IStreamDAO streamDAO, EntityManagerRegistry registry)
 	{
-		this.streamDAO = streamDAO;
+//		this.streamDAO = streamDAO;
 		this.registry = registry;
+		cache = new EntityCache();
+		cache.init();
 	}
 
 	public synchronized String dumpStats()
@@ -39,27 +40,34 @@ public class EntityRepository implements ICommitObserver
 
 	public synchronized Entity loadEntity(String type, Long entityId, EntityLoader oloader) throws Exception
 	{
-		Entity obj = map.get(entityId);
+		ESpec spec = cache.getSpec(entityId);
+//		Entity obj = (spec != null) ? spec.entity : null;
 		Long startId = null;
 		long epoch = 0L;
-		if (obj != null)
+		if (spec != null)
 		{
-			long when = whenMap.get(entityId);
+//			long when = whenMap.get(entityId);
+			long when = spec.when;
 			epoch = oloader.getMaxId(); //epoch
 			if(when >= epoch)
 			{
 				Logger.logDebug("ER(%d) hit!", entityId);
 				numHits++;
-				return obj;
+				return spec.entity;
 			}
 			startId = when + 1L;
 			//Logger.logDebug("ER(%d) stale!", entityId);
 		}
+		
+		if (spec == null)
+		{
+			spec = new ESpec();
+		}
 
-		obj = doLoadEntity(type, entityId, oloader, startId, obj, epoch);
+		Entity obj = doLoadEntity(type, entityId, oloader, startId, epoch, spec);
 		return obj;
 	}
-	private Entity doLoadEntity(String type, Long entityId, EntityLoader oloader, Long startId, Entity obj, long epoch) throws Exception
+	private Entity doLoadEntity(String type, Long entityId, EntityLoader oloader, Long startId, long epoch, ESpec spec) throws Exception
 	{
 		//we can't use commit cache here because we are searching for whole stream of commits. !!later could use commit cache with
 		List<Commit> L = null;
@@ -80,10 +88,12 @@ public class EntityRepository implements ICommitObserver
 		//if no changes have occurred then update the when map because obj is up-to-date
 		if (L.size() == 0)
 		{
-			whenMap.put(entityId, epoch); //we're up to date wrt to epoch
+//			whenMap.put(entityId, epoch); //we're up to date wrt to epoch
+			spec.when = epoch;
+			cache.put(entityId, spec);
 			Logger.logDebug("ER(%d) hitd! epoch=%d", entityId, epoch);
 			numHits++;
-			return obj;
+			return spec.entity;
 		}
 		numMisses++;
 		Logger.logDebug("ER(%d) miss startId=%d", entityId, startId);
@@ -94,19 +104,19 @@ public class EntityRepository implements ICommitObserver
 		for(Commit commit : L)
 		{
 			try {
-				obj = doObserve(entityId, commit, mgr, obj);
+				spec.entity = doObserve(entityId, commit, mgr, spec);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 
-		return obj;
+		return spec.entity;
 	}
 
-	public synchronized Object getSize() 
+	public synchronized long getSize() 
 	{
-		return map.size();
+		return cache.size();
 	}
 
 	@Override
@@ -116,24 +126,25 @@ public class EntityRepository implements ICommitObserver
 		{
 			return false;
 		}
-		return map.containsKey(stream.getId()); //only care about entity we have already in cache
+		return cache.containsKey(stream.getId()); //only care about entity we have already in cache
 	}
 
 	@Override
 	public synchronized void observe(MContext mtx, Stream stream, Commit commit) 
 	{
 		Long entityId = stream.getId();
-		Entity obj = map.get(entityId);
+		ESpec spec = cache.getSpec(entityId);
+//		Entity obj = (spec != null) ? spec.entity : null;
 
 		IEntityMgr mgr = registry.findByType(stream.getType());
 		try {
-			obj = doObserve(entityId, commit, mgr, obj);
+			Entity obj = doObserve(entityId, commit, mgr, spec);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	private Entity doObserve(Long entityId, Commit commit, IEntityMgr mgr, Entity obj) throws Exception
+	private Entity doObserve(Long entityId, Commit commit, IEntityMgr mgr, ESpec spec) throws Exception
 	{
 		this.trail.add(commit.getId().toString()); //remove later!!
 
@@ -141,37 +152,40 @@ public class EntityRepository implements ICommitObserver
 		{
 		case 'I':
 		case 'S':
-			obj = mgr.rehydrate(commit.getJson());
-			if (obj != null)
+			spec.entity = mgr.rehydrate(commit.getJson());
+			if (spec.entity != null)
 			{
-				obj.setId(entityId);
-				map.put(entityId, obj);
+				spec.entity.setId(entityId);
+				cache.put(entityId, spec);
 			}
 			break;
 		case 'U':
-			mgr.mergeHydrate(obj, commit.getJson());
-			map.put(entityId, obj); //update object in cache
+			mgr.mergeHydrate(spec.entity, commit.getJson());
+			cache.put(entityId, spec); //update object in cache
 			break;
 		case 'D':
-			obj = null;
+			spec.entity = null;
 			break;
 		default:
 			break;
 		}
 
-		if (obj != null)
+		if (spec.entity != null)
 		{
-			obj.clearSetList();
+			spec.entity.clearSetList();
 			long current = commit.getId();
-			whenMap.put(entityId, current); 
+//			whenMap.put(entityId, current); 
+			spec.when = current;
+			cache.put(entityId, spec);
 			Logger.logDebug("ER(%d) when=%d", entityId, current);
 		}
-		return obj;
+		return spec.entity;
 	}
 
 	public synchronized Entity getIfLoaded(Long entityId) 
 	{
-		Entity obj = map.get(entityId);
+		ESpec spec = cache.getSpec(entityId);
+		Entity obj = (spec != null) ? spec.entity : null;
 		return obj;
 	}
 }
