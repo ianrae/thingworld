@@ -49,17 +49,30 @@ public class IteratorTests extends BaseMesfTest
 	{
 		public List<MyString> list = new ArrayList<>();
 		
-		public List<MyString> loadRange(long startIndex, long n)
+		public List<MyString> loadRange(long startId, long n)
 		{
-			System.out.println(String.format("LD %d.%d", startIndex,n));
+			System.out.println(String.format("LD %d.%d", startId,n));
 			List<MyString> resultL = new ArrayList<>();
-			
-			for(long i = 0; i < list.size(); i++)
+			startId = (startId == 0L) ? 1 : startId;
+			long i = startId;
+			while(resultL.size() < n)
 			{
-				if (i >= startIndex && i < (startIndex + n))
+				boolean found = false;
+				for(MyString ss : list)
 				{
-					resultL.add(list.get((int) i));
+					if (ss.getId().longValue() == i)
+					{
+						resultL.add(ss);
+						found = true;
+						break;
+					}
 				}
+				
+				if (! found)
+				{
+					break;
+				}
+				i++;
 			}
 			
 			return resultL;
@@ -97,25 +110,24 @@ public class IteratorTests extends BaseMesfTest
 		MyLoader loader = new MyLoader();
 		SegmentedGuavaCache<MyString> cache = new SegmentedGuavaCache<MyString>();
 		cache.init(4, loader);
-		String[] ar = new String[] { "0", "1", "2", "3"};
-		List<MyString> ssL = buildList(ar, 0);
+		String[] ar = new String[] { "1", "2", "3"}; //first seg always has one less since is no id 0
+		List<MyString> ssL = buildList(ar, 1);
 		cache.putList(0, ssL);
 		
 		MyString s = cache.getOne(1);
-		chkCache(cache, "0", 1);
-		chkCache(cache, "1", 2);
-		chkCache(cache, "2", 3);
-		chkCache(cache, "3", 4);
-		chkCache(cache, null, 5);
+		chkCache(cache, "1", 1);
+		chkCache(cache, "2", 2);
+		chkCache(cache, "3", 3);
+		chkCache(cache, null, 4);
 
-		String[] ar2 = new String[] { "4", "5", "6", "7"};
+		String[] ar2 = new String[] {"4", "5", "6", "7"};
 		ssL = buildList(ar2, 4);
 		cache.putList(4, ssL);
 		
 		for(long i = 4; i < 8; i++)
 		{
 			Long n = i;
-			chkCache(cache, n.toString(), i+1);
+			chkCache(cache, n.toString(), i);
 		}
 		chkCache(cache, null, 9);
 		
@@ -126,7 +138,7 @@ public class IteratorTests extends BaseMesfTest
 		for(long i = 8; i < 9; i++)
 		{
 			Long n = i;
-			chkCache(cache, n.toString(), i+1);
+			chkCache(cache, n.toString(), i);
 		}
 		chkCache(cache, null, 10);
 		
@@ -143,7 +155,7 @@ public class IteratorTests extends BaseMesfTest
 		for(int i = 0; i < ar.length; i++)
 		{
 			MyString ss = new MyString();
-			ss.id = i + 1 + startId; //start at 1
+			ss.id = i + startId; //start at 1
 			ss.s = ar[i];
 			ssL.add(ss);
 		}
@@ -156,14 +168,15 @@ public class IteratorTests extends BaseMesfTest
 		MyLoader loader = new MyLoader();
 		SegmentedGuavaCache<MyString> cache = new SegmentedGuavaCache<MyString>();
 		cache.init(4, loader);
-		String[] ar = new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-		List<MyString> ssL = buildList(ar, 0);
+		String[] ar = new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+		List<MyString> ssL = buildList(ar, 1);
 		loader.list = ssL;
 		
-		for(long i = 0; i < 10; i++)
+		for(long i = 1; i <= 10; i++)
 		{
 			Long n = i;
-			chkCache(cache, n.toString(), i + 1);
+			log(n.toString());
+			chkCache(cache, n.toString(), i);
 		}
 		chkCache(cache, null, 11);
 		

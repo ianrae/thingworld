@@ -33,11 +33,11 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 		{
 			return (id >= firstId && id <= lastId);
 		}
-		public boolean willFit(long id)
-		{
-			long finalId = firstId + segSize - 1;
-			return (id >= firstId && id <= finalId);
-		}
+//		public boolean willFit(long id)
+//		{
+//			long finalId = firstId + segSize - 1;
+//			return (id >= firstId && id <= finalId);
+//		}
 	}
 	
 	private Cache<Long, List<T>> segmentMap;
@@ -120,18 +120,21 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 	
 	private Long findSegmentToLiveIn(long entityId)
 	{
-		List<T> L = null;
-		for(Long segmentId : segmentMap.asMap().keySet())
-		{
-			L = segmentMap.asMap().get(segmentId);
-			Range range = calcRange(L);
-			
-			if (range.willFit(entityId))
-			{
-				return segmentId;
-			}
-		}
-		return -1L;
+//		List<T> L = null;
+//		for(Long segmentId : segmentMap.asMap().keySet())
+//		{
+//			L = segmentMap.asMap().get(segmentId);
+//			Range range = calcRange(L);
+//			
+//			if (range.willFit(entityId))
+//			{
+//				return segmentId;
+//			}
+//		}
+//		return -1L;
+		
+		long segFirstId = ((entityId) / segSize) * segSize; //eg. first seg (0 but no entity has id 0),1,2,3 2nd: 4,5,6,7
+		return segFirstId;
 	}
 
 	@Override
@@ -140,10 +143,10 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 		getOneDiscoveredNoMore = false;
 //		long seg = (index / segSize) * segSize;
 		long seg = findSegmentToLiveIn(entityId);
-		if (seg < 0) //not found?
-		{
-			seg = ((entityId) / segSize) * segSize; //eg. first seg (0 but no entity has id 0),1,2,3 2nd: 4,5,6,7
-		}
+//		if (seg < 0) //not found?
+//		{
+//			seg = ((entityId) / segSize) * segSize; //eg. first seg (0 but no entity has id 0),1,2,3 2nd: 4,5,6,7
+//		}
 
 		List<T> L = segmentMap.asMap().get(seg);
 		if (L == null) //not in cache?
