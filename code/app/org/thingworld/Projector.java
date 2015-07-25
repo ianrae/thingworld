@@ -27,7 +27,7 @@ public class Projector
 		{
 			return; //nothing to do
 		}
-		Logger.log("Projector %d,start %d", mtx.getEventMaxId(), startId);
+		Logger.log("Projector %d,start %d", mtx.getMaxId(), startId);
 		cache.clearLastSegment(mtx.getMaxId());
 		scache.clearLastSegment(mtx.getMaxId());
 		List<ICommitObserver> obsL = new ArrayList<>();

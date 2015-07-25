@@ -164,6 +164,7 @@ public class EntityRepository implements ICommitObserver
 			obj.clearSetList();
 			long current = commit.getId();
 			whenMap.put(entityId, current); 
+			Logger.logDebug("ER(%d) when=%d", entityId, current);
 		}
 		return obj;
 	}
