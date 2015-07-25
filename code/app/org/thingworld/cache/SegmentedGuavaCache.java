@@ -142,7 +142,7 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 		long seg = findSegmentToLiveIn(entityId);
 		if (seg < 0) //not found?
 		{
-			seg = (entityId / segSize) * segSize; 
+			seg = ((entityId) / segSize) * segSize; //eg. first seg (0 but no entity has id 0),1,2,3 2nd: 4,5,6,7
 		}
 
 		List<T> L = segmentMap.asMap().get(seg);
@@ -151,7 +151,7 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 			L = loader.loadRange(seg, segSize);
 			if (L != null && L.size() > 0)
 			{
-				segmentMap.put(new Long(seg), L);
+				addRangeToCache(seg, L);
 			}
 			else //not in db?
 			{
@@ -169,7 +169,7 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 			List<T> newL = loader.loadRange(seg, segSize);
 			if (L != null && L.size() > 0)
 			{
-				segmentMap.put(new Long(seg), newL);
+				addRangeToCache(seg, newL);
 			}
 			else 
 			{
@@ -195,6 +195,25 @@ public class SegmentedGuavaCache<T extends HasId> implements ISegmentedCache<T>
 		}
 		
 		throw new IllegalStateException(String.format("Entity %d not in segment %d (size:%d!)", entityId, seg, segSize));
+	}
+	
+	private void addRangeToCache(long seg, List<T> L)
+	{
+		Range range = new Range(segSize);
+		range.firstId = seg;
+		range.lastId = seg + segSize - 1;
+		
+		List<T> newL = new ArrayList<>();
+		for(T entity : L)
+		{
+			if (range.inRange(entity.getId()))
+			{
+				newL.add(entity);
+			}
+		}
+		
+		segmentMap.put(new Long(seg), newL);
+
 	}
 
 	private boolean isInSegment(List<T> L, long entityId) 
