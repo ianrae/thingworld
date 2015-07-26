@@ -131,6 +131,68 @@ public class EntityRepositoryTests extends BaseMesfTest
 	}
 
 	
+	@Test
+	public void test10() throws Exception
+	{
+		//create long-running objects
+		PersistenceContext persistenceCtx = FactoryGirl.createPersistenceContext();
+		ICommitDAO dao = persistenceCtx.getDao();
+		
+		MyPerm perm = new MyPerm(persistenceCtx);
+		TopLevelTests.ScooterInitializer init = new TopLevelTests.ScooterInitializer();
+		init.init(perm);
+		perm.start();
+		assertEquals(0, perm.readModel1.size());
+		
+		for(int i = 0; i < 10; i++)
+		{
+			log(String.format("1st"));
+			MContext mtx = perm.createMContext();
+			InsertScooterCmd cmd = new InsertScooterCmd();
+			cmd.a = 15;
+			cmd.s = "bob";
+			CommandProcessor proc = mtx.findProc(Scooter.class);
+			proc.process(cmd);
+		}
+		assertEquals(0, perm.readModel1.size()); //haven't done yet
+		
+		//commit log way ahead of readmodel, so we load chunks 4 at a time
+		log("acquire");
+		MContext mtx = perm.createMContext();
+		mtx.acquire(TopLevelTests.MyReadModel.class);
+		log("acquire..again");
+		mtx = perm.createMContext();
+		mtx.acquire(TopLevelTests.MyReadModel.class);
+		
+		//add 2 more commits
+		for(int i = 0; i < 2; i++)
+		{
+			log(String.format("1st"));
+			mtx = perm.createMContext();
+			InsertScooterCmd cmd = new InsertScooterCmd();
+			cmd.a = 15;
+			cmd.s = "bob";
+			CommandProcessor proc = mtx.findProc(Scooter.class);
+			proc.process(cmd);
+		}
+		
+		//only loads 2 chunks to catch up
+		log("acquire..again3");
+		mtx = perm.createMContext();
+		mtx.acquire(TopLevelTests.MyReadModel.class);
+		
+		//EntityRepo is completely separate from readmodel so it's still empty
+		//but if the entityrepo already had some objects in it, they would be freshened
+		log("show");
+		mtx = perm.createMContext();
+		CommandProcessor proc = mtx.findProc(Scooter.class);
+		ShowScooterCmd sscmd = new ShowScooterCmd();
+		sscmd.entityId = 1L;
+		proc.process(sscmd);
+		
+		log("done");
+	}
+	
 	private void chkScooterStr(MyPerm perm, long entityId, String string) 
 	{
 		Scooter scooter = (Scooter) perm.loadEntityFromRepo(entityId);

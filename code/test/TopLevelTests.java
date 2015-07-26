@@ -11,6 +11,7 @@ import org.thingworld.ICommitObserver;
 import org.thingworld.IDomainIntializer;
 import org.thingworld.MContext;
 import org.thingworld.Permanent;
+import org.thingworld.Projector;
 import org.thingworld.cmd.CommandProcessor;
 import org.thingworld.cmd.ProcRegistry;
 import org.thingworld.entity.EntityManagerRegistry;
@@ -70,9 +71,10 @@ public class TopLevelTests extends BaseMesfTest
 		}
 
 		@Override
-		public void freshen(MContext mtx, ICommitObserver extraObserver) {
-			// TODO Auto-generated method stub
-			
+		public void freshen(MContext mtx, ICommitObserver extraObserver) 
+		{
+			Projector projector = mtx.createProjector();
+			projector.run(mtx, this, this.lastCommitId + 1, extraObserver);
 		}
 	}
 	
