@@ -20,7 +20,7 @@ public class EntityRepository implements ICommitObserver
 	private EntityManagerRegistry registry;
 	private long numHits;
 	private long numMisses;
-	private SfxTrail trail = new SfxTrail();
+//	private SfxTrail trail = new SfxTrail();
 
 	public EntityRepository(IStreamDAO streamDAO, EntityManagerRegistry registry)
 	{
@@ -34,7 +34,7 @@ public class EntityRepository implements ICommitObserver
 	{
 		String s = String.format("OVC: hits:%d, misses:%d", numHits, numMisses);
 		Logger.log(s);
-		Logger.log(trail.getTrail());
+//		Logger.log(trail.getTrail());
 		return s;
 	}
 
@@ -146,7 +146,7 @@ public class EntityRepository implements ICommitObserver
 	}
 	private Entity doObserve(Long entityId, Commit commit, IEntityMgr mgr, ESpec spec) throws Exception
 	{
-		this.trail.add(commit.getId().toString()); //remove later!!
+//		this.trail.add(commit.getId().toString()); //remove later!!
 
 		switch(commit.getAction())
 		{
