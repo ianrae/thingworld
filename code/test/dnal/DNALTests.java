@@ -128,6 +128,21 @@ public class DNALTests extends BaseTest {
 			}
 		}
 	}
+	
+	public static class IntRangeValidation {
+		public void validate(List<ValidationError> list, String fieldName, String value) {
+			int nAge = Integer.parseInt(value);
+			if (nAge > 100) {
+				this.addError(list, fieldName, "out of range");
+			}
+		}
+		protected void addError(List<ValidationError> errors, String fieldName, String err) {
+			ValidationError error = new ValidationError();
+			error.fieldName = fieldName;
+			error.error = err;
+			errors.add(error);
+		}
+	}
 
 	public static abstract class MutatorBase<T> {
 
@@ -181,10 +196,8 @@ public class DNALTests extends BaseTest {
 
 		public List<ValidationError> validate() {
 			List<ValidationError> errors = new ArrayList<>();
-			int nAge = Integer.parseInt(age);
-			if (nAge > 100) {
-				this.addError(errors, "age", "out of range");
-			}
+			IntRangeValidation vv = new IntRangeValidation();
+			vv.validate(errors, "age", age);
 			return errors;
 		}
 
@@ -219,10 +232,8 @@ public class DNALTests extends BaseTest {
 
 		public List<ValidationError> validate() {
 			List<ValidationError> errors = new ArrayList<>();
-			int nAge = Integer.parseInt(age);
-			if (nAge > 100) {
-				this.addError(errors, "age", "out of range");
-			}
+			IntRangeValidation vv = new IntRangeValidation();
+			vv.validate(errors, "age", age);
 			return errors;
 		}
 
