@@ -2,12 +2,16 @@ package dnal;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
 
-public class DNALTests {
+import testhelper.BaseTest;
+
+public class DNALTests extends BaseTest {
 
 	public static class BackingStore {
 		private Map<String,String> map = new HashMap<String,String>();
@@ -54,8 +58,24 @@ public class DNALTests {
 		}
 	}
 	
+	public static class ValidationError {
+		public String fieldName;
+		public String error;
+	}
+	
 	public static class ValidationException extends Exception {
-		public String x;
+		public List<ValidationError> errors = new ArrayList<>();
+
+		public ValidationException(List<ValidationError> errors) {
+			this.errors = errors;
+		}
+
+		public void dump() {
+			for(ValidationError err: errors) {
+				String s = String.format("field %s - %s", err.fieldName, err.error);
+				System.out.println(s);
+			}
+		}
 	}
 	
 	public static class NameMutator {
@@ -82,10 +102,27 @@ public class DNALTests {
 		}
 		
 		public boolean isValid() {
-			return true;
+			List<ValidationError> errors = validate();
+			return (errors.size() == 0);
 		}
 		
-		public Name toImmutable() {
+		public List<ValidationError> validate() {
+			List<ValidationError> errors = new ArrayList<>();
+			int nAge = Integer.parseInt(age);
+			if (nAge > 100) {
+				ValidationError error = new ValidationError();
+				error.fieldName = "age";
+				error.error = "out of range";
+				errors.add(error);
+			}
+			return errors;
+		}
+		
+		public Name toImmutable() throws ValidationException {
+			List<ValidationError> errors = validate();
+			if (errors.size() > 0) {
+				throw new ValidationException(errors);
+			}
 			Name obj = new Name(name, age);
 			return obj;
 		}
@@ -93,10 +130,7 @@ public class DNALTests {
 
 	@Test
 	public void test() {
-		BackingStore store = new BackingStore();
-		NameLoader loader = new NameLoader();
-		loader.store = store;
-		
+		NameLoader loader = createLoader();
 		Name name = loader.getName("obj1");
 		assertEquals("bob", name.getName());
 		assertEquals("30", name.getAge());
@@ -107,17 +141,20 @@ public class DNALTests {
 
 	@Test
 	public void test2() {
-		
-		BackingStore store = new BackingStore();
-		NameLoader loader = new NameLoader();
-		loader.store = store;
+		NameLoader loader = createLoader();
 		Name name = loader.getName("obj1");
 		NameMutator mutator = new NameMutator(name);
 		
 		mutator.setAge("33");
 		mutator.setName("bobby");
 		
-		name = mutator.toImmutable();
+		name = null;
+		try {
+			name = mutator.toImmutable();
+		} catch (ValidationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		assertEquals("bobby", name.getName());
 		assertEquals("33", name.getAge());
@@ -128,23 +165,31 @@ public class DNALTests {
 	
 	@Test
 	public void testValidation() {
-		
-		BackingStore store = new BackingStore();
-		NameLoader loader = new NameLoader();
-		loader.store = store;
+		NameLoader loader = createLoader();
 		Name name = loader.getName("obj1");
 		NameMutator mutator = new NameMutator(name);
 		
-		mutator.setAge("33");
+		mutator.setAge("133");
 		mutator.setName("bobby");
 		
-		name = mutator.toImmutable();
+		assertEquals(false, mutator.isValid());
 		
-		assertEquals("bobby", name.getName());
-		assertEquals("33", name.getAge());
+		name = null;
+		try {
+			name = mutator.toImmutable();
+		} catch (ValidationException e) {
+			e.dump();
+		}
+		assertEquals(null, name);
 		
-		Name name2 = loader.getName("nosuchname");
-		assertEquals(null, name2);
+	}
+	
+	//--helpers
+	private NameLoader createLoader() {
+		BackingStore store = new BackingStore();
+		NameLoader loader = new NameLoader();
+		loader.store = store;
+		return loader;
 	}
 	
 }
