@@ -30,8 +30,8 @@ public class DNALTests extends BaseTest {
 		}
 	}
 	
-	public static class Name {
-		public Name(String name, String age) {
+	public static class Person {
+		public Person(String name, String age) {
 			this.name = name;
 			this.age = age;
 		}
@@ -45,16 +45,20 @@ public class DNALTests extends BaseTest {
 		}
 	}
 	
-	public static class NameLoader {
+	public interface ILoader<T> {
+		T getXObj(String objId);
+	}
+	
+	public static class PersonLoader implements ILoader<Person>{
 		public BackingStore store;
 		
-		public Name getName(String objId) {
+		public Person getXObj(String objId) {
 			String x1 = store.getMap().get(objId + ".name");
 			String x2 = store.getMap().get(objId + ".age");
 			if (x1 == null || x2 == null) {
 				return null;
 			}
-			Name name = new Name(x1,x2);
+			Person name = new Person(x1,x2);
 			return name;
 		}
 	}
@@ -74,10 +78,10 @@ public class DNALTests extends BaseTest {
 		}
 	}
 	
-	public static class CityLoader {
+	public static class CityLoader implements ILoader<City>{
 		public BackingStore store;
 		
-		public City getCity(String objId) {
+		public City getXObj(String objId) {
 			String x1 = store.getMap().get(objId + ".name");
 			String x2 = store.getMap().get(objId + ".age");
 			if (x1 == null || x2 == null) {
@@ -90,18 +94,18 @@ public class DNALTests extends BaseTest {
 	
 	
 	public static class API {
-		public NameLoader nameLoader;
-		public CityLoader cityLoader;
+		public ILoader<Person> nameLoader;
+		public ILoader<City> cityLoader;
 		
-		public Name getName(String objId) {
-			return nameLoader.getName(objId);
+		public Person getPerson(String objId) {
+			return nameLoader.getXObj(objId);
 		}
 		
 		public <T> T getObject(String objId) {
 			if (objId.startsWith("city")) {
-				return (T) cityLoader.getCity(objId);
+				return (T) cityLoader.getXObj(objId);
 			}
-			return (T) nameLoader.getName(objId);
+			return (T) nameLoader.getXObj(objId);
 		}
 	}
 	
@@ -125,13 +129,13 @@ public class DNALTests extends BaseTest {
 		}
 	}
 	
-	public static class NameMutator {
+	public static class PersonMutator {
 		private String name;
 		private String age;
 		
-		public NameMutator() {
+		public PersonMutator() {
 		}
-		public NameMutator(Name obj) {
+		public PersonMutator(Person obj) {
 			name = obj.getName();
 			age = obj.getAge();
 		}
@@ -165,73 +169,73 @@ public class DNALTests extends BaseTest {
 			return errors;
 		}
 		
-		public Name toImmutable() throws ValidationException {
+		public Person toImmutable() throws ValidationException {
 			List<ValidationError> errors = validate();
 			if (errors.size() > 0) {
 				throw new ValidationException(errors);
 			}
-			Name obj = new Name(name, age);
+			Person obj = new Person(name, age);
 			return obj;
 		}
 	}
 
 	@Test
 	public void test() {
-		NameLoader loader = createLoader();
-		Name name = loader.getName("obj1");
-		assertEquals("bob", name.getName());
-		assertEquals("30", name.getAge());
+		PersonLoader loader = createLoader();
+		Person person = loader.getXObj("obj1");
+		assertEquals("bob", person.getName());
+		assertEquals("30", person.getAge());
 		
-		Name name2 = loader.getName("nosuchname");
-		assertEquals(null, name2);
+		Person person2 = loader.getXObj("nosuchname");
+		assertEquals(null, person2);
 	}
 
 	@Test
 	public void test2() {
-		NameLoader loader = createLoader();
-		Name name = loader.getName("obj1");
-		NameMutator mutator = new NameMutator(name);
+		PersonLoader loader = createLoader();
+		Person person = loader.getXObj("obj1");
+		PersonMutator mutator = new PersonMutator(person);
 		
 		mutator.setAge("33");
 		mutator.setName("bobby");
 		
-		name = getNameObj(mutator);
-		assertEquals("bobby", name.getName());
-		assertEquals("33", name.getAge());
+		person = getNameObj(mutator);
+		assertEquals("bobby", person.getName());
+		assertEquals("33", person.getAge());
 		
-		Name name2 = loader.getName("nosuchname");
-		assertEquals(null, name2);
+		Person person2 = loader.getXObj("nosuchname");
+		assertEquals(null, person2);
 	}
 	
 	@Test
 	public void testValidation() {
-		NameLoader loader = createLoader();
-		Name name = loader.getName("obj1");
-		NameMutator mutator = new NameMutator(name);
+		PersonLoader loader = createLoader();
+		Person person = loader.getXObj("obj1");
+		PersonMutator mutator = new PersonMutator(person);
 		
 		mutator.setAge("133");
 		mutator.setName("bobby");
 		
 		assertEquals(false, mutator.isValid());
 		
-		name = getNameObj(mutator);
-		assertEquals(null, name);
+		person = getNameObj(mutator);
+		assertEquals(null, person);
 	}
 	
 	@Test
 	public void testAPI() {
 		API api = createAPI();
 		
-		Name name = api.getName("obj1");
-		assertEquals("bob", name.getName());
-		assertEquals("30", name.getAge());
+		Person person = api.getPerson("obj1");
+		assertEquals("bob", person.getName());
+		assertEquals("30", person.getAge());
 		
-		Name name2 = api.getName("nosuchname");
-		assertEquals(null, name2);
+		Person person2 = api.getPerson("nosuchname");
+		assertEquals(null, person2);
 		
-		name = api.getObject("obj1");
-		assertEquals("bob", name.getName());
-		assertEquals("30", name.getAge());
+		person = api.getObject("obj1");
+		assertEquals("bob", person.getName());
+		assertEquals("30", person.getAge());
 		
 		City city = api.getObject("city1");
 		assertEquals("halifax", city.getName());
@@ -241,16 +245,16 @@ public class DNALTests extends BaseTest {
 	
 	
 	//--helpers
-	private NameLoader createLoader() {
+	private PersonLoader createLoader() {
 		BackingStore store = new BackingStore();
-		NameLoader loader = new NameLoader();
+		PersonLoader loader = new PersonLoader();
 		loader.store = store;
 		return loader;
 	}
 	
 	private API createAPI() {
 		BackingStore store = new BackingStore();
-		NameLoader loader = new NameLoader();
+		PersonLoader loader = new PersonLoader();
 		loader.store = store;
 		API api = new API();
 		api.nameLoader = loader;
@@ -262,8 +266,8 @@ public class DNALTests extends BaseTest {
 		return api;
 	}
 	
-	private Name getNameObj(NameMutator mutator) {
-		Name name = null;
+	private Person getNameObj(PersonMutator mutator) {
+		Person name = null;
 		try {
 			name = mutator.toImmutable();
 		} catch (ValidationException e) {
