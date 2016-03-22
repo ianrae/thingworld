@@ -29,7 +29,7 @@ public class DNALTests extends BaseTest {
 			return map;
 		}
 	}
-	
+
 	public static class Person {
 		public Person(String name, String age) {
 			this.name = name;
@@ -44,14 +44,14 @@ public class DNALTests extends BaseTest {
 			return age;
 		}
 	}
-	
+
 	public interface ILoader<T> {
 		T getXObj(String objId);
 	}
-	
+
 	public static class PersonLoader implements ILoader<Person>{
 		public BackingStore store;
-		
+
 		public Person getXObj(String objId) {
 			String x1 = store.getMap().get(objId + ".name");
 			String x2 = store.getMap().get(objId + ".age");
@@ -62,7 +62,7 @@ public class DNALTests extends BaseTest {
 			return name;
 		}
 	}
-	
+
 	public static class City {
 		public City(String name, String age) {
 			this.name = name;
@@ -77,10 +77,10 @@ public class DNALTests extends BaseTest {
 			return age;
 		}
 	}
-	
+
 	public static class CityLoader implements ILoader<City>{
 		public BackingStore store;
-		
+
 		public City getXObj(String objId) {
 			String x1 = store.getMap().get(objId + ".name");
 			String x2 = store.getMap().get(objId + ".age");
@@ -91,16 +91,16 @@ public class DNALTests extends BaseTest {
 			return name;
 		}
 	}
-	
-	
+
+
 	public static class API {
 		public ILoader<Person> nameLoader;
 		public ILoader<City> cityLoader;
-		
+
 		public Person getPerson(String objId) {
 			return nameLoader.getXObj(objId);
 		}
-		
+
 		public <T> T getObject(String objId) {
 			if (objId.startsWith("city")) {
 				return (T) cityLoader.getXObj(objId);
@@ -108,12 +108,12 @@ public class DNALTests extends BaseTest {
 			return (T) nameLoader.getXObj(objId);
 		}
 	}
-	
+
 	public static class ValidationError {
 		public String fieldName;
 		public String error;
 	}
-	
+
 	public static class ValidationException extends Exception {
 		public List<ValidationError> errors = new ArrayList<>();
 
@@ -128,11 +128,38 @@ public class DNALTests extends BaseTest {
 			}
 		}
 	}
-	
-	public static class PersonMutator {
+
+	public static abstract class MutatorBase<T> {
+
+		public boolean isValid() {
+			List<ValidationError> errors = validate();
+			return (errors.size() == 0);
+		}
+
+		public abstract List<ValidationError> validate();
+
+		protected void addError(List<ValidationError> errors, String fieldName, String err) {
+			ValidationError error = new ValidationError();
+			error.fieldName = "age";
+			error.error = "out of range";
+			errors.add(error);
+		}
+
+		public T toImmutable() throws ValidationException {
+			List<ValidationError> errors = validate();
+			if (errors.size() > 0) {
+				throw new ValidationException(errors);
+			}
+			return createObject();
+		}
+		
+		protected abstract T createObject();
+	}
+
+	public static class PersonMutator extends MutatorBase<Person> {
 		private String name;
 		private String age;
-		
+
 		public PersonMutator() {
 		}
 		public PersonMutator(Person obj) {
@@ -151,33 +178,61 @@ public class DNALTests extends BaseTest {
 		public void setAge(String age) {
 			this.age = age;
 		}
-		
-		public boolean isValid() {
-			List<ValidationError> errors = validate();
-			return (errors.size() == 0);
-		}
-		
+
 		public List<ValidationError> validate() {
 			List<ValidationError> errors = new ArrayList<>();
 			int nAge = Integer.parseInt(age);
 			if (nAge > 100) {
-				ValidationError error = new ValidationError();
-				error.fieldName = "age";
-				error.error = "out of range";
-				errors.add(error);
+				this.addError(errors, "age", "out of range");
 			}
 			return errors;
 		}
-		
-		public Person toImmutable() throws ValidationException {
-			List<ValidationError> errors = validate();
-			if (errors.size() > 0) {
-				throw new ValidationException(errors);
-			}
+
+		@Override
+		protected Person createObject() {
 			Person obj = new Person(name, age);
 			return obj;
 		}
 	}
+	public static class CityMutator extends MutatorBase<City> {
+		private String name;
+		private String age;
+
+		public CityMutator() {
+		}
+		public CityMutator(City obj) {
+			name = obj.getName();
+			age = obj.getAge();
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getAge() {
+			return age;
+		}
+		public void setAge(String age) {
+			this.age = age;
+		}
+
+		public List<ValidationError> validate() {
+			List<ValidationError> errors = new ArrayList<>();
+			int nAge = Integer.parseInt(age);
+			if (nAge > 100) {
+				this.addError(errors, "age", "out of range");
+			}
+			return errors;
+		}
+
+		@Override
+		protected City createObject() {
+			City city = new City(name, age);
+			return city;
+		}
+	}
+
 
 	@Test
 	public void test() {
@@ -185,7 +240,7 @@ public class DNALTests extends BaseTest {
 		Person person = loader.getXObj("obj1");
 		assertEquals("bob", person.getName());
 		assertEquals("30", person.getAge());
-		
+
 		Person person2 = loader.getXObj("nosuchname");
 		assertEquals(null, person2);
 	}
@@ -195,55 +250,55 @@ public class DNALTests extends BaseTest {
 		PersonLoader loader = createLoader();
 		Person person = loader.getXObj("obj1");
 		PersonMutator mutator = new PersonMutator(person);
-		
+
 		mutator.setAge("33");
 		mutator.setName("bobby");
-		
+
 		person = getNameObj(mutator);
 		assertEquals("bobby", person.getName());
 		assertEquals("33", person.getAge());
-		
+
 		Person person2 = loader.getXObj("nosuchname");
 		assertEquals(null, person2);
 	}
-	
+
 	@Test
 	public void testValidation() {
 		PersonLoader loader = createLoader();
 		Person person = loader.getXObj("obj1");
 		PersonMutator mutator = new PersonMutator(person);
-		
+
 		mutator.setAge("133");
 		mutator.setName("bobby");
-		
+
 		assertEquals(false, mutator.isValid());
-		
+
 		person = getNameObj(mutator);
 		assertEquals(null, person);
 	}
-	
+
 	@Test
 	public void testAPI() {
 		API api = createAPI();
-		
+
 		Person person = api.getPerson("obj1");
 		assertEquals("bob", person.getName());
 		assertEquals("30", person.getAge());
-		
+
 		Person person2 = api.getPerson("nosuchname");
 		assertEquals(null, person2);
-		
+
 		person = api.getObject("obj1");
 		assertEquals("bob", person.getName());
 		assertEquals("30", person.getAge());
-		
+
 		City city = api.getObject("city1");
 		assertEquals("halifax", city.getName());
 		assertEquals("30", city.getAge());
 	}
 
-	
-	
+
+
 	//--helpers
 	private PersonLoader createLoader() {
 		BackingStore store = new BackingStore();
@@ -251,21 +306,21 @@ public class DNALTests extends BaseTest {
 		loader.store = store;
 		return loader;
 	}
-	
+
 	private API createAPI() {
 		BackingStore store = new BackingStore();
 		PersonLoader loader = new PersonLoader();
 		loader.store = store;
 		API api = new API();
 		api.nameLoader = loader;
-		
+
 		CityLoader cityLoader = new CityLoader();
 		cityLoader.store = store;
 		api.cityLoader = cityLoader;
-		
+
 		return api;
 	}
-	
+
 	private Person getNameObj(PersonMutator mutator) {
 		Person name = null;
 		try {
@@ -275,5 +330,5 @@ public class DNALTests extends BaseTest {
 		}
 		return name;
 	}
-	
+
 }
