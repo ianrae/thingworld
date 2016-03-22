@@ -26,8 +26,12 @@ public class DNALTests extends BaseTest {
 			map.put("integer1.value", "10");
 		}
 
-		public Map<String, String> getMap() {
-			return map;
+		public String getStringValue(String objId) {
+			return map.get(objId);
+		}
+		public Integer getIntegerValue(String objId) {
+			String s = getStringValue(objId);
+			return new Integer(s);
 		}
 	}
 
@@ -54,8 +58,8 @@ public class DNALTests extends BaseTest {
 		public BackingStore store;
 
 		public Person getXObj(String objId) {
-			String x1 = store.getMap().get(objId + ".name");
-			String x2 = store.getMap().get(objId + ".age");
+			String x1 = store.getStringValue(objId + ".name");
+			String x2 = store.getStringValue(objId + ".age");
 			if (x1 == null || x2 == null) {
 				return null;
 			}
@@ -65,16 +69,17 @@ public class DNALTests extends BaseTest {
 	}
 
 	public static class City {
-		public City(String name, String age) {
+		private final String name;
+		private final Integer age;
+		
+		public City(String name, Integer age) {
 			this.name = name;
 			this.age = age;
 		}
-		private final String name;
-		private final String age;
 		public String getName() {
 			return name;
 		}
-		public String getAge() {
+		public Integer getAge() {
 			return age;
 		}
 	}
@@ -83,8 +88,8 @@ public class DNALTests extends BaseTest {
 		public BackingStore store;
 
 		public City getXObj(String objId) {
-			String x1 = store.getMap().get(objId + ".name");
-			String x2 = store.getMap().get(objId + ".age");
+			String x1 = store.getStringValue(objId + ".name");
+			Integer x2 = store.getIntegerValue(objId + ".age");
 			if (x1 == null || x2 == null) {
 				return null;
 			}
@@ -96,7 +101,7 @@ public class DNALTests extends BaseTest {
 		public BackingStore store;
 
 		public Integer getXObj(String objId) {
-			String x1 = store.getMap().get(objId + ".value");
+			String x1 = store.getStringValue(objId + ".value");
 			if (x1 == null) {
 				return null;
 			}
@@ -168,6 +173,9 @@ public class DNALTests extends BaseTest {
 	public static class IntRangeValidation extends ValidationBase {
 		public IntRangeValidation(String fieldName, String value) {
 			super(fieldName, value);
+		}
+		public IntRangeValidation(String fieldName, Integer value) {
+			super(fieldName, value.toString());
 		}
 
 		public void validate(List<ValidationError> list) {
@@ -245,7 +253,7 @@ public class DNALTests extends BaseTest {
 	}
 	public static class CityMutator extends MutatorBase<City> {
 		private String name;
-		private String age;
+		private Integer age;
 
 		public CityMutator() {
 		}
@@ -259,12 +267,6 @@ public class DNALTests extends BaseTest {
 		public void setName(String name) {
 			this.name = name;
 		}
-		public String getAge() {
-			return age;
-		}
-		public void setAge(String age) {
-			this.age = age;
-		}
 
 		@Override
 		protected void addValidators(List<ValidationBase> validators) {
@@ -275,6 +277,12 @@ public class DNALTests extends BaseTest {
 		protected City createObject() {
 			City city = new City(name, age);
 			return city;
+		}
+		public Integer getAge() {
+			return age;
+		}
+		public void setAge(Integer age) {
+			this.age = age;
 		}
 	}
 
@@ -372,7 +380,7 @@ public class DNALTests extends BaseTest {
 
 		City city = api.getObject("city1");
 		assertEquals("halifax", city.getName());
-		assertEquals("30", city.getAge());
+		assertEquals(30, city.getAge().intValue());
 	}
 
 
