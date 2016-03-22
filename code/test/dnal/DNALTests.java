@@ -129,18 +129,34 @@ public class DNALTests extends BaseTest {
 		}
 	}
 	
-	public static class IntRangeValidation {
-		public void validate(List<ValidationError> list, String fieldName, String value) {
-			int nAge = Integer.parseInt(value);
-			if (nAge > 100) {
-				this.addError(list, fieldName, "out of range");
-			}
+	public static abstract class ValidationBase {
+		protected String fieldName;
+		protected String value;
+		
+		public ValidationBase(String fieldName, String value) {
+			this.fieldName = fieldName;
+			this.value = value;
 		}
+		
+		public abstract void validate(List<ValidationError> list);
+
 		protected void addError(List<ValidationError> errors, String fieldName, String err) {
 			ValidationError error = new ValidationError();
 			error.fieldName = fieldName;
 			error.error = err;
 			errors.add(error);
+		}
+	}
+	public static class IntRangeValidation extends ValidationBase {
+		public IntRangeValidation(String fieldName, String value) {
+			super(fieldName, value);
+		}
+
+		public void validate(List<ValidationError> list) {
+			int nAge = Integer.parseInt(value);
+			if (nAge > 100) {
+				this.addError(list, fieldName, "out of range");
+			}
 		}
 	}
 
@@ -152,13 +168,6 @@ public class DNALTests extends BaseTest {
 		}
 
 		public abstract List<ValidationError> validate();
-
-		protected void addError(List<ValidationError> errors, String fieldName, String err) {
-			ValidationError error = new ValidationError();
-			error.fieldName = "age";
-			error.error = "out of range";
-			errors.add(error);
-		}
 
 		public T toImmutable() throws ValidationException {
 			List<ValidationError> errors = validate();
@@ -196,8 +205,13 @@ public class DNALTests extends BaseTest {
 
 		public List<ValidationError> validate() {
 			List<ValidationError> errors = new ArrayList<>();
-			IntRangeValidation vv = new IntRangeValidation();
-			vv.validate(errors, "age", age);
+			List<ValidationBase> validators = new ArrayList<>();
+			validators.add(new IntRangeValidation("age", age));
+			
+			for(ValidationBase validator: validators) {
+				validator.validate(errors);
+			}
+			
 			return errors;
 		}
 
@@ -232,8 +246,12 @@ public class DNALTests extends BaseTest {
 
 		public List<ValidationError> validate() {
 			List<ValidationError> errors = new ArrayList<>();
-			IntRangeValidation vv = new IntRangeValidation();
-			vv.validate(errors, "age", age);
+			List<ValidationBase> validators = new ArrayList<>();
+			validators.add(new IntRangeValidation("age", age));
+			
+			for(ValidationBase validator: validators) {
+				validator.validate(errors);
+			}
 			return errors;
 		}
 
