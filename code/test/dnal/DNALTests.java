@@ -53,6 +53,43 @@ public class DNALTests {
 			return name;
 		}
 	}
+	
+	public static class ValidationException extends Exception {
+		public String x;
+	}
+	
+	public static class NameMutator {
+		private String name;
+		private String age;
+		
+		public NameMutator() {
+		}
+		public NameMutator(Name obj) {
+			name = obj.getName();
+			age = obj.getAge();
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getAge() {
+			return age;
+		}
+		public void setAge(String age) {
+			this.age = age;
+		}
+		
+		public boolean isValid() {
+			return true;
+		}
+		
+		public Name toImmutable() {
+			Name obj = new Name(name, age);
+			return obj;
+		}
+	}
 
 	@Test
 	public void test() {
@@ -68,4 +105,46 @@ public class DNALTests {
 		assertEquals(null, name2);
 	}
 
+	@Test
+	public void test2() {
+		
+		BackingStore store = new BackingStore();
+		NameLoader loader = new NameLoader();
+		loader.store = store;
+		Name name = loader.getName("obj1");
+		NameMutator mutator = new NameMutator(name);
+		
+		mutator.setAge("33");
+		mutator.setName("bobby");
+		
+		name = mutator.toImmutable();
+		
+		assertEquals("bobby", name.getName());
+		assertEquals("33", name.getAge());
+		
+		Name name2 = loader.getName("nosuchname");
+		assertEquals(null, name2);
+	}
+	
+	@Test
+	public void testValidation() {
+		
+		BackingStore store = new BackingStore();
+		NameLoader loader = new NameLoader();
+		loader.store = store;
+		Name name = loader.getName("obj1");
+		NameMutator mutator = new NameMutator(name);
+		
+		mutator.setAge("33");
+		mutator.setName("bobby");
+		
+		name = mutator.toImmutable();
+		
+		assertEquals("bobby", name.getName());
+		assertEquals("33", name.getAge());
+		
+		Name name2 = loader.getName("nosuchname");
+		assertEquals(null, name2);
+	}
+	
 }
