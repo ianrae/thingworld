@@ -23,6 +23,7 @@ public class DNALTests extends BaseTest {
 			map.put("obj2.age", "30");
 			map.put("city1.name", "halifax");
 			map.put("city1.age", "30");
+			map.put("integer1.value", "10");
 		}
 
 		public Map<String, String> getMap() {
@@ -91,11 +92,25 @@ public class DNALTests extends BaseTest {
 			return name;
 		}
 	}
+	public static class IntegerLoader implements ILoader<Integer>{
+		public BackingStore store;
+
+		public Integer getXObj(String objId) {
+			String x1 = store.getMap().get(objId + ".value");
+			if (x1 == null) {
+				return null;
+			}
+			Integer name = new Integer(x1);
+			return name;
+		}
+	}
+
 
 
 	public static class API {
 		public ILoader<Person> nameLoader;
 		public ILoader<City> cityLoader;
+		public ILoader<Integer> integerLoader;
 
 		public Person getPerson(String objId) {
 			return nameLoader.getXObj(objId);
@@ -104,6 +119,9 @@ public class DNALTests extends BaseTest {
 		public <T> T getObject(String objId) {
 			if (objId.startsWith("city")) {
 				return (T) cityLoader.getXObj(objId);
+			}
+			else if (objId.startsWith("integer")) {
+				return (T) integerLoader.getXObj(objId);
 			}
 			return (T) nameLoader.getXObj(objId);
 		}
@@ -167,7 +185,18 @@ public class DNALTests extends BaseTest {
 			return (errors.size() == 0);
 		}
 
-		public abstract List<ValidationError> validate();
+		public List<ValidationError> validate() {
+			List<ValidationError> errors = new ArrayList<>();
+			List<ValidationBase> validators = new ArrayList<>();
+			addValidators(validators);
+			
+			for(ValidationBase validator: validators) {
+				validator.validate(errors);
+			}
+			return errors;
+		}
+
+		protected abstract void addValidators(List<ValidationBase> validators);
 
 		public T toImmutable() throws ValidationException {
 			List<ValidationError> errors = validate();
@@ -203,16 +232,9 @@ public class DNALTests extends BaseTest {
 			this.age = age;
 		}
 
-		public List<ValidationError> validate() {
-			List<ValidationError> errors = new ArrayList<>();
-			List<ValidationBase> validators = new ArrayList<>();
+		@Override
+		protected void addValidators(List<ValidationBase> validators) {
 			validators.add(new IntRangeValidation("age", age));
-			
-			for(ValidationBase validator: validators) {
-				validator.validate(errors);
-			}
-			
-			return errors;
 		}
 
 		@Override
@@ -244,15 +266,9 @@ public class DNALTests extends BaseTest {
 			this.age = age;
 		}
 
-		public List<ValidationError> validate() {
-			List<ValidationError> errors = new ArrayList<>();
-			List<ValidationBase> validators = new ArrayList<>();
+		@Override
+		protected void addValidators(List<ValidationBase> validators) {
 			validators.add(new IntRangeValidation("age", age));
-			
-			for(ValidationBase validator: validators) {
-				validator.validate(errors);
-			}
-			return errors;
 		}
 
 		@Override
@@ -262,6 +278,32 @@ public class DNALTests extends BaseTest {
 		}
 	}
 
+	public static class IntegerMutator extends MutatorBase<Integer> {
+		private String value;
+
+		public IntegerMutator() {
+		}
+		public IntegerMutator(Integer obj) {
+			value = obj.toString();
+		}
+		public String getValue() {
+			return value;
+		}
+		public void setValue(String name) {
+			this.value = name;
+		}
+
+		@Override
+		protected void addValidators(List<ValidationBase> validators) {
+			validators.add(new IntRangeValidation("value", value));
+		}
+
+		@Override
+		protected Integer createObject() {
+			Integer val = new Integer(value);
+			return val;
+		}
+	}
 
 	@Test
 	public void test() {
@@ -289,6 +331,13 @@ public class DNALTests extends BaseTest {
 
 		Person person2 = loader.getXObj("nosuchname");
 		assertEquals(null, person2);
+	}
+
+	@Test
+	public void test3() {
+		API api = createAPI();
+		Integer n = api.getObject("integer1");
+		assertEquals(10, n.intValue());
 	}
 
 	@Test
@@ -347,6 +396,10 @@ public class DNALTests extends BaseTest {
 		cityLoader.store = store;
 		api.cityLoader = cityLoader;
 
+		IntegerLoader integerLoader = new IntegerLoader();
+		integerLoader.store = store;
+		api.integerLoader = integerLoader;
+		
 		return api;
 	}
 
