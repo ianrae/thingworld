@@ -21,6 +21,8 @@ public class DNALTests extends BaseTest {
 			map.put("obj1.age", "30");
 			map.put("obj2.name", "bob");
 			map.put("obj2.age", "30");
+			map.put("city1.name", "halifax");
+			map.put("city1.age", "30");
 		}
 
 		public Map<String, String> getMap() {
@@ -30,7 +32,6 @@ public class DNALTests extends BaseTest {
 	
 	public static class Name {
 		public Name(String name, String age) {
-			super();
 			this.name = name;
 			this.age = age;
 		}
@@ -55,6 +56,52 @@ public class DNALTests extends BaseTest {
 			}
 			Name name = new Name(x1,x2);
 			return name;
+		}
+	}
+	
+	public static class City {
+		public City(String name, String age) {
+			this.name = name;
+			this.age = age;
+		}
+		private final String name;
+		private final String age;
+		public String getName() {
+			return name;
+		}
+		public String getAge() {
+			return age;
+		}
+	}
+	
+	public static class CityLoader {
+		public BackingStore store;
+		
+		public City getCity(String objId) {
+			String x1 = store.getMap().get(objId + ".name");
+			String x2 = store.getMap().get(objId + ".age");
+			if (x1 == null || x2 == null) {
+				return null;
+			}
+			City name = new City(x1,x2);
+			return name;
+		}
+	}
+	
+	
+	public static class API {
+		public NameLoader nameLoader;
+		public CityLoader cityLoader;
+		
+		public Name getName(String objId) {
+			return nameLoader.getName(objId);
+		}
+		
+		public <T> T getObject(String objId) {
+			if (objId.startsWith("city")) {
+				return (T) cityLoader.getCity(objId);
+			}
+			return (T) nameLoader.getName(objId);
 		}
 	}
 	
@@ -148,14 +195,7 @@ public class DNALTests extends BaseTest {
 		mutator.setAge("33");
 		mutator.setName("bobby");
 		
-		name = null;
-		try {
-			name = mutator.toImmutable();
-		} catch (ValidationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		name = getNameObj(mutator);
 		assertEquals("bobby", name.getName());
 		assertEquals("33", name.getAge());
 		
@@ -174,15 +214,31 @@ public class DNALTests extends BaseTest {
 		
 		assertEquals(false, mutator.isValid());
 		
-		name = null;
-		try {
-			name = mutator.toImmutable();
-		} catch (ValidationException e) {
-			e.dump();
-		}
+		name = getNameObj(mutator);
 		assertEquals(null, name);
-		
 	}
+	
+	@Test
+	public void testAPI() {
+		API api = createAPI();
+		
+		Name name = api.getName("obj1");
+		assertEquals("bob", name.getName());
+		assertEquals("30", name.getAge());
+		
+		Name name2 = api.getName("nosuchname");
+		assertEquals(null, name2);
+		
+		name = api.getObject("obj1");
+		assertEquals("bob", name.getName());
+		assertEquals("30", name.getAge());
+		
+		City city = api.getObject("city1");
+		assertEquals("halifax", city.getName());
+		assertEquals("30", city.getAge());
+	}
+
+	
 	
 	//--helpers
 	private NameLoader createLoader() {
@@ -190,6 +246,30 @@ public class DNALTests extends BaseTest {
 		NameLoader loader = new NameLoader();
 		loader.store = store;
 		return loader;
+	}
+	
+	private API createAPI() {
+		BackingStore store = new BackingStore();
+		NameLoader loader = new NameLoader();
+		loader.store = store;
+		API api = new API();
+		api.nameLoader = loader;
+		
+		CityLoader cityLoader = new CityLoader();
+		cityLoader.store = store;
+		api.cityLoader = cityLoader;
+		
+		return api;
+	}
+	
+	private Name getNameObj(NameMutator mutator) {
+		Name name = null;
+		try {
+			name = mutator.toImmutable();
+		} catch (ValidationException e) {
+			e.dump();
+		}
+		return name;
 	}
 	
 }
