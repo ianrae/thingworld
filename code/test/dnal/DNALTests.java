@@ -24,10 +24,11 @@ public class DNALTests extends BaseTest {
 		public BackingStore() {
 			map.put("obj1.name", "bob");
 			map.put("obj1.age", "30");
-			map.put("obj2.name", "bob");
+			map.put("obj2.name", "sue");
 			map.put("obj2.age", "30");
 			map.put("city1.name", "halifax");
 			map.put("city1.age", "30");
+			map.put("city1.personREF", "obj2");
 			map.put("integer1.value", "10");
 		}
 
@@ -83,16 +84,21 @@ public class DNALTests extends BaseTest {
 	public static class City {
 		private final String name;
 		private final Integer age;
+		private final Person person;
 		
-		public City(String name, Integer age) {
+		public City(String name, Integer age, Person person) {
 			this.name = name;
 			this.age = age;
+			this.person = person;
 		}
 		public String getName() {
 			return name;
 		}
 		public Integer getAge() {
 			return age;
+		}
+		public Person getPerson() {
+			return person;
 		}
 	}
 
@@ -102,10 +108,14 @@ public class DNALTests extends BaseTest {
 		public City getXObj(String objId, ILoaderRegistry registry) {
 			String x1 = store.getStringValue(objId + ".name");
 			Integer x2 = store.getIntegerValue(objId + ".age");
-			if (x1 == null || x2 == null) {
+			
+			String subId = store.getStringValue(objId + ".personREF");
+			Person x3 = (Person) registry.getObject(subId);
+			
+			if (x1 == null || x2 == null || x3 == null) {
 				return null;
 			}
-			City name = new City(x1,x2);
+			City name = new City(x1,x2, x3);
 			return name;
 		}
 	}
@@ -270,12 +280,14 @@ public class DNALTests extends BaseTest {
 	public static class CityMutator extends MutatorBase<City> {
 		private String name;
 		private Integer age;
+		private Person person;
 
 		public CityMutator() {
 		}
 		public CityMutator(City obj) {
 			name = obj.getName();
 			age = obj.getAge();
+			person = obj.getPerson();
 		}
 		public String getName() {
 			return name;
@@ -291,7 +303,7 @@ public class DNALTests extends BaseTest {
 
 		@Override
 		protected City createObject() {
-			City city = new City(name, age);
+			City city = new City(name, age, person);
 			return city;
 		}
 		public Integer getAge() {
@@ -299,6 +311,12 @@ public class DNALTests extends BaseTest {
 		}
 		public void setAge(Integer age) {
 			this.age = age;
+		}
+		public Person getPerson() {
+			return person;
+		}
+		public void setPerson(Person person) {
+			this.person = person;
 		}
 	}
 
@@ -396,6 +414,7 @@ public class DNALTests extends BaseTest {
 		City city = api.getObject("city1");
 		assertEquals("halifax", city.getName());
 		assertEquals(30, city.getAge().intValue());
+		assertEquals("sue", city.getPerson().getName());
 	}
 
 
