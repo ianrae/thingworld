@@ -57,6 +57,18 @@ public class DNALTests extends BaseTest {
 			return age;
 		}
 	}
+	
+	public static class Employee extends Person {
+		public Employee(String name, String age, String code) {
+			super(name, age);
+			this.code = code;
+		}
+		private final String code;
+		
+		public String getCode() {
+			return code;
+		}
+	}
 
 	public interface ILoaderRegistry {
 		Object getObject(String objId);
@@ -77,6 +89,20 @@ public class DNALTests extends BaseTest {
 				return null;
 			}
 			Person name = new Person(x1,x2);
+			return name;
+		}
+	}
+	public static class EmployeeLoader implements ILoader<Employee>{
+		public IBackingStore store;
+
+		public Employee getXObj(String objId, ILoaderRegistry registry) {
+			String x1 = store.getStringValue(objId + ".name");
+			String x2 = store.getStringValue(objId + ".age");
+			String x3 = store.getStringValue(objId + ".code");
+			if (x1 == null || x2 == null || x3 == null) {
+				return null;
+			}
+			Employee name = new Employee(x1,x2,x3);
 			return name;
 		}
 	}
@@ -136,14 +162,16 @@ public class DNALTests extends BaseTest {
 		public ILoader<Person> nameLoader;
 		public ILoader<City> cityLoader;
 		public ILoader<Integer> integerLoader;
+		public ILoader<Employee> employeeLoader;
 
 		@Override
 		public Object getObject(String objId) {
 			if (objId.startsWith("city")) {
 				return cityLoader.getXObj(objId, this);
-			}
-			else if (objId.startsWith("integer")) {
+			} else if (objId.startsWith("integer")) {
 				return integerLoader.getXObj(objId, this);
+			} else if (objId.startsWith("employee")) {
+				return employeeLoader.getXObj(objId, this);
 			}
 			return nameLoader.getXObj(objId, this);
 		}
