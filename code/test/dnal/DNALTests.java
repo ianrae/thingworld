@@ -30,6 +30,9 @@ public class DNALTests extends BaseTest {
 			map.put("city1.age", "30");
 			map.put("city1.personREF", "obj2");
 			map.put("integer1.value", "10");
+			map.put("employee1.name", "rich");
+			map.put("employee1.age", "30");
+			map.put("employee1.code", "xyz");
 		}
 
 		@Override
@@ -443,6 +446,9 @@ public class DNALTests extends BaseTest {
 		assertEquals("halifax", city.getName());
 		assertEquals(30, city.getAge().intValue());
 		assertEquals("sue", city.getPerson().getName());
+		
+		Employee emp = api.getObject("employee1");
+		assertEquals("xyz", emp.getCode());
 	}
 
 
@@ -471,6 +477,10 @@ public class DNALTests extends BaseTest {
 		IntegerLoader integerLoader = new IntegerLoader();
 		integerLoader.store = store;
 		registry.integerLoader = integerLoader;
+		
+		EmployeeLoader empLoader = new EmployeeLoader();
+		empLoader.store = store;
+		registry.employeeLoader = empLoader;
 		
 		return api;
 	}
