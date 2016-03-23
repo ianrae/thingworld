@@ -13,7 +13,12 @@ import testhelper.BaseTest;
 
 public class DNALTests extends BaseTest {
 
-	public static class BackingStore {
+	public interface IBackingStore {
+		String getStringValue(String objId);
+		Integer getIntegerValue(String objId);
+		//add validateAfterLoad -- need to validate all objects in the store
+	}
+	public static class BackingStore implements IBackingStore {
 		private Map<String,String> map = new HashMap<String,String>();
 
 		public BackingStore() {
@@ -26,9 +31,11 @@ public class DNALTests extends BaseTest {
 			map.put("integer1.value", "10");
 		}
 
+		@Override
 		public String getStringValue(String objId) {
 			return map.get(objId);
 		}
+		@Override
 		public Integer getIntegerValue(String objId) {
 			String s = getStringValue(objId);
 			return new Integer(s);
@@ -55,7 +62,7 @@ public class DNALTests extends BaseTest {
 	}
 
 	public static class PersonLoader implements ILoader<Person>{
-		public BackingStore store;
+		public IBackingStore store;
 
 		public Person getXObj(String objId) {
 			String x1 = store.getStringValue(objId + ".name");
@@ -85,7 +92,7 @@ public class DNALTests extends BaseTest {
 	}
 
 	public static class CityLoader implements ILoader<City>{
-		public BackingStore store;
+		public IBackingStore store;
 
 		public City getXObj(String objId) {
 			String x1 = store.getStringValue(objId + ".name");
@@ -98,7 +105,7 @@ public class DNALTests extends BaseTest {
 		}
 	}
 	public static class IntegerLoader implements ILoader<Integer>{
-		public BackingStore store;
+		public IBackingStore store;
 
 		public Integer getXObj(String objId) {
 			String x1 = store.getStringValue(objId + ".value");
@@ -110,25 +117,37 @@ public class DNALTests extends BaseTest {
 		}
 	}
 
-
-
-	public static class API {
+	public interface ILoaderRegistry {
+		Object getObject(String objId);
+	}
+	
+	public static class LoaderRegistry implements ILoaderRegistry {
 		public ILoader<Person> nameLoader;
 		public ILoader<City> cityLoader;
 		public ILoader<Integer> integerLoader;
 
-		public Person getPerson(String objId) {
-			return nameLoader.getXObj(objId);
-		}
-
-		public <T> T getObject(String objId) {
+		@Override
+		public Object getObject(String objId) {
 			if (objId.startsWith("city")) {
-				return (T) cityLoader.getXObj(objId);
+				return cityLoader.getXObj(objId);
 			}
 			else if (objId.startsWith("integer")) {
-				return (T) integerLoader.getXObj(objId);
+				return integerLoader.getXObj(objId);
 			}
-			return (T) nameLoader.getXObj(objId);
+			return nameLoader.getXObj(objId);
+		}
+	}
+
+
+	public static class API {
+		public LoaderRegistry registry;
+		
+//		public Person getPerson(String objId) {
+//			return registry.nameLoader.getXObj(objId);
+//		}
+
+		public <T> T getObject(String objId) {
+			return (T) registry.getObject(objId);
 		}
 	}
 
@@ -366,12 +385,11 @@ public class DNALTests extends BaseTest {
 	@Test
 	public void testAPI() {
 		API api = createAPI();
-
-		Person person = api.getPerson("obj1");
+		Person person = api.getObject("obj1");
 		assertEquals("bob", person.getName());
 		assertEquals("30", person.getAge());
 
-		Person person2 = api.getPerson("nosuchname");
+		Person person2 = api.getObject("nosuchname");
 		assertEquals(null, person2);
 
 		person = api.getObject("obj1");
@@ -387,26 +405,27 @@ public class DNALTests extends BaseTest {
 
 	//--helpers
 	private PersonLoader createLoader() {
-		BackingStore store = new BackingStore();
+		IBackingStore store = new BackingStore();
 		PersonLoader loader = new PersonLoader();
 		loader.store = store;
 		return loader;
 	}
 
 	private API createAPI() {
-		BackingStore store = new BackingStore();
+		IBackingStore store = new BackingStore();
 		PersonLoader loader = new PersonLoader();
 		loader.store = store;
 		API api = new API();
-		api.nameLoader = loader;
+		api.registry = new LoaderRegistry();
+		api.registry.nameLoader = loader;
 
 		CityLoader cityLoader = new CityLoader();
 		cityLoader.store = store;
-		api.cityLoader = cityLoader;
+		api.registry.cityLoader = cityLoader;
 
 		IntegerLoader integerLoader = new IntegerLoader();
 		integerLoader.store = store;
-		api.integerLoader = integerLoader;
+		api.registry.integerLoader = integerLoader;
 		
 		return api;
 	}
