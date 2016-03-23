@@ -57,14 +57,19 @@ public class DNALTests extends BaseTest {
 		}
 	}
 
+	public interface ILoaderRegistry {
+		Object getObject(String objId);
+	}
+	
+
 	public interface ILoader<T> {
-		T getXObj(String objId);
+		T getXObj(String objId, ILoaderRegistry registry);
 	}
 
 	public static class PersonLoader implements ILoader<Person>{
 		public IBackingStore store;
 
-		public Person getXObj(String objId) {
+		public Person getXObj(String objId, ILoaderRegistry registry) {
 			String x1 = store.getStringValue(objId + ".name");
 			String x2 = store.getStringValue(objId + ".age");
 			if (x1 == null || x2 == null) {
@@ -94,7 +99,7 @@ public class DNALTests extends BaseTest {
 	public static class CityLoader implements ILoader<City>{
 		public IBackingStore store;
 
-		public City getXObj(String objId) {
+		public City getXObj(String objId, ILoaderRegistry registry) {
 			String x1 = store.getStringValue(objId + ".name");
 			Integer x2 = store.getIntegerValue(objId + ".age");
 			if (x1 == null || x2 == null) {
@@ -107,7 +112,7 @@ public class DNALTests extends BaseTest {
 	public static class IntegerLoader implements ILoader<Integer>{
 		public IBackingStore store;
 
-		public Integer getXObj(String objId) {
+		public Integer getXObj(String objId, ILoaderRegistry registry) {
 			String x1 = store.getStringValue(objId + ".value");
 			if (x1 == null) {
 				return null;
@@ -117,10 +122,6 @@ public class DNALTests extends BaseTest {
 		}
 	}
 
-	public interface ILoaderRegistry {
-		Object getObject(String objId);
-	}
-	
 	public static class LoaderRegistry implements ILoaderRegistry {
 		public ILoader<Person> nameLoader;
 		public ILoader<City> cityLoader;
@@ -129,23 +130,19 @@ public class DNALTests extends BaseTest {
 		@Override
 		public Object getObject(String objId) {
 			if (objId.startsWith("city")) {
-				return cityLoader.getXObj(objId);
+				return cityLoader.getXObj(objId, this);
 			}
 			else if (objId.startsWith("integer")) {
-				return integerLoader.getXObj(objId);
+				return integerLoader.getXObj(objId, this);
 			}
-			return nameLoader.getXObj(objId);
+			return nameLoader.getXObj(objId, this);
 		}
 	}
 
 
 	public static class API {
-		public LoaderRegistry registry;
+		public ILoaderRegistry registry;
 		
-//		public Person getPerson(String objId) {
-//			return registry.nameLoader.getXObj(objId);
-//		}
-
 		public <T> T getObject(String objId) {
 			return (T) registry.getObject(objId);
 		}
@@ -335,18 +332,18 @@ public class DNALTests extends BaseTest {
 	@Test
 	public void test() {
 		PersonLoader loader = createLoader();
-		Person person = loader.getXObj("obj1");
+		Person person = loader.getXObj("obj1", null);
 		assertEquals("bob", person.getName());
 		assertEquals("30", person.getAge());
 
-		Person person2 = loader.getXObj("nosuchname");
+		Person person2 = loader.getXObj("nosuchname", null);
 		assertEquals(null, person2);
 	}
 
 	@Test
 	public void test2() {
 		PersonLoader loader = createLoader();
-		Person person = loader.getXObj("obj1");
+		Person person = loader.getXObj("obj1", null);
 		PersonMutator mutator = new PersonMutator(person);
 
 		mutator.setAge("33");
@@ -356,7 +353,7 @@ public class DNALTests extends BaseTest {
 		assertEquals("bobby", person.getName());
 		assertEquals("33", person.getAge());
 
-		Person person2 = loader.getXObj("nosuchname");
+		Person person2 = loader.getXObj("nosuchname", null);
 		assertEquals(null, person2);
 	}
 
@@ -370,7 +367,7 @@ public class DNALTests extends BaseTest {
 	@Test
 	public void testValidation() {
 		PersonLoader loader = createLoader();
-		Person person = loader.getXObj("obj1");
+		Person person = loader.getXObj("obj1", null);
 		PersonMutator mutator = new PersonMutator(person);
 
 		mutator.setAge("133");
@@ -416,16 +413,17 @@ public class DNALTests extends BaseTest {
 		PersonLoader loader = new PersonLoader();
 		loader.store = store;
 		API api = new API();
-		api.registry = new LoaderRegistry();
-		api.registry.nameLoader = loader;
+		LoaderRegistry registry = new LoaderRegistry();
+		api.registry = registry;
+		registry.nameLoader = loader;
 
 		CityLoader cityLoader = new CityLoader();
 		cityLoader.store = store;
-		api.registry.cityLoader = cityLoader;
+		registry.cityLoader = cityLoader;
 
 		IntegerLoader integerLoader = new IntegerLoader();
 		integerLoader.store = store;
-		api.registry.integerLoader = integerLoader;
+		registry.integerLoader = integerLoader;
 		
 		return api;
 	}
