@@ -63,7 +63,7 @@ public class DNALLoaderTests extends BaseTest {
 			for(DValue dval: valueL) {
 				ITypeValidator validator = registry.find(dval.type);
 				if (validator != null) {
-					ValidationResult result = validator.validate(dval, dval.value);
+					ValidationResult result = validator.validate(dval, dval.rawValue);
 					if (! result.isValid) {
 						failCount++;
 						errors.addAll(result.errors);

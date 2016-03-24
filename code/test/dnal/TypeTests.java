@@ -66,14 +66,14 @@ public class TypeTests {
 	private void shouldFail(String input) {
 		MockIntValidator validator = new MockIntValidator();
 		DValue dval = createDValue(input);
-		ValidationResult result = validator.validate(dval, dval.value);
+		ValidationResult result = validator.validate(dval, dval.rawValue);
 		checkFail(result);
 	}
 
 	private void shouldPass(String input, Object expected) {
 		MockIntValidator validator = new MockIntValidator();
 		DValue dval = createDValue(input);
-		ValidationResult result = validator.validate(dval, dval.value);
+		ValidationResult result = validator.validate(dval, dval.rawValue);
 		checkPass(result, expected);
 	}
 
@@ -92,7 +92,7 @@ public class TypeTests {
 		dval.name = "item1";
 		dval.packageName = "a.b.c";
 		dval.type = "int";
-		dval.value = object;
+		dval.rawValue = object;
 		return dval;
 	}
 

@@ -101,7 +101,7 @@ public class DNALParserTests extends BaseTest {
 			if (tok.endsWith(",") || tok.endsWith(";")) {
 				tok = tok.substring(0, tok.length() - 1);
 			}
-			currentDValue.value = tok;
+			currentDValue.rawValue = tok;
 
 			if (continueFlag) {
 				finalDvalue.valueList.add(currentDValue);
@@ -213,7 +213,7 @@ public class DNALParserTests extends BaseTest {
 	private void checkDVal(DValue dval, String type, String name, String val) {
 		assertEquals(type, dval.type);
 		assertEquals(name, dval.name);
-		assertEquals(val, dval.value);
+		assertEquals(val, dval.rawValue);
 	}
 
 	private DValue doScan(String input) {
