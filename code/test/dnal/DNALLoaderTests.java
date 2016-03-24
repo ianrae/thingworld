@@ -108,6 +108,17 @@ public class DNALLoaderTests extends BaseTest {
 		assertEquals(1, loader.getDataL().size());
 		assertEquals("size", loader.getDataL().get(0).name);
 	}
+	@Test
+	public void testFile2() {
+		String path = "./test/testfiles/file2.dnal";
+		DNALLoader loader = new DNALLoader();
+		loader.registry = buildRegistry();
+		boolean b = loader.load(path);
+		assertEquals(true, b);
+		assertEquals(2, loader.getDataL().size());
+		assertEquals("size", loader.getDataL().get(0).name);
+		assertEquals("firstName", loader.getDataL().get(0).name);
+	}
 	
 	private TypeRegistry buildRegistry() {
 		TypeRegistry registry = new TypeRegistry();

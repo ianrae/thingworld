@@ -15,7 +15,7 @@ import org.mef.dnal.validation.ValidationException;
 
 import testhelper.BaseTest;
 
-public class DNALTests extends BaseTest {
+public class EarlyDNALTests extends BaseTest {
 
 	public interface IBackingStore {
 		String getStringValue(String objId);

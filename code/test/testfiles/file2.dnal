@@ -1,0 +1,5 @@
+//a basic dnal file
+package a.b.c
+  int 	size: 100
+  string firstName: sue
+end
