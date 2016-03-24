@@ -8,5 +8,6 @@ public class DValue {
 	public String type;
 	public String name;
 	public String rawValue;
+	public Object finalValue;
 	public List<DValue> valueList; //either value or this
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.mef.dnal.core.DValue;
 import org.mef.dnal.validation.ValidationBase;
 import org.mef.dnal.validation.ValidationError;
 import org.mef.dnal.validation.ValidationException;
@@ -22,25 +23,38 @@ public class DNALTests extends BaseTest {
 		//add validateAfterLoad -- need to validate all objects in the store
 	}
 	public static class BackingStore implements IBackingStore {
-		private Map<String,String> map = new HashMap<String,String>();
+		private Map<String,DValue> map = new HashMap<String,DValue>();
 
 		public BackingStore() {
-			map.put("obj1.name", "bob");
-			map.put("obj1.age", "30");
-			map.put("obj2.name", "sue");
-			map.put("obj2.age", "30");
-			map.put("city1.name", "halifax");
-			map.put("city1.age", "30");
-			map.put("city1.personREF", "obj2");
-			map.put("integer1.value", "10");
-			map.put("employee1.name", "rich");
-			map.put("employee1.age", "30");
-			map.put("employee1.code", "xyz");
+			add("obj1", "name", "bob");
+			add("obj1", "age", "30");
+			add("obj2", "name", "sue");
+			add("obj2", "age", "30");
+			add("city1", "name", "halifax");
+			add("city1", "age", "30");
+			add("city1", "personREF", "obj2");
+			add("integer1", "value", "10");
+			add("employee1", "name", "rich");
+			add("employee1", "age", "30");
+			add("employee1", "code", "xyz");
+		}
+
+		private void add(String packageName, String name, String val) {
+			DValue dval = new DValue();
+			dval.packageName = packageName;
+			dval.name = name;
+			dval.rawValue = val;
+			dval.finalValue = val;
+			map.put(packageName + "." + name, dval);
 		}
 
 		@Override
 		public String getStringValue(String objId) {
-			return map.get(objId);
+			DValue dval = map.get(objId);
+			if (dval == null) {
+				return null;
+			}
+			return (String) dval.finalValue;
 		}
 		@Override
 		public Integer getIntegerValue(String objId) {

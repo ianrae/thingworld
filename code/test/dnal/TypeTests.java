@@ -34,6 +34,7 @@ public class TypeTests {
 					Integer n = Integer.parseInt(inputObj.toString());
 					result.isValid = true;
 					result.validObj = n;
+					dval.finalValue = result.validObj;
 				} catch(NumberFormatException e) {
 					addError(result, dval, "not an integer");
 				}
@@ -75,6 +76,7 @@ public class TypeTests {
 		DValue dval = createDValue(input);
 		ValidationResult result = validator.validate(dval, dval.rawValue);
 		checkPass(result, expected);
+		assertEquals(expected, dval.finalValue);
 	}
 
 	private void checkPass(ValidationResult result, Object object) {
