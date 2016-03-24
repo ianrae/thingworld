@@ -38,10 +38,29 @@ public class TypeTests {
 
 	@Test
 	public void test() {
+		shouldFail(null);
+		shouldFail(" ");
+		shouldFail(" 5 ");
+		shouldFail("ab5");
+		shouldFail("5.1");
+		
+		shouldPass("0", 0);
+		shouldPass("10", 10);
+		shouldPass("-450", -450);
+	}
+	
+	private void shouldFail(String input) {
 		MockIntValidator validator = new MockIntValidator();
-		DValue dval = createDValue(null);
-		ValidationResult result = validator.validate(dval, null);
+		DValue dval = createDValue(input);
+		ValidationResult result = validator.validate(dval, dval.value);
 		checkFail(result);
+	}
+	
+	private void shouldPass(String input, Object expected) {
+		MockIntValidator validator = new MockIntValidator();
+		DValue dval = createDValue(input);
+		ValidationResult result = validator.validate(dval, dval.value);
+		checkPass(result, expected);
 	}
 
 	private void checkPass(ValidationResult result, Object object) {
