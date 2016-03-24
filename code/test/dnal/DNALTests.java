@@ -27,15 +27,15 @@ public class DNALTests extends BaseTest {
 
 		public BackingStore() {
 			add("obj1", "name", "bob");
-			add("obj1", "age", "30");
+			addn("obj1", "age", 30);
 			add("obj2", "name", "sue");
-			add("obj2", "age", "30");
+			addn("obj2", "age", 30);
 			add("city1", "name", "halifax");
-			add("city1", "age", "30");
+			addn("city1", "age", 30);
 			add("city1", "personREF", "obj2");
-			add("integer1", "value", "10");
+			addn("integer1", "value", 10);
 			add("employee1", "name", "rich");
-			add("employee1", "age", "30");
+			addn("employee1", "age", 30);
 			add("employee1", "code", "xyz");
 		}
 
@@ -45,6 +45,16 @@ public class DNALTests extends BaseTest {
 			dval.name = name;
 			dval.rawValue = val;
 			dval.finalValue = val;
+			dval.type = "string";
+			map.put(packageName + "." + name, dval);
+		}
+		private void addn(String packageName, String name, Integer val) {
+			DValue dval = new DValue();
+			dval.packageName = packageName;
+			dval.name = name;
+			dval.rawValue = val.toString();
+			dval.finalValue = val;
+			dval.type = "int";
 			map.put(packageName + "." + name, dval);
 		}
 
@@ -58,28 +68,31 @@ public class DNALTests extends BaseTest {
 		}
 		@Override
 		public Integer getIntegerValue(String objId) {
-			String s = getStringValue(objId);
-			return new Integer(s);
+			DValue dval = map.get(objId);
+			if (dval == null) {
+				return null;
+			}
+			return (Integer) dval.finalValue;
 		}
 	}
 
 	public static class Person {
-		public Person(String name, String age) {
+		public Person(String name, Integer age) {
 			this.name = name;
 			this.age = age;
 		}
 		private final String name;
-		private final String age;
+		private final Integer age;
 		public String getName() {
 			return name;
 		}
-		public String getAge() {
+		public Integer getAge() {
 			return age;
 		}
 	}
 	
 	public static class Employee extends Person {
-		public Employee(String name, String age, String code) {
+		public Employee(String name, Integer age, String code) {
 			super(name, age);
 			this.code = code;
 		}
@@ -104,7 +117,7 @@ public class DNALTests extends BaseTest {
 
 		public Person getXObj(String objId, ILoaderRegistry registry) {
 			String x1 = store.getStringValue(objId + ".name");
-			String x2 = store.getStringValue(objId + ".age");
+			Integer x2 = store.getIntegerValue(objId + ".age");
 			if (x1 == null || x2 == null) {
 				return null;
 			}
@@ -117,7 +130,7 @@ public class DNALTests extends BaseTest {
 
 		public Employee getXObj(String objId, ILoaderRegistry registry) {
 			String x1 = store.getStringValue(objId + ".name");
-			String x2 = store.getStringValue(objId + ".age");
+			Integer x2 = store.getIntegerValue(objId + ".age");
 			String x3 = store.getStringValue(objId + ".code");
 			if (x1 == null || x2 == null || x3 == null) {
 				return null;
@@ -169,12 +182,8 @@ public class DNALTests extends BaseTest {
 		public IBackingStore store;
 
 		public Integer getXObj(String objId, ILoaderRegistry registry) {
-			String x1 = store.getStringValue(objId + ".value");
-			if (x1 == null) {
-				return null;
-			}
-			Integer name = new Integer(x1);
-			return name;
+			Integer x1 = store.getIntegerValue(objId + ".value");
+			return x1;
 		}
 	}
 
@@ -255,7 +264,7 @@ public class DNALTests extends BaseTest {
 
 	public static class PersonMutator extends MutatorBase<Person> {
 		private String name;
-		private String age;
+		private Integer age;
 
 		public PersonMutator() {
 		}
@@ -269,10 +278,10 @@ public class DNALTests extends BaseTest {
 		public void setName(String name) {
 			this.name = name;
 		}
-		public String getAge() {
+		public Integer getAge() {
 			return age;
 		}
-		public void setAge(String age) {
+		public void setAge(Integer age) {
 			this.age = age;
 		}
 
@@ -362,7 +371,7 @@ public class DNALTests extends BaseTest {
 		PersonLoader loader = createLoader();
 		Person person = loader.getXObj("obj1", null);
 		assertEquals("bob", person.getName());
-		assertEquals("30", person.getAge());
+		assertEquals(30, person.getAge().intValue());
 
 		Person person2 = loader.getXObj("nosuchname", null);
 		assertEquals(null, person2);
@@ -374,12 +383,12 @@ public class DNALTests extends BaseTest {
 		Person person = loader.getXObj("obj1", null);
 		PersonMutator mutator = new PersonMutator(person);
 
-		mutator.setAge("33");
+		mutator.setAge(33);
 		mutator.setName("bobby");
 
 		person = getNameObj(mutator);
 		assertEquals("bobby", person.getName());
-		assertEquals("33", person.getAge());
+		assertEquals(33, person.getAge().intValue());
 
 		Person person2 = loader.getXObj("nosuchname", null);
 		assertEquals(null, person2);
@@ -398,7 +407,7 @@ public class DNALTests extends BaseTest {
 		Person person = loader.getXObj("obj1", null);
 		PersonMutator mutator = new PersonMutator(person);
 
-		mutator.setAge("133");
+		mutator.setAge(133);
 		mutator.setName("bobby");
 
 		assertEquals(false, mutator.isValid());
@@ -412,14 +421,14 @@ public class DNALTests extends BaseTest {
 		API api = createAPI();
 		Person person = api.getObject("obj1");
 		assertEquals("bob", person.getName());
-		assertEquals("30", person.getAge());
+		assertEquals(30, person.getAge().intValue());
 
 		Person person2 = api.getObject("nosuchname");
 		assertEquals(null, person2);
 
 		person = api.getObject("obj1");
 		assertEquals("bob", person.getName());
-		assertEquals("30", person.getAge());
+		assertEquals(30, person.getAge().intValue());
 
 		City city = api.getObject("city1");
 		assertEquals("halifax", city.getName());
