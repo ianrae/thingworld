@@ -7,47 +7,14 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.junit.Test;
+import org.mef.dnal.core.DValue;
+import org.mef.dnal.parser.LSState;
+import org.mef.dnal.parser.ParseErrorTracker;
 
 import testhelper.BaseTest;
 
 
 public class DNALParserTests extends BaseTest {
-
-	public static enum LSState {
-		WANT_TYPE,
-		WANT_NAME,
-		WANT_VAL,
-		END,
-		NO_MORE,
-		PARTIAL,
-		ERROR
-	}
-
-	public static class DValue {
-		public String packageName;
-		public String type;
-		public String name;
-		public String value;
-		public List<DValue> valueList; //either value or this
-	}
-
-	public static class ParseErrorTracker {
-		private List<String> list = new ArrayList<>();
-
-		public void addError(String err) {
-			System.out.println("ERR: " + err);
-			list.add(err);
-		}
-
-		public boolean areNoErrors() {
-			return list.size() == 0;
-		}
-
-		public boolean hasErrors() {
-			return list.size() > 0;
-		}
-	}
-
 
 	public static class LineScanner {
 		private DValue currentDValue;

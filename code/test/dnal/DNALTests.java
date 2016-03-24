@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.mef.dnal.validation.ValidationBase;
+import org.mef.dnal.validation.ValidationError;
+import org.mef.dnal.validation.ValidationException;
 
 import testhelper.BaseTest;
 
@@ -189,44 +192,6 @@ public class DNALTests extends BaseTest {
 		}
 	}
 
-	public static class ValidationError {
-		public String fieldName;
-		public String error;
-	}
-
-	public static class ValidationException extends Exception {
-		public List<ValidationError> errors = new ArrayList<>();
-
-		public ValidationException(List<ValidationError> errors) {
-			this.errors = errors;
-		}
-
-		public void dump() {
-			for(ValidationError err: errors) {
-				String s = String.format("field %s - %s", err.fieldName, err.error);
-				System.out.println(s);
-			}
-		}
-	}
-	
-	public static abstract class ValidationBase {
-		protected String fieldName;
-		protected String value;
-		
-		public ValidationBase(String fieldName, String value) {
-			this.fieldName = fieldName;
-			this.value = value;
-		}
-		
-		public abstract void validate(List<ValidationError> list);
-
-		protected void addError(List<ValidationError> errors, String fieldName, String err) {
-			ValidationError error = new ValidationError();
-			error.fieldName = fieldName;
-			error.error = err;
-			errors.add(error);
-		}
-	}
 	public static class IntRangeValidation extends ValidationBase {
 		public IntRangeValidation(String fieldName, String value) {
 			super(fieldName, value);
