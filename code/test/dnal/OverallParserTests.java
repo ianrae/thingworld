@@ -4,10 +4,10 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import org.junit.Test;
 import org.mef.dnal.parser.ParseErrorTracker;
+import org.thingworld.sfx.SfxTextReader;
 
 import dnal.DNALLoaderTests.DNALLoader;
 import dnal.RegistryTests.RegistryBuilder;
@@ -32,6 +32,17 @@ public class OverallParserTests extends BaseTest {
 		private List<String> currentSubset;
 		public TypeFileScanner tscanner;
 		public DNALLoader dloader;
+		private boolean success;
+		
+		public boolean load(String path) {
+			SfxTextReader reader = new SfxTextReader();
+			List<String> lines = reader.readFile(path);
+			success = scan(lines);
+			return success;
+		}
+		public boolean isValid() {
+			return success;
+		}
 
 		public boolean scan(List<String> fileL) {
 			OTState state = OTState.WANT_START;
@@ -176,7 +187,22 @@ public class OverallParserTests extends BaseTest {
 		assertEquals(1, scanner.dloader.getDataL().size());
 		assertEquals("size", scanner.dloader.getDataL().get(0).name);
 	}
-
+	@Test
+	public void testFile2() {
+		String path = "./test/testfiles/file2.dnal";
+		OverallFileScanner scanner = new OverallFileScanner();
+		boolean b = scanner.load(path);
+		assertEquals(true, b);
+	}
+	@Test
+	public void testFile3() {
+		String path = "./test/testfiles/file3.dnal";
+		OverallFileScanner scanner = new OverallFileScanner();
+		boolean b = scanner.load(path);
+		assertEquals(true, b);
+	}
+	
+	
 	private void checkSize(int expectedSize, List<DType> list) {
 		assertEquals(expectedSize, list.size());
 	}

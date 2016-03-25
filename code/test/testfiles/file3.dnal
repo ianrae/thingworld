@@ -1,0 +1,11 @@
+//a basic dnal file
+TYPES
+ type Timeout extends int
+ end
+ENDTYPES
+
+package a.b.c
+  int 		size: 100
+  string 	firstName: sue
+  boolean 	flag: true
+end

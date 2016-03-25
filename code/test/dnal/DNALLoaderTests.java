@@ -1,11 +1,9 @@
 package dnal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 import org.junit.Test;
 import org.mef.dnal.core.DValue;
@@ -17,7 +15,6 @@ import dnal.DNALParserTests.FileScanner;
 import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
 import dnal.TypeTests.ITypeValidator;
-import dnal.TypeTests.MockIntValidator;
 import dnal.TypeTests.ValidationResult;
 
 public class DNALLoaderTests extends BaseTest {
