@@ -18,4 +18,11 @@ public class ParseErrorTracker {
 	public boolean hasErrors() {
 		return list.size() > 0;
 	}
+	
+	public void dumpErrors() {
+		for(String err: list) {
+			System.out.println(err);
+		}
+		System.out.println(String.format("%d errros", list.size()));
+	}
 }

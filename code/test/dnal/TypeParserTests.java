@@ -165,11 +165,15 @@ public class TypeParserTests extends BaseTest {
 	}
 
 	public static class TypeFileScanner {
-		private ParseErrorTracker errorTracker = new ParseErrorTracker();
+		private ParseErrorTracker errorTracker;
 		public List<DType> typeL = new ArrayList<>();
 //		private String currentType;
 		private int lineNum;
 		private DType currentDType;
+
+		public TypeFileScanner(ParseErrorTracker errorTracker) {
+			this.errorTracker = errorTracker;
+		}
 
 		public boolean scan(List<String> fileL) {
 			FTState state = FTState.WANT_TYPE;
@@ -300,8 +304,8 @@ public class TypeParserTests extends BaseTest {
 	@Test
 	public void testF0() {
 		List<String> fileL = buildFile(0);
-
-		TypeFileScanner scanner = new TypeFileScanner();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		TypeFileScanner scanner = new TypeFileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(false, b);
 	}
@@ -310,7 +314,8 @@ public class TypeParserTests extends BaseTest {
 	public void testF1() {
 		List<String> fileL = buildFile(1);
 
-		TypeFileScanner scanner = new TypeFileScanner();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		TypeFileScanner scanner = new TypeFileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(1, scanner.typeL);
@@ -321,7 +326,8 @@ public class TypeParserTests extends BaseTest {
 	public void testF2() {
 		List<String> fileL = buildFile(2);
 
-		TypeFileScanner scanner = new TypeFileScanner();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		TypeFileScanner scanner = new TypeFileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(1, scanner.typeL);
@@ -333,7 +339,8 @@ public class TypeParserTests extends BaseTest {
 	public void testF4() {
 		List<String> fileL = buildFile(4);
 
-		TypeFileScanner scanner = new TypeFileScanner();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		TypeFileScanner scanner = new TypeFileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(1, scanner.typeL);
@@ -346,7 +353,8 @@ public class TypeParserTests extends BaseTest {
 	public void testF6() {
 		List<String> fileL = buildFile(6);
 
-		TypeFileScanner scanner = new TypeFileScanner();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		TypeFileScanner scanner = new TypeFileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(2, scanner.typeL);
@@ -362,7 +370,8 @@ public class TypeParserTests extends BaseTest {
 	public void testF7() {
 		List<String> fileL = buildFile(7);
 
-		TypeFileScanner scanner = new TypeFileScanner();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		TypeFileScanner scanner = new TypeFileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(1, scanner.typeL);

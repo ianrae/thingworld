@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mef.dnal.parser.ParseErrorTracker;
+import org.mef.dnal.validation.ValidationError;
 import org.thingworld.sfx.SfxTextReader;
 
 import dnal.DNALLoaderTests.DNALLoader;
@@ -44,6 +45,14 @@ public class OverallParserTests extends BaseTest {
 		public boolean isValid() {
 			return success;
 		}
+		
+		public void dumpErrors() {
+			this.errorTracker.dumpErrors();
+			if (tscanner != null) {
+			}
+//				log(String.format("%s: %s", err.fieldName, err.error));
+		}
+		
 
 		public boolean scan(List<String> fileL) {
 			OTState state = OTState.WANT_START;
@@ -113,7 +122,7 @@ public class OverallParserTests extends BaseTest {
 		private OTState handleInsideTypes(String tok) {
 			if (tok.startsWith("ENDTYPES")) {
 
-				tscanner = new TypeFileScanner();
+				tscanner = new TypeFileScanner(this.errorTracker);
 				boolean b = tscanner.scan(currentSubset);
 				currentSubset = new ArrayList<>();
 				if (! b) {
