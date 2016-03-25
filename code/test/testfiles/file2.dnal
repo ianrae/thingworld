@@ -1,6 +1,6 @@
 //a basic dnal file
 package a.b.c
   int 		size: 100
-  string 	firstName: "sue mary"
+  string 	firstName: sue mary
   boolean 	flag: true
 end
