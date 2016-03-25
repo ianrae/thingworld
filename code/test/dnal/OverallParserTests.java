@@ -1,22 +1,22 @@
 package dnal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 import org.mef.dnal.parser.ParseErrorTracker;
-import org.mef.dnal.validation.ValidationError;
 import org.thingworld.sfx.SfxTextReader;
 
+import testhelper.BaseTest;
 import dnal.DNALLoaderTests.DNALLoader;
 import dnal.RegistryTests.RegistryBuilder;
+import dnal.RegistryTests.TypeRegistry;
 import dnal.RegistryTests.TypeValidator;
 import dnal.TypeParserTests.DType;
 import dnal.TypeParserTests.DTypeEntry;
 import dnal.TypeParserTests.TypeFileScanner;
-import testhelper.BaseTest;
 
 
 public class OverallParserTests extends BaseTest {
@@ -35,6 +35,7 @@ public class OverallParserTests extends BaseTest {
 		public TypeFileScanner tscanner;
 		public DNALLoader dloader;
 		private boolean success;
+		private TypeRegistry registry;
 		
 		public boolean load(String path) {
 			SfxTextReader reader = new SfxTextReader();
@@ -52,6 +53,8 @@ public class OverallParserTests extends BaseTest {
 
 		public boolean scan(List<String> fileL) {
 			OTState state = OTState.WANT_START;
+			RegistryTests.RegistryBuilder builder = new RegistryBuilder();
+			this.registry = builder.buildRegistry();
 
 			lineNum = 0;
 			for(String line : fileL) {
@@ -72,8 +75,7 @@ public class OverallParserTests extends BaseTest {
 			if (currentSubset != null && currentSubset.size() > 0) {
 				log("loader..");
 				dloader = new DNALLoader(errorTracker);
-				RegistryTests.RegistryBuilder builder = new RegistryBuilder();
-				dloader.registry = builder.buildRegistry();
+				dloader.registry = registry;
 				boolean b = dloader.load(currentSubset);
 				if (! b) {
 					state = OTState.ERROR;
@@ -125,7 +127,7 @@ public class OverallParserTests extends BaseTest {
 					return OTState.ERROR;
 				}
 				
-				RegistryTests.TypeValidator typeValidator = new TypeValidator(errorTracker);
+				RegistryTests.TypeValidator typeValidator = new TypeValidator(errorTracker, registry);
 				b = typeValidator.validate(tscanner.typeL);
 				if (! b) {
 					return OTState.ERROR;

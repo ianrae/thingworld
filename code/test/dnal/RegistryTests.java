@@ -90,10 +90,9 @@ public class RegistryTests extends BaseTest {
 		public int addedCount;
 		private ParseErrorTracker errorTracker = new ParseErrorTracker();
 
-		public TypeValidator(ParseErrorTracker errorTracker) {
+		public TypeValidator(ParseErrorTracker errorTracker, TypeRegistry registry) {
 			this.errorTracker = errorTracker;
-			RegistryBuilder builder = new RegistryBuilder();
-			registry = builder.buildRegistry();
+			this.registry = registry;
 		}
 
 		public boolean validate(List<DType> typeL) {
@@ -193,26 +192,30 @@ public class RegistryTests extends BaseTest {
 	@Test
 	public void testTypeValidatorSub() {
 		List<DType> typeL = buildList("Customer", "struct", true, "int");
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		TypeValidator validator = new TypeValidator(errorTracker);
+		TypeValidator validator = createValidator();
 		boolean b = validator.validate(typeL);
 		checkValidator(validator, b, true, 1);
+	}
+	
+	private TypeValidator createValidator() {
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		RegistryBuilder builder = new RegistryBuilder();
+		TypeValidator validator = new TypeValidator(errorTracker, builder.buildRegistry());
+		return validator;
 	}
 	
 	@Test
 	public void testTypeValidatorSubBad() {
 		List<DType> typeL = buildList("Customer", "struct", true, "zzzz");
 		
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		TypeValidator validator = new TypeValidator(errorTracker);
+		TypeValidator validator = createValidator();
 		boolean b = validator.validate(typeL);
 		checkValidator(validator, b, false, 0);
 	}
 	@Test
 	public void testTypeValidatorSubNotStruct() {
 		List<DType> typeL = buildList("Customer", "int", true, "int");
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		TypeValidator validator = new TypeValidator(errorTracker);
+		TypeValidator validator = createValidator();
 		boolean b = validator.validate(typeL);
 		checkValidator(validator, b, false, 0);
 	}
@@ -226,8 +229,7 @@ public class RegistryTests extends BaseTest {
 	
 	private void goodOne(String name, String baseType) {
 		List<DType> typeL = buildList(name, baseType);
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		TypeValidator validator = new TypeValidator(errorTracker);
+		TypeValidator validator = createValidator();
 		boolean b = validator.validate(typeL);
 		dumpErrors(validator);
 		assertEquals(true, b);
@@ -241,8 +243,7 @@ public class RegistryTests extends BaseTest {
 	}
 	private void badOne(String name, String baseType) {
 		List<DType> typeL = buildList(name, baseType);
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		TypeValidator validator = new TypeValidator(errorTracker);
+		TypeValidator validator = createValidator();
 		boolean b = validator.validate(typeL);
 		dumpErrors(validator);
 		assertEquals(false, b);
