@@ -223,6 +223,7 @@ public class TypeParserTests extends BaseTest {
 					state = handleBaseType(tok);
 					break;
 				case END:
+					state = handleInnerEnd(tok);
 					break;
 				default:
 					if (tok.startsWith("//")) {
@@ -240,11 +241,13 @@ public class TypeParserTests extends BaseTest {
 		private FTState handleEnd(String tok) {
 			this.typeL.add(currentDType);
 			this.currentDType = null; 
-//			if (tok.startsWith("end")) {
-////				this.currentType = null;
-//				this.currentDType = null;
-//				return FTState.WANT_TYPENAME;
-//			}
+			return FTState.END;
+		}
+		private FTState handleInnerEnd(String tok) {
+			if (tok.startsWith("type")) {
+				this.currentDType = new DType();
+				return FTState.WANT_TYPENAME;
+			}
 			return FTState.END;
 		}
 
@@ -339,43 +342,34 @@ public class TypeParserTests extends BaseTest {
 		checkDTypeEntry(scanner.typeL.get(0).entries.get(1), "int", "col");
 		checkDType(scanner.typeL.get(0), "int", "Timeout");
 	}
-//	@Test
-//	public void testF5() {
-//		List<String> fileL = buildFile(5);
-//
-//		TypeFileScanner scanner = new TypeFileScanner();
-//		boolean b = scanner.scan(fileL);
-//		assertEquals(true, b);
-//		checkSize(1, scanner.valueL);
-//		checkDType(scanner.valueL.get(0), "int", "size", null);
-//		checkDType(scanner.valueL.get(0).valueList.get(0), "int", "height", "66");
-//		checkSize(2, scanner.valueL.get(0).valueList);
-//	}
-//	@Test
-//	public void testF6() {
-//		List<String> fileL = buildFile(6);
-//
-//		TypeFileScanner scanner = new TypeFileScanner();
-//		boolean b = scanner.scan(fileL);
-//		assertEquals(true, b);
-//		checkSize(2, scanner.valueL);
-//		checkDType(scanner.valueL.get(0), "int", "size", "45");
-//		checkPackage(scanner.valueL.get(0), "a.b.c");
-//		checkDType(scanner.valueL.get(1), "int", "wid", "33");
-//		checkPackage(scanner.valueL.get(1), "d.e.f");
-//	}
-//	@Test
-//	public void testF7() {
-//		List<String> fileL = buildFile(7);
-//
-//		TypeFileScanner scanner = new TypeFileScanner();
-//		boolean b = scanner.scan(fileL);
-//		assertEquals(true, b);
-//		checkSize(1, scanner.valueL);
-//		checkDType(scanner.valueL.get(0), "int", "size", "45");
-//		checkPackage(scanner.valueL.get(0), "a.b.c");
-//	}
-//	
+	@Test
+	public void testF6() {
+		List<String> fileL = buildFile(6);
+
+		TypeFileScanner scanner = new TypeFileScanner();
+		boolean b = scanner.scan(fileL);
+		assertEquals(true, b);
+		checkSize(2, scanner.typeL);
+		checkEntrySize(1, scanner.typeL.get(0).entries);
+		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
+		checkDType(scanner.typeL.get(0), "int", "Timeout");
+
+		checkEntrySize(1, scanner.typeL.get(1).entries);
+		checkDTypeEntry(scanner.typeL.get(1).entries.get(0), "int", "wid");
+		checkDType(scanner.typeL.get(1), "int", "ZTimeout");
+	}
+	@Test
+	public void testF7() {
+		List<String> fileL = buildFile(7);
+
+		TypeFileScanner scanner = new TypeFileScanner();
+		boolean b = scanner.scan(fileL);
+		assertEquals(true, b);
+		checkSize(1, scanner.typeL);
+		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
+		checkDType(scanner.typeL.get(0), "int", "Timeout");
+	}
+	
 	
 	private void checkSize(int expectedSize, List<DType> list) {
 		assertEquals(expectedSize, list.size());
@@ -429,30 +423,30 @@ public class TypeParserTests extends BaseTest {
 			L.add("end");
 			L.add("");
 			break;
-		case 5:
-			L.add("");
-			L.add("package a.b.c");
-			L.add(" int size: {");
-			L.add(" int height: 66 ");
-			L.add(" int wid: 45 }");
-//			L.add(" }");
-			L.add("end");
-			L.add("");
-			break;
+//		case 5:
+//			L.add("");
+//			L.add("package a.b.c");
+//			L.add(" int size: {");
+//			L.add(" int height: 66 ");
+//			L.add(" int wid: 45 }");
+////			L.add(" }");
+//			L.add("end");
+//			L.add("");
+//			break;
 		case 6:
 			L.add("");
-			L.add("package a.b.c");
-			L.add(" int size: 45");
+			L.add("type Timeout extends int");
+			L.add(" int size");
 			L.add("end");
-			L.add("package d.e.f");
-			L.add(" int wid: 33");
+			L.add("type ZTimeout extends int");
+			L.add(" int wid");
 			L.add("end");
 			L.add("");
 			break;
 		case 7:
 			L.add("//a comment");
-			L.add("package a.b.c //another one");
-			L.add(" int size: 45 //third one");
+			L.add("type Timeout extends int //another one");
+			L.add(" int size //third one");
 			L.add("end");
 			L.add(""); 
 			break;
