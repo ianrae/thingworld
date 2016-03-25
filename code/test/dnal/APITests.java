@@ -14,6 +14,14 @@ import org.junit.Test;
 import org.mef.dnal.core.DValue;
 
 public class APITests {
+
+	public static class DNALException extends Exception {
+		public String reason;
+
+		public DNALException(String string) {
+			reason = string;
+		}
+	}
 	
 	public static class DNALAPI {
 		
@@ -21,8 +29,12 @@ public class APITests {
 		private List<DValue> dataL;
 		private Map<String,DValue> map = new HashMap<>();
 
-		public DNALAPI(DNALLoader loader) {
+		public DNALAPI(DNALLoader loader) throws DNALException {
 			this.loader = loader;
+			if (! loader.isValid()) {
+				throw new DNALException("loader has invalid data");
+			}
+			
 			this.dataL = loader.getDataL();
 			for(DValue dval: dataL) {
 				String key = dval.packageName + "." + dval.name;
@@ -30,23 +42,33 @@ public class APITests {
 			}
 		}
 		
-		public String getString(String id) {
+		public String getString(String id) throws DNALException {
+			DValue dval = getVal(id, "string");
+			return dval.finalValue.toString();
+		}
+		public int getInt(String id) throws DNALException {
+			DValue dval = getVal(id, "int");
+			return (Integer)dval.finalValue;
+		}
+		private DValue getVal(String id, String type) throws DNALException {
 			DValue dval = map.get(id);
 			if (dval == null) {
-				return null;
+				throw new DNALException("can't find property: " + id);
+			} else if (! type.equals(dval.type)) {
+				throw new DNALException(String.format("property '%s' is type %s, not %s", id, dval.type, type));
 			}
-			return dval.finalValue.toString();
+			return dval;
 		}
 	}
 
 	@Test
-	public void test() {
+	public void test() throws Exception {
 		DNALLoader loader = buildLoader();
 		DNALAPI api = new DNALAPI(loader);
 		
-		String s = api.getString("a.b.c.size");
-		assertEquals("100", s);
-		s = api.getString("a.b.c.firstName");
+		int k = api.getInt("a.b.c.size");
+		assertEquals(100, k);
+		String s = api.getString("a.b.c.firstName");
 		assertEquals("sue", s);
 	}
 	
@@ -62,8 +84,7 @@ public class APITests {
 	private TypeRegistry buildRegistry() {
 		TypeRegistry registry = new TypeRegistry();
 		registry.add("int", new MockIntValidator());
+		registry.add("string", new TypeTests.MockStringValidator());
 		return registry;
 	}
-	
-
 }

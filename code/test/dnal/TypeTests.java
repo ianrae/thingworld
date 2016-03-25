@@ -21,7 +21,7 @@ public class TypeTests {
 		ValidationResult validate(DValue dval, Object inputObj);
 	}
 
-	public static class MockIntValidator implements ITypeValidator {
+	public static abstract class ValidatorBase implements ITypeValidator {
 
 		@Override
 		public ValidationResult validate(DValue dval, Object inputObj) {
@@ -30,24 +30,46 @@ public class TypeTests {
 			if (inputObj == null) {
 				addError(result, dval, "value is null");
 			} else {
-				try {
-					Integer n = Integer.parseInt(inputObj.toString());
-					result.isValid = true;
-					result.validObj = n;
-					dval.finalValue = result.validObj;
-				} catch(NumberFormatException e) {
-					addError(result, dval, "not an integer");
-				}
+				doValue(result, dval, inputObj);
 			}
 
 			return result;
 		}
 
-		private void addError(ValidationResult result, DValue dval, String err) {
+		protected abstract void doValue(ValidationResult result, DValue dval, Object inputObj);
+
+		protected void addError(ValidationResult result, DValue dval, String err) {
 			ValidationError valerr = new ValidationError();
 			valerr.fieldName = dval.packageName + "." + dval.name;
 			valerr.error = err;
 			result.errors.add(valerr);
+		}
+	}
+	public static class MockIntValidator extends ValidatorBase {
+
+		@Override
+		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
+			try {
+				Integer n = Integer.parseInt(inputObj.toString());
+				result.isValid = true;
+				result.validObj = n;
+				dval.finalValue = result.validObj;
+			} catch(NumberFormatException e) {
+				addError(result, dval, "not an integer");
+			}
+		}
+	}
+	public static class MockStringValidator extends ValidatorBase {
+
+		@Override
+		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
+			try {
+				result.isValid = true;
+				result.validObj = inputObj.toString();
+				dval.finalValue = result.validObj;
+			} catch(NumberFormatException e) {
+				addError(result, dval, "not an string");
+			}
 		}
 	}
 

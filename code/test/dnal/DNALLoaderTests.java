@@ -36,13 +36,17 @@ public class DNALLoaderTests extends BaseTest {
 		public TypeRegistry registry;
 		public List<ValidationError> errors = new ArrayList<>();
 		private List<DValue> dataL;
+		private boolean success;
 		
 		public boolean load(String path) {
 			SfxTextReader reader = new SfxTextReader();
 			List<String> lines = reader.readFile(path);
-			return load(lines);
+			success = load(lines);
+			return success;
 		}
-		
+		public boolean isValid() {
+			return success;
+		}
 		public boolean load(List<String> lines) {
 
 			FileScanner scanner = new FileScanner();
@@ -117,12 +121,13 @@ public class DNALLoaderTests extends BaseTest {
 		assertEquals(true, b);
 		assertEquals(2, loader.getDataL().size());
 		assertEquals("size", loader.getDataL().get(0).name);
-		assertEquals("firstName", loader.getDataL().get(0).name);
+		assertEquals("firstName", loader.getDataL().get(1).name);
 	}
 	
 	private TypeRegistry buildRegistry() {
 		TypeRegistry registry = new TypeRegistry();
 		registry.add("int", new MockIntValidator());
+		registry.add("string", new TypeTests.MockStringValidator());
 		return registry;
 	}
 	
