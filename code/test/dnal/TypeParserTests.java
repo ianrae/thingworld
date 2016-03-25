@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.junit.Test;
-import org.mef.dnal.parser.LSState;
 import org.mef.dnal.parser.ParseErrorTracker;
 
 import testhelper.BaseTest;
@@ -20,7 +19,15 @@ public class TypeParserTests extends BaseTest {
 		public String baseType;
 		public String name;
 	}	
-
+	
+	public enum LTState {
+		WANT_TYPE,
+		WANT_NAME,
+		END,
+		NO_MORE,
+		PARTIAL,
+		ERROR
+	}
 	public static class TypeLineScanner {
 		private DType currentDType;
 		private DType finalDvalue;
@@ -38,7 +45,7 @@ public class TypeParserTests extends BaseTest {
 		}
 
 		public boolean scan(String line) {
-			LSState state = LSState.WANT_TYPE;
+			LTState state = LTState.WANT_TYPE;
 			Scanner scan = new Scanner(line);
 
 			while(scan.hasNext()) {
@@ -52,9 +59,6 @@ public class TypeParserTests extends BaseTest {
 				case WANT_NAME:
 					state = handleName(tok);
 					break;
-				case WANT_VAL:
-					state = handleVal(tok);
-					break;
 				case END:
 					state = handleEnd(tok);
 					break;
@@ -63,13 +67,13 @@ public class TypeParserTests extends BaseTest {
 					break;
 				}
 				
-				if (state == LSState.NO_MORE) {
+				if (state == LTState.NO_MORE) {
 					break; //we're done
 				}
 			}
 			scan.close();
 
-			return (state == LSState.END || state == LSState.PARTIAL || state == LSState.NO_MORE) && (errorTracker.areNoErrors());
+			return (state == LTState.END || state == LTState.PARTIAL || state == LTState.NO_MORE) && (errorTracker.areNoErrors());
 		}
 
 		public DType getDType() {
@@ -79,53 +83,31 @@ public class TypeParserTests extends BaseTest {
 			return finalDvalue;
 		}
 
-		private LSState handleType(String tok) {
+		private LTState handleType(String tok) {
 			currentDType = new DType();
-//			currentDType.type = tok;
+			currentDType.baseType = tok;
 			currentDType.packageName = this.packageName;
-			return LSState.WANT_NAME;
+			return LTState.WANT_NAME;
 		}
-		private LSState handleName(String tok) {
-			if (! tok.endsWith(":")) {
-				errorTracker.addError("missing ':'");
-				return LSState.ERROR;
-			}
-			currentDType.name = tok.substring(0, tok.length() - 1);
-			return LSState.WANT_VAL;
-		}
-		private LSState handleVal(String tok) {
-			if (tok.equals("{")) {
-//				if (currentDType.valueList == null) {
-//					currentDType.valueList = new ArrayList<>();
-//				}
-				finalDvalue = currentDType;
-				continueFlag = true;
-				return LSState.PARTIAL;
-			}
-
+		private LTState handleName(String tok) {
 			if (tok.endsWith(",") || tok.endsWith(";")) {
 				tok = tok.substring(0, tok.length() - 1);
 			}
-//			currentDType.rawValue = tok;
-
-			if (continueFlag) {
-//				finalDvalue.valueList.add(currentDType);
-			} else {
-				finalDvalue = currentDType;
-			}
-			return LSState.END;
+			currentDType.name = tok;
+			finalDvalue = currentDType;
+			return LTState.END;
 		}
-		private LSState handleEnd(String tok) {
+		private LTState handleEnd(String tok) {
 			if (continueFlag) {
 				if (tok.equals("}"));
 				continueFlag = false;
-				return LSState.END;
+				return LTState.END;
 			}
 			
 			if (tok.startsWith("//")) {
-				return LSState.NO_MORE;
+				return LTState.NO_MORE;
 			}
-			return LSState.ERROR;
+			return LTState.ERROR;
 		}
 
 
@@ -141,14 +123,14 @@ public class TypeParserTests extends BaseTest {
 	@Test
 	public void testTypeLineScanner() {
 		DType dtype = doScan("int size");
-		checkDVal(dtype, "int", "size", "5");
-//
-//		//, and ; allowed but ignored
-//		dtype = doScan("int size: 5,");
-//		checkDVal(dtype, "int", "size", "5");
-//
-//		dtype = doScan("int size: 5;");
-//		checkDVal(dtype, "int", "size", "5");
+		checkDType(dtype, "int", "size");
+
+		//, and ; allowed but ignored
+		dtype = doScan("int size,");
+		checkDType(dtype, "int", "size");
+
+		dtype = doScan("int size;");
+		checkDType(dtype, "int", "size");
 	}
 
 //	@Test
@@ -204,10 +186,9 @@ public class TypeParserTests extends BaseTest {
 		assertEquals(null, dtype);
 	}
 
-	private void checkDVal(DType dtype, String type, String name, String val) {
-//		assertEquals(type, dtype.type);
-//		assertEquals(name, dtype.name);
-//		assertEquals(val, dtype.rawValue);
+	private void checkDType(DType dtype, String type, String name) {
+		assertEquals(type, dtype.baseType);
+		assertEquals(name, dtype.name);
 	}
 
 	private DType doScan(String input) {
