@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.mef.dnal.core.DValue;
 import org.mef.dnal.validation.ValidationError;
 
+import dnal.RegistryTests.TypeRegistry;
+
 public class TypeTests {
 
 	public static class ValidationResult {
