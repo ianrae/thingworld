@@ -40,17 +40,16 @@ public class FinalTests {
 		assertEquals("time", dataL.get(1).name);
 	}
 
-	//TODO: after fix x: 100 (no type needed) get this working
-//	@Test
-//	public void testStruct() {
-//		String path = buildPath("struct.dnal");
-//		OverallFileScanner scanner = new OverallFileScanner();
-//		boolean b = scanner.load(path);
-//		assertEquals(true, b);
-//		List<DValue> dataL = scanner.dloader.getDataL();
-//		assertEquals(2, dataL.size());
-//		assertEquals("time", dataL.get(1).name);
-//	}
+	@Test
+	public void testStruct() {
+		String path = buildPath("struct.dnal");
+		OverallFileScanner scanner = new OverallFileScanner();
+		boolean b = scanner.load(path);
+		assertEquals(true, b);
+		List<DValue> dataL = scanner.dloader.getDataL();
+		assertEquals(2, dataL.size());
+		assertEquals("time", dataL.get(1).name);
+	}
 	
 	private String buildPath(String filename) {
 		return "./test/testfiles/final/" + filename;

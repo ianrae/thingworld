@@ -30,7 +30,22 @@ public class TypeTests {
 			ValidationResult result = new ValidationResult();
 
 			if (inputObj == null) {
-				addError(result, dval, "value is null");
+				if (dval.valueList != null) {
+					boolean sav = result.isValid;
+					int failCount = 0;
+					for(DValue sub: dval.valueList) {
+						//!!fix
+						result.isValid = sav;
+						doValue(result, sub, sub.rawValue);
+						if (! result.isValid) {
+							failCount++;
+						}
+					}
+					
+					result.isValid = (failCount == 0);
+				} else {
+					addError(result, dval, "value is null");
+				}
 			} else {
 				doValue(result, dval, inputObj);
 			}
