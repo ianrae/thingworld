@@ -23,16 +23,35 @@ import dnal.TypeTests.ValidationResult;
 import dnal.TypeTests.ValidatorBase;
 
 public class RegistryTests extends BaseTest {
+	
+	public static class TypeDesc {
+		public ITypeValidator validator;
+		public String baseType; //!!later support packages (i.e. two packages can have type of same name)
+	}
 
 	public static class TypeRegistry {
-		private Map<String,ITypeValidator> map = new HashMap<>();
+		private Map<String,TypeDesc> map = new HashMap<>();
 
-		public void add(String type, ITypeValidator validator) {
-			map.put(type, validator);
+		public void add(String type, String baseType, ITypeValidator validator) {
+			TypeDesc desc = new TypeDesc();
+			desc.validator = validator;
+			desc.baseType = baseType;
+			map.put(type, desc);
 		}
 
 		public ITypeValidator find(String type) {
-			return map.get(type);
+			TypeDesc desc = map.get(type);
+			if (desc == null) {
+				return null;
+			}
+			return desc.validator;
+		}
+		public String findBaseType(String type) {
+			TypeDesc desc = map.get(type);
+			if (desc == null) {
+				return null;
+			}
+			return desc.baseType;
 		}
 	}
 
@@ -40,9 +59,9 @@ public class RegistryTests extends BaseTest {
 
 		public TypeRegistry buildRegistry() {
 			TypeRegistry registry = new TypeRegistry();
-			registry.add("int", new MockIntValidator());
-			registry.add("string", new TypeTests.MockStringValidator());
-			registry.add("boolean", new TypeTests.MockBooleanValidator());
+			registry.add("int", "PRIMITIVE", new MockIntValidator());
+			registry.add("string", "PRIMITIVE", new TypeTests.MockStringValidator());
+			registry.add("boolean", "PRIMITIVE", new TypeTests.MockBooleanValidator());
 			return registry;
 		}
 	}
@@ -96,6 +115,7 @@ public class RegistryTests extends BaseTest {
 				if (dtype.entries != null && dtype.entries.size() > 0) {
 					if (! isStruct(dtype)) {
 						addError(dtype, String.format("'%s' is not a struct", dtype.name));
+						ok = false;
 					}
 					
 					for(DTypeEntry sub: dtype.entries) {
@@ -109,7 +129,7 @@ public class RegistryTests extends BaseTest {
 				if (ok) {
 					MockCustomTypeValidator custom = new MockCustomTypeValidator();
 					custom.registry = registry;
-					registry.add(dtype.name, custom);
+					registry.add(dtype.name, dtype.baseType, custom);
 					addedCount++;
 				}
 			}
@@ -117,16 +137,22 @@ public class RegistryTests extends BaseTest {
 		}
 		
 		private boolean isStruct(DType dtype) {
-			DType original = dtype;
-			
-			while(true) {
-				if (dtype.baseType.equals("struct")) {
+			String currentBaseType = dtype.baseType;
+
+			for(int i = 0; i < 100; i++) {
+				if (currentBaseType.equals("struct")) {
 					return true;
 				}
 					
-				//ITypeValidator validator = registry.find(dtype.baseType);
-				throw new IllegalArgumentException("not supported");
+				String baseType = registry.findBaseType(currentBaseType);
+				if (baseType == null) {
+					return false;
+				}
+				currentBaseType = baseType;
 			}
+			//!!runaway
+			System.out.println("RUNAWAY!!");
+			return false;
 		}
 
 		private boolean ensureExists(DType dtype, String typeName) {
@@ -163,21 +189,30 @@ public class RegistryTests extends BaseTest {
 		List<DType> typeL = buildList("Customer", "struct", true, "int");
 		TypeValidator validator = new TypeValidator();
 		boolean b = validator.validate(typeL);
-		dumpErrors(validator);
-		assertEquals(true, b);
-		assertEquals(1, validator.addedCount);
+		checkValidator(validator, b, true, 1);
 	}
+	
 	@Test
 	public void testTypeValidatorSubBad() {
 		List<DType> typeL = buildList("Customer", "struct", true, "zzzz");
 		TypeValidator validator = new TypeValidator();
 		boolean b = validator.validate(typeL);
-		dumpErrors(validator);
-		assertEquals(false, b);
-		assertEquals(0, validator.addedCount);
+		checkValidator(validator, b, false, 0);
+	}
+	@Test
+	public void testTypeValidatorSubNotStruct() {
+		List<DType> typeL = buildList("Customer", "int", true, "int");
+		TypeValidator validator = new TypeValidator();
+		boolean b = validator.validate(typeL);
+		checkValidator(validator, b, false, 0);
 	}
 	
 	//---
+	private void checkValidator(TypeValidator validator, boolean b, boolean bExpected, int expectedAdded) {
+		dumpErrors(validator);
+		assertEquals(bExpected, b);
+		assertEquals(expectedAdded, validator.addedCount);
+	}
 	
 	private void goodOne(String name, String baseType) {
 		List<DType> typeL = buildList(name, baseType);
