@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import dnal.DNALLoaderTests.DNALLoader;
-import dnal.DNALLoaderTests.TypeRegistry;
+import dnal.RegistryTests.RegistryBuilder;
+import dnal.RegistryTests.TypeRegistry;
 import dnal.TypeTests.MockIntValidator;
 
 import org.junit.Test;
@@ -96,10 +97,7 @@ public class APITests {
 	}
 	
 	private TypeRegistry buildRegistry() {
-		TypeRegistry registry = new TypeRegistry();
-		registry.add("int", new MockIntValidator());
-		registry.add("string", new TypeTests.MockStringValidator());
-		registry.add("boolean", new TypeTests.MockBooleanValidator());
-		return registry;
+		RegistryTests.RegistryBuilder builder = new RegistryBuilder();
+		return builder.buildRegistry();
 	}
 }

@@ -14,23 +14,14 @@ import org.thingworld.sfx.SfxTextReader;
 
 import testhelper.BaseTest;
 import dnal.DNALParserTests.FileScanner;
+import dnal.RegistryTests.RegistryBuilder;
+import dnal.RegistryTests.TypeRegistry;
 import dnal.TypeTests.ITypeValidator;
 import dnal.TypeTests.MockIntValidator;
 import dnal.TypeTests.ValidationResult;
 
 public class DNALLoaderTests extends BaseTest {
 	
-	public static class TypeRegistry {
-		private Map<String,ITypeValidator> map = new HashMap<>();
-		
-		public void add(String type, ITypeValidator validator) {
-			map.put(type, validator);
-		}
-
-		public ITypeValidator find(String type) {
-			return map.get(type);
-		}
-	}
 	
 	public static class DNALLoader {
 		public TypeRegistry registry;
@@ -150,11 +141,8 @@ public class DNALLoaderTests extends BaseTest {
 		assertEquals(i, n.intValue());
 	}
 	private TypeRegistry buildRegistry() {
-		TypeRegistry registry = new TypeRegistry();
-		registry.add("int", new MockIntValidator());
-		registry.add("string", new TypeTests.MockStringValidator());
-		registry.add("boolean", new TypeTests.MockBooleanValidator());
-		return registry;
+		RegistryTests.RegistryBuilder builder = new RegistryBuilder();
+		return builder.buildRegistry();
 	}
 	
 	private List<String> buildFile(int scenario) {
