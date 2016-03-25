@@ -2,8 +2,6 @@ package dnal;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 import org.junit.Test;
@@ -32,16 +30,10 @@ public class TypeParserTests extends BaseTest {
 		private DType currentDType;
 		private DType finalDvalue;
 		private ParseErrorTracker errorTracker = new ParseErrorTracker();
-		private boolean continueFlag;
 		private String packageName;
 
 		public TypeLineScanner(String packageName) {
 			this.packageName = packageName;
-		}
-		public TypeLineScanner(String packageName, DType dtype) {
-			this.packageName = packageName;
-			this.finalDvalue = dtype;
-			continueFlag = true;
 		}
 
 		public boolean scan(String line) {
@@ -73,7 +65,7 @@ public class TypeParserTests extends BaseTest {
 			}
 			scan.close();
 
-			return (state == LTState.END || state == LTState.PARTIAL || state == LTState.NO_MORE) && (errorTracker.areNoErrors());
+			return (state == LTState.END || state == LTState.NO_MORE) && (errorTracker.areNoErrors());
 		}
 
 		public DType getDType() {
@@ -98,15 +90,10 @@ public class TypeParserTests extends BaseTest {
 			return LTState.END;
 		}
 		private LTState handleEnd(String tok) {
-			if (continueFlag) {
-				if (tok.equals("}"));
-				continueFlag = false;
-				return LTState.END;
-			}
-			
 			if (tok.startsWith("//")) {
 				return LTState.NO_MORE;
 			}
+			this.errorTracker.addError("unknown token: " + tok);
 			return LTState.ERROR;
 		}
 
@@ -114,10 +101,6 @@ public class TypeParserTests extends BaseTest {
 		private void log(String s) {
 			System.out.println(s);
 		}
-		public boolean isContinueFlag() {
-			return continueFlag;
-		}
-
 	}
 
 	@Test
@@ -133,49 +116,12 @@ public class TypeParserTests extends BaseTest {
 		checkDType(dtype, "int", "size");
 	}
 
-//	@Test
-//	public void testTypeLineScanner2() {
-//		checkScanFail("int size 5");
-//		checkScanFail("int size ");
-//	}
-//
-//	@Test
-//	public void testTypeLineScanner3() {
-//		DType dtype = doScan("int size: {");
-//		checkDVal(dtype, "int", "size", null);
-//		assertTrue(dtype.valueList != null);
-//		continueScan(dtype, "int col: 45 }", false);
-//		checkDVal(dtype, "int", "size", null);
-//		assertEquals(1, dtype.valueList.size());
-//		checkDVal(dtype.valueList.get(0), "int", "col", "45");
-//	}
-//
-//	@Test
-//	public void testTypeLineScanner4() {
-//		DType dtype = doScan("int size: {");
-//		checkDVal(dtype, "int", "size", null);
-//		assertTrue(dtype.valueList != null);
-//		continueScan(dtype, "int col: 45 ", true);
-//		checkDVal(dtype, "int", "size", null);
-//		assertEquals(1, dtype.valueList.size());
-//		checkDVal(dtype.valueList.get(0), "int", "col", "45");
-//
-//		continueScan(dtype, "int wid: 14 }", false);
-//		checkDVal(dtype, "int", "size", null);
-//		assertEquals(2, dtype.valueList.size());
-//		checkDVal(dtype.valueList.get(1), "int", "wid", "14");
-//
-//	}
-//
-//	@Test
-//	public void testTypeLineScanner3Missing() {
-//		DType dtype = doScan("int size: {");
-//		checkDVal(dtype, "int", "size", null);
-//		assertTrue(dtype.valueList != null);
-//		continueScan(dtype, "int col: 45 ", true);
-//		checkDVal(dtype, "int", "size", null);
-//		assertEquals(1, dtype.valueList.size());
-//	}
+	@Test
+	public void testTypeLineScanner2() {
+		checkScanFail("int ");
+		checkScanFail("int size sdldssdfs");
+	}
+
 
 	//--helpers
 	private void checkScanFail(String input) {
@@ -197,13 +143,6 @@ public class TypeParserTests extends BaseTest {
 		assertEquals(true, b);
 		DType dtype = scanner.getDType();
 		return dtype;
-	}
-
-	private void continueScan(DType dtype, String input, boolean expectedContFlag) {
-		TypeLineScanner scanner = new TypeLineScanner(null, dtype);
-		boolean b = scanner.scan(input);
-		assertEquals(true, b);
-		assertEquals(expectedContFlag, scanner.isContinueFlag());
 	}
 
 }
