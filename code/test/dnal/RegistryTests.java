@@ -17,12 +17,14 @@ import org.thingworld.sfx.SfxTextReader;
 import testhelper.BaseTest;
 import dnal.DNALLoaderTests.DNALLoader;
 import dnal.DNALParserTests.FileScanner;
+import dnal.TypeGeneratorTests.TypeGenerator;
 import dnal.TypeParserTests.DType;
 import dnal.TypeParserTests.DTypeEntry;
 import dnal.TypeTests.ITypeValidator;
 import dnal.TypeTests.MockIntValidator;
 import dnal.TypeTests.ValidationResult;
 import dnal.TypeTests.ValidatorBase;
+import dnal.dio.PositionDIO;
 
 public class RegistryTests extends BaseTest {
 	
@@ -34,7 +36,8 @@ public class RegistryTests extends BaseTest {
 
 	public static class TypeRegistry {
 		private Map<String,TypeDesc> map = new HashMap<>();
-
+		public TypeGenerator generator;
+		
 		public void add(String type, String baseType, ITypeValidator validator, DType customDType) {
 			TypeDesc desc = new TypeDesc();
 			desc.validator = validator;
@@ -101,7 +104,8 @@ public class RegistryTests extends BaseTest {
 		@Override
 		protected void buildSubObj(DValue dval)
 		{
-			dval.finalValue = "should be a position obj"; //!!
+//			dval.finalValue = "should be a position obj"; //!!
+			dval.finalValue = registry.generator.createObject(dval);
 		}
 		
 		@Override

@@ -9,13 +9,16 @@ import org.mef.dnal.core.DValue;
 
 import testhelper.BaseTest;
 import dnal.OverallParserTests.OverallFileScanner;
+import dnal.TypeGeneratorTests.TypeGenerator;
+import dnal.dio.PositionMutator;
 
 public class FinalTests extends BaseTest {
 
 	@Test
 	public void testPrimitives() {
 		String path = buildPath("primitives.dnal");
-		OverallFileScanner scanner = new OverallFileScanner();
+		TypeGenerator gen = createGenerator();
+		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.dloader.getDataL();
@@ -25,7 +28,8 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testPrimitivesBad() {
 		String path = buildPath("primitivesBad.dnal");
-		OverallFileScanner scanner = new OverallFileScanner();
+		TypeGenerator gen = createGenerator();
+		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.load(path);
 		assertEquals(false, b);
 		scanner.dumpErrors();
@@ -33,7 +37,8 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testSimple() {
 		String path = buildPath("simple.dnal");
-		OverallFileScanner scanner = new OverallFileScanner();
+		TypeGenerator gen = createGenerator();
+		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.dloader.getDataL();
@@ -44,7 +49,8 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testStruct() {
 		String path = buildPath("struct.dnal");
-		OverallFileScanner scanner = new OverallFileScanner();
+		TypeGenerator gen = createGenerator();
+		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.dloader.getDataL();
@@ -53,6 +59,11 @@ public class FinalTests extends BaseTest {
 		log(dataL.get(0).finalValue.toString()); //!! remove later
 	}
 	
+	private TypeGenerator createGenerator() {
+		TypeGenerator gen = new TypeGenerator();
+		gen.register("Position", new PositionMutator());
+		return gen;
+	}
 	private String buildPath(String filename) {
 		return "./test/testfiles/final/" + filename;
 	}

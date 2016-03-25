@@ -14,9 +14,11 @@ import dnal.DNALLoaderTests.DNALLoader;
 import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
 import dnal.RegistryTests.TypeValidator;
+import dnal.TypeGeneratorTests.TypeGenerator;
 import dnal.TypeParserTests.DType;
 import dnal.TypeParserTests.DTypeEntry;
 import dnal.TypeParserTests.TypeFileScanner;
+import dnal.dio.PositionMutator;
 
 
 public class OverallParserTests extends BaseTest {
@@ -36,7 +38,11 @@ public class OverallParserTests extends BaseTest {
 		public DNALLoader dloader;
 		private boolean success;
 		private TypeRegistry registry;
+		private TypeGenerator generator;
 		
+		public OverallFileScanner(TypeGenerator gen) {
+			this.generator = gen;
+		}
 		public boolean load(String path) {
 			SfxTextReader reader = new SfxTextReader();
 			List<String> lines = reader.readFile(path);
@@ -55,6 +61,7 @@ public class OverallParserTests extends BaseTest {
 			OTState state = OTState.WANT_START;
 			RegistryTests.RegistryBuilder builder = new RegistryBuilder();
 			this.registry = builder.buildRegistry();
+			this.registry.generator = generator;
 
 			lineNum = 0;
 			for(String line : fileL) {
@@ -155,7 +162,8 @@ public class OverallParserTests extends BaseTest {
 	public void testF0() {
 		List<String> fileL = buildFile(0);
 
-		OverallFileScanner scanner = new OverallFileScanner();
+		TypeGenerator gen = this.createGenerator();
+		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.scan(fileL);
 		assertEquals(false, b);
 	}
@@ -164,7 +172,8 @@ public class OverallParserTests extends BaseTest {
 	public void testF1() {
 		List<String> fileL = buildFile(1);
 
-		OverallFileScanner scanner = new OverallFileScanner();
+		TypeGenerator gen = this.createGenerator();
+		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(1, scanner.tscanner.typeL);
@@ -176,7 +185,8 @@ public class OverallParserTests extends BaseTest {
 	public void testF2() {
 		List<String> fileL = buildFile(2);
 
-		OverallFileScanner scanner = new OverallFileScanner();
+		TypeGenerator gen = this.createGenerator();
+		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(1, scanner.tscanner.typeL);
@@ -190,7 +200,8 @@ public class OverallParserTests extends BaseTest {
 	public void testF3() {
 		List<String> fileL = buildFile(3);
 
-		OverallFileScanner scanner = new OverallFileScanner();
+		TypeGenerator gen = this.createGenerator();
+		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		assertEquals(null, scanner.tscanner);
@@ -205,7 +216,8 @@ public class OverallParserTests extends BaseTest {
 	public void testF4() {
 		List<String> fileL = buildFile(4);
 
-		OverallFileScanner scanner = new OverallFileScanner();
+		TypeGenerator gen = this.createGenerator();
+		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.scan(fileL);
 		assertEquals(false, b);
 		checkSize(1, scanner.tscanner.typeL);
@@ -216,14 +228,16 @@ public class OverallParserTests extends BaseTest {
 	@Test
 	public void testFile2() {
 		String path = "./test/testfiles/file2.dnal";
-		OverallFileScanner scanner = new OverallFileScanner();
+		TypeGenerator gen = this.createGenerator();
+		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 	}
 	@Test
 	public void testFile3() {
 		String path = "./test/testfiles/file3.dnal";
-		OverallFileScanner scanner = new OverallFileScanner();
+		TypeGenerator gen = this.createGenerator();
+		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 	}
@@ -241,6 +255,11 @@ public class OverallParserTests extends BaseTest {
 	private void checkDType(DType dtype, String type, String name) {
 		assertEquals(type, dtype.baseType);
 		assertEquals(name, dtype.name);
+	}
+	private TypeGenerator createGenerator() {
+		TypeGenerator gen = new TypeGenerator();
+		gen.register("Position", new PositionMutator());
+		return gen;
 	}
 
 
