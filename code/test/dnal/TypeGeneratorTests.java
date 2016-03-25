@@ -1,6 +1,6 @@
 package dnal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,61 +8,54 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.mef.dnal.core.DValue;
-import org.mef.dnal.validation.ValidationException;
 
-import dnal.TypeParserTests.DType;
 import dnal.dio.PositionDIO;
 import dnal.dio.PositionMutator;
 
 public class TypeGeneratorTests {
 	
-	public static class TypeGenerator {
-		private Map<String, Class<?>> map = new HashMap<>();
+	public interface ITypeGenerator {
+		void register(String type, Class<?> clazz);
+		public Object createImmutableObject(DValue dval);
+	}
+	
+	public static class MockTypeGenerator implements ITypeGenerator {
+
+		@Override
+		public void register(String type, Class<?> clazz) {
+		}
+
+		@Override
+		public Object createImmutableObject(DValue dval) {
+			return "MARKER:" + dval.type;
+		}
 		
+	}
+
+	public static class TypeGenerator implements ITypeGenerator{
+		private Map<String, Class<?>> map = new HashMap<>();
+
+		@Override
 		public void register(String type, Class<?> clazz) {
 			map.put(type, clazz);
 		}
-		
-		public Object createObject(DValue dval) {
+
+		@Override
+		public Object createImmutableObject(DValue dval) {
 			Class<?> clazz = map.get(dval.type);
 			if (clazz == null) {
 				return null;
 			}
-			
-			//!!!!
-			if (dval.type.equals("Position")) {
-				PositionMutator mutator = null;
-				try {
-					mutator = (PositionMutator) clazz.newInstance();
-				} catch (InstantiationException | IllegalAccessException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				Integer x = (Integer) findVal(dval, "x");
-				Integer y = (Integer) findVal(dval, "y");
-				mutator.setX(x);
-				mutator.setY(y);
-				
-				Object dio = null;
-				try {
-					dio = mutator.toImmutable();
-				} catch (ValidationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return dio;
+
+			PositionMutator mutator = null;
+			try {
+				mutator = (PositionMutator) clazz.newInstance();
+			} catch (InstantiationException | IllegalAccessException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
-			
-			return null;
-		}
-		
-		private Object findVal(DValue dval, String field) {
-			for(DValue sub: dval.valueList) {
-				if (sub.name.equals(field)) {
-					return sub.finalValue;
-				}
-			}
-			return null;
+
+			return mutator.createFromDValue(dval);
 		}
 	}
 
@@ -74,16 +67,16 @@ public class TypeGeneratorTests {
 		dval.valueList = new ArrayList<>();
 		dval.valueList.add(createSub("x", 100));
 		dval.valueList.add(createSub("y", 200));
-		
+
 		TypeGenerator gen = new TypeGenerator();
 		gen.register("Position", PositionMutator.class);
-		
-		Object obj = gen.createObject(dval);
+
+		Object obj = gen.createImmutableObject(dval);
 		PositionDIO pos = (PositionDIO) obj;
 		assertEquals(100, pos.getX());
 		assertEquals(200, pos.getY());
 	}
-	
+
 	private DValue createSub(String field, int n) {
 		DValue dval = new DValue();
 		dval.name = field;

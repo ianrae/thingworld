@@ -9,6 +9,7 @@ import org.mef.dnal.core.DValue;
 
 import testhelper.BaseTest;
 import dnal.OverallParserTests.OverallFileScanner;
+import dnal.TypeGeneratorTests.ITypeGenerator;
 import dnal.TypeGeneratorTests.TypeGenerator;
 import dnal.dio.PositionDIO;
 import dnal.dio.PositionMutator;
@@ -18,7 +19,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testPrimitives() {
 		String path = buildPath("primitives.dnal");
-		TypeGenerator gen = createGenerator();
+		ITypeGenerator gen = createGenerator();
 		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
@@ -29,7 +30,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testPrimitivesBad() {
 		String path = buildPath("primitivesBad.dnal");
-		TypeGenerator gen = createGenerator();
+		ITypeGenerator gen = createGenerator();
 		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.load(path);
 		assertEquals(false, b);
@@ -38,7 +39,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testSimple() {
 		String path = buildPath("simple.dnal");
-		TypeGenerator gen = createGenerator();
+		ITypeGenerator gen = createGenerator();
 		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
@@ -50,20 +51,26 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testStruct() {
 		String path = buildPath("struct.dnal");
-		TypeGenerator gen = createGenerator();
+		ITypeGenerator gen = createGenerator();
 		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.dloader.getDataL();
 		assertEquals(1, dataL.size());
 		assertEquals("pos", dataL.get(0).name);
-		PositionDIO pos = (PositionDIO) dataL.get(0).finalValue;
-		assertEquals(10, pos.getX());
-		assertEquals(20, pos.getY());
+		
+		//we want to be able to load and validate before doing codegen, so
+		//don't have classes yet - use mock-type-gen
+//		PositionDIO pos = (PositionDIO) dataL.get(0).finalValue;
+//		assertEquals(10, pos.getX());
+//		assertEquals(20, pos.getY());
+		String fakepos = (String) dataL.get(0).finalValue;
+		log(fakepos);
 	}
 	
-	private TypeGenerator createGenerator() {
-		TypeGenerator gen = new TypeGenerator();
+	private ITypeGenerator createGenerator() {
+//		ITypeGenerator gen = new TypeGenerator();
+		ITypeGenerator gen = new TypeGeneratorTests.MockTypeGenerator();
 		gen.register("Position", PositionMutator.class);
 		return gen;
 	}

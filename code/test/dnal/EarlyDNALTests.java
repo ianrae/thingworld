@@ -232,7 +232,6 @@ public class EarlyDNALTests extends BaseTest {
 	}
 
 	public static abstract class MutatorBase<T> {
-
 		public boolean isValid() {
 			List<ValidationError> errors = validate();
 			return (errors.size() == 0);
@@ -260,6 +259,17 @@ public class EarlyDNALTests extends BaseTest {
 		}
 		
 		protected abstract T createObject();
+		public abstract T createFromDValue(DValue dval);
+	
+		protected Object findVal(DValue dval, String field) {
+			for(DValue sub: dval.valueList) {
+				if (sub.name.equals(field)) {
+					return sub.finalValue;
+				}
+			}
+			return null;
+		}
+		
 	}
 
 	public static class PersonMutator extends MutatorBase<Person> {
@@ -294,6 +304,11 @@ public class EarlyDNALTests extends BaseTest {
 		protected Person createObject() {
 			Person obj = new Person(name, age);
 			return obj;
+		}
+		@Override
+		public Person createFromDValue(DValue dval) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 	public static class CityMutator extends MutatorBase<City> {
@@ -337,6 +352,11 @@ public class EarlyDNALTests extends BaseTest {
 		public void setPerson(Person person) {
 			this.person = person;
 		}
+		@Override
+		public City createFromDValue(DValue dval) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 
 	public static class IntegerMutator extends MutatorBase<Integer> {
@@ -363,6 +383,11 @@ public class EarlyDNALTests extends BaseTest {
 		protected Integer createObject() {
 			Integer val = new Integer(value);
 			return val;
+		}
+		@Override
+		public Integer createFromDValue(DValue dval) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 

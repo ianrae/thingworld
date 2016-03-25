@@ -14,6 +14,7 @@ import dnal.DNALLoaderTests.DNALLoader;
 import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
 import dnal.RegistryTests.TypeValidator;
+import dnal.TypeGeneratorTests.ITypeGenerator;
 import dnal.TypeGeneratorTests.TypeGenerator;
 import dnal.TypeParserTests.DType;
 import dnal.TypeParserTests.DTypeEntry;
@@ -38,9 +39,9 @@ public class OverallParserTests extends BaseTest {
 		public DNALLoader dloader;
 		private boolean success;
 		private TypeRegistry registry;
-		private TypeGenerator generator;
+		private ITypeGenerator generator;
 		
-		public OverallFileScanner(TypeGenerator gen) {
+		public OverallFileScanner(ITypeGenerator gen) {
 			this.generator = gen;
 		}
 		public boolean load(String path) {
@@ -162,7 +163,7 @@ public class OverallParserTests extends BaseTest {
 	public void testF0() {
 		List<String> fileL = buildFile(0);
 
-		TypeGenerator gen = this.createGenerator();
+		ITypeGenerator gen = createGenerator();
 		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.scan(fileL);
 		assertEquals(false, b);
@@ -172,7 +173,7 @@ public class OverallParserTests extends BaseTest {
 	public void testF1() {
 		List<String> fileL = buildFile(1);
 
-		TypeGenerator gen = this.createGenerator();
+		ITypeGenerator gen = createGenerator();
 		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
@@ -185,7 +186,7 @@ public class OverallParserTests extends BaseTest {
 	public void testF2() {
 		List<String> fileL = buildFile(2);
 
-		TypeGenerator gen = this.createGenerator();
+		ITypeGenerator gen = createGenerator();
 		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
@@ -200,7 +201,7 @@ public class OverallParserTests extends BaseTest {
 	public void testF3() {
 		List<String> fileL = buildFile(3);
 
-		TypeGenerator gen = this.createGenerator();
+		ITypeGenerator gen = createGenerator();
 		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
@@ -216,7 +217,7 @@ public class OverallParserTests extends BaseTest {
 	public void testF4() {
 		List<String> fileL = buildFile(4);
 
-		TypeGenerator gen = this.createGenerator();
+		ITypeGenerator gen = createGenerator();
 		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.scan(fileL);
 		assertEquals(false, b);
@@ -228,7 +229,7 @@ public class OverallParserTests extends BaseTest {
 	@Test
 	public void testFile2() {
 		String path = "./test/testfiles/file2.dnal";
-		TypeGenerator gen = this.createGenerator();
+		ITypeGenerator gen = createGenerator();
 		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
@@ -236,7 +237,7 @@ public class OverallParserTests extends BaseTest {
 	@Test
 	public void testFile3() {
 		String path = "./test/testfiles/file3.dnal";
-		TypeGenerator gen = this.createGenerator();
+		ITypeGenerator gen = createGenerator();
 		OverallFileScanner scanner = new OverallFileScanner(gen);
 		boolean b = scanner.load(path);
 		assertEquals(true, b);

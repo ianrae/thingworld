@@ -2,7 +2,9 @@ package dnal.dio;
 
 import java.util.List;
 
+import org.mef.dnal.core.DValue;
 import org.mef.dnal.validation.ValidationBase;
+import org.mef.dnal.validation.ValidationException;
 
 import dnal.EarlyDNALTests.MutatorBase;
 
@@ -37,5 +39,21 @@ public class PositionMutator extends MutatorBase<PositionDIO> {
 	}
 	public void setY(int y) {
 		this.y = y;
+	}
+	@Override
+	public PositionDIO createFromDValue(DValue dval) {
+		Integer x = (Integer) findVal(dval, "x");
+		Integer y = (Integer) findVal(dval, "y");
+		setX(x);
+		setY(y);
+		
+		PositionDIO dio = null;
+		try {
+			dio = toImmutable();
+		} catch (ValidationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return dio;
 	}
 }
