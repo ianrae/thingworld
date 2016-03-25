@@ -14,7 +14,6 @@ import dnal.RegistryTests.RegistryBuilder;
 import dnal.TypeParserTests.DType;
 import dnal.TypeParserTests.DTypeEntry;
 import dnal.TypeParserTests.TypeFileScanner;
-import dnal.TypeParserTests.TypeLineScanner;
 import testhelper.BaseTest;
 
 
@@ -95,6 +94,8 @@ public class OverallParserTests extends BaseTest {
 				currentSubset = new ArrayList<>();
 				return OTState.INSIDE_TYPES;
 			}
+			currentSubset = new ArrayList<>();
+			currentSubset.add(tok);
 			return OTState.INSIDE_DATA;
 		}
 		private OTState handleInsideTypes(String tok) {
@@ -160,48 +161,21 @@ public class OverallParserTests extends BaseTest {
 		assertEquals(1, scanner.dloader.getDataL().size());
 		assertEquals("size", scanner.dloader.getDataL().get(0).name);
 	}
-	//	
-	//	@Test
-	//	public void testF4() {
-	//		List<String> fileL = buildFile(4);
-	//
-	//		OverallFileScanner scanner = new OverallFileScanner();
-	//		boolean b = scanner.scan(fileL);
-	//		assertEquals(true, b);
-	//		checkSize(1, scanner.typeL);
-	//		checkEntrySize(2, scanner.typeL.get(0).entries);
-	//		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
-	//		checkDTypeEntry(scanner.typeL.get(0).entries.get(1), "int", "col");
-	//		checkDType(scanner.typeL.get(0), "int", "Timeout");
-	//	}
-	//	@Test
-	//	public void testF6() {
-	//		List<String> fileL = buildFile(6);
-	//
-	//		OverallFileScanner scanner = new OverallFileScanner();
-	//		boolean b = scanner.scan(fileL);
-	//		assertEquals(true, b);
-	//		checkSize(2, scanner.typeL);
-	//		checkEntrySize(1, scanner.typeL.get(0).entries);
-	//		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
-	//		checkDType(scanner.typeL.get(0), "int", "Timeout");
-	//
-	//		checkEntrySize(1, scanner.typeL.get(1).entries);
-	//		checkDTypeEntry(scanner.typeL.get(1).entries.get(0), "int", "wid");
-	//		checkDType(scanner.typeL.get(1), "int", "ZTimeout");
-	//	}
-	//	@Test
-	//	public void testF7() {
-	//		List<String> fileL = buildFile(7);
-	//
-	//		OverallFileScanner scanner = new OverallFileScanner();
-	//		boolean b = scanner.scan(fileL);
-	//		assertEquals(true, b);
-	//		checkSize(1, scanner.typeL);
-	//		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
-	//		checkDType(scanner.typeL.get(0), "int", "Timeout");
-	//	}
+	@Test
+	public void testF3() {
+		List<String> fileL = buildFile(3);
 
+		OverallFileScanner scanner = new OverallFileScanner();
+		boolean b = scanner.scan(fileL);
+		assertEquals(true, b);
+		assertEquals(null, scanner.tscanner);
+//		checkSize(1, scanner.tscanner.typeL);
+//		checkEntrySize(0, scanner.tscanner.typeL.get(0).entries);
+//		checkDType(scanner.tscanner.typeL.get(0), "int", "Timeout");
+		
+		assertEquals(1, scanner.dloader.getDataL().size());
+		assertEquals("size", scanner.dloader.getDataL().get(0).name);
+	}
 
 	private void checkSize(int expectedSize, List<DType> list) {
 		assertEquals(expectedSize, list.size());
@@ -243,40 +217,12 @@ public class OverallParserTests extends BaseTest {
 			L.add("end");
 			L.add("");
 			break;
-		case 4:
+		case 3:
 			L.add("");
-			L.add("type Timeout extends int");
-			L.add(" int size");
-			L.add(" int col");
+			L.add("package a.b.c");
+			L.add(" int size: 45");
 			L.add("end");
 			L.add("");
-			break;
-			//		case 5:
-			//			L.add("");
-			//			L.add("package a.b.c");
-			//			L.add(" int size: {");
-			//			L.add(" int height: 66 ");
-			//			L.add(" int wid: 45 }");
-			////			L.add(" }");
-			//			L.add("end");
-			//			L.add("");
-			//			break;
-		case 6:
-			L.add("");
-			L.add("type Timeout extends int");
-			L.add(" int size");
-			L.add("end");
-			L.add("type ZTimeout extends int");
-			L.add(" int wid");
-			L.add("end");
-			L.add("");
-			break;
-		case 7:
-			L.add("//a comment");
-			L.add("type Timeout extends int //another one");
-			L.add(" int size //third one");
-			L.add("end");
-			L.add(""); 
 			break;
 		}
 		return L;
