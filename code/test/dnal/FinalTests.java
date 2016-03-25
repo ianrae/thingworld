@@ -13,7 +13,7 @@ public class FinalTests {
 
 	@Test
 	public void testPrimitives() {
-		String path = "./test/testfiles/final/primitives.dnal";
+		String path = buildPath("primitives.dnal");
 		OverallFileScanner scanner = new OverallFileScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
@@ -23,7 +23,7 @@ public class FinalTests {
 	}
 	@Test
 	public void testPrimitivesBad() {
-		String path = "./test/testfiles/final/primitivesBad.dnal";
+		String path = buildPath("primitivesBad.dnal");
 		OverallFileScanner scanner = new OverallFileScanner();
 		boolean b = scanner.load(path);
 		assertEquals(false, b);
@@ -31,14 +31,27 @@ public class FinalTests {
 	}
 	@Test
 	public void testSimple() {
-		String path = "./test/testfiles/final/simple.dnal";
+		String path = buildPath("simple.dnal");
 		OverallFileScanner scanner = new OverallFileScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.dloader.getDataL();
 		assertEquals(2, dataL.size());
 		assertEquals("time", dataL.get(1).name);
-		
 	}
 
+	@Test
+	public void testStruct() {
+		String path = buildPath("struct.dnal");
+		OverallFileScanner scanner = new OverallFileScanner();
+		boolean b = scanner.load(path);
+		assertEquals(true, b);
+		List<DValue> dataL = scanner.dloader.getDataL();
+		assertEquals(2, dataL.size());
+		assertEquals("time", dataL.get(1).name);
+	}
+	
+	private String buildPath(String filename) {
+		return "./test/testfiles/final/" + filename;
+	}
 }

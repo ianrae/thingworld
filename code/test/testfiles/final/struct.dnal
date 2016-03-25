@@ -1,0 +1,14 @@
+//a basic dnal file
+TYPES
+ type Position extends struct
+   int x
+   int y
+ end
+ENDTYPES
+
+package a.b.c
+  Position pos: {
+     int x: 10
+     int y: 20 
+   }
+end
