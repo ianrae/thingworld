@@ -48,7 +48,7 @@ public class DNALParserTests extends BaseTest {
 					state = handleName(tok);
 					break;
 				case WANT_VAL:
-					state = handleVal(tok);
+					state = handleVal(tok, line);
 					break;
 				case END:
 					state = handleEnd(tok);
@@ -88,7 +88,7 @@ public class DNALParserTests extends BaseTest {
 			currentDValue.name = tok.substring(0, tok.length() - 1);
 			return LSState.WANT_VAL;
 		}
-		private LSState handleVal(String tok) {
+		private LSState handleVal(String tok, String line) {
 			if (tok.equals("{")) {
 				if (currentDValue.valueList == null) {
 					currentDValue.valueList = new ArrayList<>();
@@ -97,18 +97,27 @@ public class DNALParserTests extends BaseTest {
 				continueFlag = true;
 				return LSState.PARTIAL;
 			}
-
-			if (tok.endsWith(",") || tok.endsWith(";")) {
-				tok = tok.substring(0, tok.length() - 1);
+			
+			//new impl. if is quoted then parse quoted bit as value.
+			LSState newState = LSState.END;
+			if (tok.startsWith("\"")) {
+				int pos = line.indexOf('"');
+				int endpos = line.indexOf('"', pos + 1);
+				currentDValue.rawValue = line.substring(pos + 1, endpos);
+				newState = LSState.NO_MORE;
+			} else {
+				if (tok.endsWith(",") || tok.endsWith(";")) {
+					tok = tok.substring(0, tok.length() - 1);
+				}
+				currentDValue.rawValue = tok;
 			}
-			currentDValue.rawValue = tok;
 
 			if (continueFlag) {
 				finalDvalue.valueList.add(currentDValue);
 			} else {
 				finalDvalue = currentDValue;
 			}
-			return LSState.END;
+			return newState;
 		}
 		private LSState handleEnd(String tok) {
 			if (continueFlag) {
@@ -156,6 +165,12 @@ public class DNALParserTests extends BaseTest {
 		dval = doScan("int size: 5;");
 		checkDVal(dval, "int", "size", "5");
 	}
+	@Test
+	public void testStringWithQuotes() {
+		DValue dval = doScan("string name: \"a big taxi\"");
+		checkDVal(dval, "string", "name", "a big taxi");
+	}
+
 
 	@Test
 	public void testLineScanner2() {

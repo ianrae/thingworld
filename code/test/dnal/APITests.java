@@ -71,7 +71,7 @@ public class APITests {
 		int k = api.getInt("a.b.c.size");
 		assertEquals(100, k);
 		String s = api.getString("a.b.c.firstName");
-		assertEquals("sue", s);
+		assertEquals("sue mary", s);
 		assertEquals(true, api.getBoolean("a.b.c.flag"));
 	}
 	@Test
