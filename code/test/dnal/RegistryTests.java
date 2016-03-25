@@ -29,15 +29,17 @@ public class RegistryTests extends BaseTest {
 	public static class TypeDesc {
 		public ITypeValidator validator;
 		public String baseType; //!!later support packages (i.e. two packages can have type of same name)
+		public DType customDType;
 	}
 
 	public static class TypeRegistry {
 		private Map<String,TypeDesc> map = new HashMap<>();
 
-		public void add(String type, String baseType, ITypeValidator validator) {
+		public void add(String type, String baseType, ITypeValidator validator, DType customDType) {
 			TypeDesc desc = new TypeDesc();
 			desc.validator = validator;
 			desc.baseType = baseType;
+			desc.customDType = customDType;
 			map.put(type, desc);
 		}
 
@@ -55,21 +57,29 @@ public class RegistryTests extends BaseTest {
 			}
 			return desc.baseType;
 		}
+		public DType findCustomDType(String type) {
+			TypeDesc desc = map.get(type);
+			if (desc == null) {
+				return null;
+			}
+			return desc.customDType;
+		}
 	}
 
 	public static class RegistryBuilder {
 
 		public TypeRegistry buildRegistry() {
 			TypeRegistry registry = new TypeRegistry();
-			registry.add("int", "PRIMITIVE", new MockIntValidator());
-			registry.add("string", "PRIMITIVE", new TypeTests.MockStringValidator());
-			registry.add("boolean", "PRIMITIVE", new TypeTests.MockBooleanValidator());
+			registry.add("int", "PRIMITIVE", new MockIntValidator(), null);
+			registry.add("string", "PRIMITIVE", new TypeTests.MockStringValidator(), null);
+			registry.add("boolean", "PRIMITIVE", new TypeTests.MockBooleanValidator(), null);
 			return registry;
 		}
 	}
 	
 	public static class MockCustomTypeValidator extends ValidatorBase {
 		public TypeRegistry registry;
+		private DType customDType;
 		
 		@Override
 		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
@@ -79,6 +89,47 @@ public class RegistryTests extends BaseTest {
 				dval.finalValue = result.validObj;
 			} catch(NumberFormatException e) {
 				addError(result, dval, "not an string");
+			}
+		}
+		
+		@Override
+		protected void prepareForSubObj(DValue dval)
+		{
+			customDType = registry.findCustomDType(dval.type);
+		}
+		
+		@Override
+		protected void buildSubObj(DValue dval)
+		{
+			dval.finalValue = "should be a position obj"; //!!
+		}
+		
+		@Override
+		protected void doSubValue(ValidationResult result, DValue dval)
+		{
+			String subType = null;
+			for(DTypeEntry entry: customDType.entries) {
+				if (entry.name.equals(dval.name)) {
+					subType = entry.type;
+					break;
+				}
+			}
+			
+			if (subType == null) {
+				addError(result, dval, "can't find type of: " + dval.name);
+				return;
+			} else {
+				dval.type = subType;
+			}
+			
+			ITypeValidator subval = registry.find(subType);
+			if (subval == null) {
+				this.addError(result, dval, "missing val for sub: " + dval.name);
+			} else {
+				
+				ValidationResult tmp = subval.validate(dval, dval.rawValue);
+				result.isValid = tmp.isValid;
+//				dval.finalValue = tmp.validObj;
 			}
 		}
 	}
@@ -132,7 +183,7 @@ public class RegistryTests extends BaseTest {
 				if (ok) {
 					MockCustomTypeValidator custom = new MockCustomTypeValidator();
 					custom.registry = registry;
-					registry.add(dtype.name, dtype.baseType, custom);
+					registry.add(dtype.name, dtype.baseType, custom, dtype);
 					addedCount++;
 				}
 			}

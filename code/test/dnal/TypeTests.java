@@ -31,16 +31,18 @@ public class TypeTests {
 
 			if (inputObj == null) {
 				if (dval.valueList != null) {
+					prepareForSubObj(dval);
 					boolean sav = result.isValid;
 					int failCount = 0;
 					for(DValue sub: dval.valueList) {
 						//!!fix
 						result.isValid = sav;
-						doValue(result, sub, sub.rawValue);
+						doSubValue(result, sub);
 						if (! result.isValid) {
 							failCount++;
 						}
 					}
+					buildSubObj(dval);
 					
 					result.isValid = (failCount == 0);
 				} else {
@@ -53,7 +55,10 @@ public class TypeTests {
 			return result;
 		}
 
+		protected abstract void prepareForSubObj(DValue dval);
+		protected abstract void buildSubObj(DValue dval);
 		protected abstract void doValue(ValidationResult result, DValue dval, Object inputObj);
+		protected abstract void doSubValue(ValidationResult result, DValue dval);
 
 		protected void addError(ValidationResult result, DValue dval, String err) {
 			ValidationError valerr = new ValidationError();
@@ -62,7 +67,19 @@ public class TypeTests {
 			result.errors.add(valerr);
 		}
 	}
-	public static class MockIntValidator extends ValidatorBase {
+	public static abstract class SimpleValidatorBase extends ValidatorBase {
+
+		@Override
+		protected void doSubValue(ValidationResult result, DValue dval)
+		{}
+		@Override
+		protected void prepareForSubObj(DValue dval)
+		{}
+		@Override
+		protected void buildSubObj(DValue dval)
+		{}
+	}
+	public static class MockIntValidator extends SimpleValidatorBase {
 
 		@Override
 		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
@@ -76,7 +93,7 @@ public class TypeTests {
 			}
 		}
 	}
-	public static class MockStringValidator extends ValidatorBase {
+	public static class MockStringValidator extends SimpleValidatorBase {
 
 		@Override
 		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
@@ -89,7 +106,7 @@ public class TypeTests {
 			}
 		}
 	}
-	public static class MockBooleanValidator extends ValidatorBase {
+	public static class MockBooleanValidator extends SimpleValidatorBase {
 
 		@Override
 		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {

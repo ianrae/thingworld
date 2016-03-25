@@ -7,9 +7,10 @@ import java.util.List;
 import org.junit.Test;
 import org.mef.dnal.core.DValue;
 
+import testhelper.BaseTest;
 import dnal.OverallParserTests.OverallFileScanner;
 
-public class FinalTests {
+public class FinalTests extends BaseTest {
 
 	@Test
 	public void testPrimitives() {
@@ -47,8 +48,9 @@ public class FinalTests {
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.dloader.getDataL();
-		assertEquals(2, dataL.size());
-		assertEquals("time", dataL.get(1).name);
+		assertEquals(1, dataL.size());
+		assertEquals("pos", dataL.get(0).name);
+		log(dataL.get(0).finalValue.toString()); //!! remove later
 	}
 	
 	private String buildPath(String filename) {
