@@ -8,8 +8,6 @@ import java.util.Scanner;
 
 import org.junit.Test;
 import org.mef.dnal.parser.ParseErrorTracker;
-
-import dnal.DNALParserTests.LineScanner;
 import testhelper.BaseTest;
 
 
@@ -17,8 +15,8 @@ public class TypeParserTests extends BaseTest {
 	
 	public static class DType {
 		public String packageName;
-		public String baseType;
 		public String name;
+		public String type;
 	}	
 	
 	public enum LTState {
@@ -79,7 +77,7 @@ public class TypeParserTests extends BaseTest {
 
 		private LTState handleType(String tok) {
 			currentDType = new DType();
-			currentDType.baseType = tok;
+			currentDType.type = tok;
 			currentDType.packageName = this.packageName;
 			return LTState.WANT_NAME;
 		}
@@ -135,7 +133,7 @@ public class TypeParserTests extends BaseTest {
 	}
 
 	private void checkDType(DType dtype, String type, String name) {
-		assertEquals(type, dtype.baseType);
+		assertEquals(type, dtype.type);
 		assertEquals(name, dtype.name);
 	}
 
@@ -159,11 +157,10 @@ public class TypeParserTests extends BaseTest {
 		ERROR
 	}
 
-
 	public static class TypeFileScanner {
 		private ParseErrorTracker errorTracker = new ParseErrorTracker();
 		public List<DType> valueL = new ArrayList<>();
-		private String currentPackage;
+		private String currentType;
 		private int lineNum;
 		private DType continuingDType;
 
@@ -189,14 +186,13 @@ public class TypeParserTests extends BaseTest {
 				}
 				
 				//handle package line
-				state = doPackageLine(state, line);
+				state = doTypeLine(state, line);
 			}
-
 
 			return (state == FTState.END) && (errorTracker.areNoErrors());
 		}
 		
-		private FTState doPackageLine(FTState state, String line) {
+		private FTState doTypeLine(FTState state, String line) {
 			Scanner scan = new Scanner(line);
 
 			while(scan.hasNext()) {
@@ -234,7 +230,7 @@ public class TypeParserTests extends BaseTest {
 
 		private FTState handleEnd(String tok) {
 			if (tok.startsWith("package")) {
-				this.currentPackage = null;
+				this.currentType = null;
 				this.continuingDType = null;
 				return FTState.WANT_TYPENAME;
 			}
@@ -248,8 +244,8 @@ public class TypeParserTests extends BaseTest {
 			return FTState.ERROR;
 		}
 		private FTState handleTypeName(String tok) {
-			this.currentPackage = tok;
-			log("pack: " + currentPackage);
+			this.currentType = tok;
+			log("pack: " + currentType);
 			return FTState.WANT_EXTENDS;
 		}
 		private FTState handleExtends(String tok) {
@@ -259,7 +255,7 @@ public class TypeParserTests extends BaseTest {
 			return FTState.ERROR;
 		}
 		private FTState handleBaseType(String tok) {
-			this.continuingDType.baseType = tok;
+			this.continuingDType.type = tok;
 			return FTState.INSIDE;
 		}
 		
@@ -270,7 +266,7 @@ public class TypeParserTests extends BaseTest {
 				return FTState.INSIDE;
 			}
 
-			TypeLineScanner scanner = new TypeLineScanner(currentPackage);
+			TypeLineScanner scanner = new TypeLineScanner(currentType);
 //			if (this.continuingDType != null) {
 //				scanner = new TypeLineScanner(currentPackage, continuingDType);
 //			}
