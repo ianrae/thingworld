@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.mef.dnal.core.DValue;
+import org.mef.dnal.parser.ParseErrorTracker;
 
 import dnal.DNALLoaderTests.DNALLoader;
 import dnal.RegistryTests.RegistryBuilder;
@@ -88,7 +89,8 @@ public class APITests {
 	
 	private DNALLoader buildLoader() {
 		String path = "./test/testfiles/file2.dnal";
-		DNALLoader loader = new DNALLoader();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		DNALLoader loader = new DNALLoader(errorTracker);
 		loader.registry = buildRegistry();
 		boolean b = loader.load(path);
 		assertEquals(true, b);

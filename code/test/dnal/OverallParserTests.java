@@ -75,7 +75,7 @@ public class OverallParserTests extends BaseTest {
 
 			if (currentSubset != null && currentSubset.size() > 0) {
 				log("loader..");
-				dloader = new DNALLoader();
+				dloader = new DNALLoader(errorTracker);
 				RegistryTests.RegistryBuilder builder = new RegistryBuilder();
 				dloader.registry = builder.buildRegistry();
 				boolean b = dloader.load(currentSubset);

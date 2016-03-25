@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mef.dnal.core.DValue;
+import org.mef.dnal.parser.ParseErrorTracker;
 import org.mef.dnal.validation.ValidationError;
 import org.thingworld.sfx.SfxTextReader;
 
@@ -25,7 +26,11 @@ public class DNALLoaderTests extends BaseTest {
 		public List<ValidationError> errors = new ArrayList<>();
 		private List<DValue> dataL;
 		private boolean success;
-		
+		private ParseErrorTracker errorTracker = new ParseErrorTracker();
+
+		public DNALLoader(ParseErrorTracker errorTracker) {
+			this.errorTracker = errorTracker;
+		}
 		public boolean load(String path) {
 			SfxTextReader reader = new SfxTextReader();
 			List<String> lines = reader.readFile(path);
@@ -85,7 +90,8 @@ public class DNALLoaderTests extends BaseTest {
 	@Test
 	public void test() {
 		List<String> lines = buildFile(0);
-		DNALLoader loader = new DNALLoader();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		DNALLoader loader = new DNALLoader(errorTracker);
 		loader.registry = buildRegistry();
 		boolean b = loader.load(lines);
 		assertEquals(true, b);
@@ -94,7 +100,8 @@ public class DNALLoaderTests extends BaseTest {
 	@Test
 	public void test1() {
 		List<String> lines = buildFile(1);
-		DNALLoader loader = new DNALLoader();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		DNALLoader loader = new DNALLoader(errorTracker);
 		loader.registry = buildRegistry();
 		boolean b = loader.load(lines);
 		assertEquals(false, b);
@@ -105,7 +112,8 @@ public class DNALLoaderTests extends BaseTest {
 	@Test
 	public void testFile() {
 		String path = "./test/testfiles/file1.dnal";
-		DNALLoader loader = new DNALLoader();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		DNALLoader loader = new DNALLoader(errorTracker);
 		loader.registry = buildRegistry();
 		boolean b = loader.load(path);
 		assertEquals(true, b);
@@ -115,7 +123,8 @@ public class DNALLoaderTests extends BaseTest {
 	@Test
 	public void testFile2() {
 		String path = "./test/testfiles/file2.dnal";
-		DNALLoader loader = new DNALLoader();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		DNALLoader loader = new DNALLoader(errorTracker);
 		loader.registry = buildRegistry();
 		boolean b = loader.load(path);
 		assertEquals(true, b);
