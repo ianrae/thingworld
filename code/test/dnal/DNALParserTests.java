@@ -24,12 +24,14 @@ public class DNALParserTests extends BaseTest {
 		private boolean continueFlag;
 		private String packageName;
 
-		public LineScanner(String packageName) {
+		public LineScanner(String packageName, ParseErrorTracker errorTracker2) {
 			this.packageName = packageName;
+			this.errorTracker = errorTracker2;
 		}
-		public LineScanner(String packageName, DValue dval) {
+		public LineScanner(String packageName, DValue dval, ParseErrorTracker errorTracker2) {
 			this.packageName = packageName;
 			this.finalDvalue = dval;
+			this.errorTracker = errorTracker2;
 			continueFlag = true;
 		}
 
@@ -271,7 +273,8 @@ public class DNALParserTests extends BaseTest {
 
 	//--helpers
 	private void checkScanFail(String input) {
-		LineScanner scanner = new LineScanner(null);
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		LineScanner scanner = new LineScanner(null, errorTracker);
 		boolean b = scanner.scan(input);
 		assertEquals(false, b);
 		DValue dval = scanner.getDValue();
@@ -285,7 +288,8 @@ public class DNALParserTests extends BaseTest {
 	}
 
 	private DValue doScan(String input) {
-		LineScanner scanner = new LineScanner(null);
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		LineScanner scanner = new LineScanner(null, errorTracker);
 		boolean b = scanner.scan(input);
 		assertEquals(true, b);
 		DValue dval = scanner.getDValue();
@@ -293,7 +297,8 @@ public class DNALParserTests extends BaseTest {
 	}
 
 	private void continueScan(DValue dval, String input, boolean expectedContFlag) {
-		LineScanner scanner = new LineScanner(null, dval);
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		LineScanner scanner = new LineScanner(null, dval, errorTracker);
 		boolean b = scanner.scan(input);
 		assertEquals(true, b);
 		assertEquals(expectedContFlag, scanner.isContinueFlag());
@@ -407,9 +412,9 @@ public class DNALParserTests extends BaseTest {
 				return FSState.INSIDE;
 			}
 
-			LineScanner scanner = new LineScanner(currentPackage);
+			LineScanner scanner = new LineScanner(currentPackage, errorTracker);
 			if (this.continuingDVal != null) {
-				scanner = new LineScanner(currentPackage, continuingDVal);
+				scanner = new LineScanner(currentPackage, continuingDVal, errorTracker);
 			}
 			boolean b = scanner.scan(tok);
 			if (! b) {
