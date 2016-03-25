@@ -317,6 +317,10 @@ public class DNALParserTests extends BaseTest {
 		private int lineNum;
 		private DValue continuingDVal;
 
+		public FileScanner(ParseErrorTracker errorTracker2) {
+			this.errorTracker = errorTracker2;
+		}
+
 		public boolean scan(List<String> fileL) {
 			FSState state = FSState.WANT_PACKAGE;
 
@@ -431,7 +435,8 @@ public class DNALParserTests extends BaseTest {
 	public void testF0() {
 		List<String> fileL = buildFile(0);
 
-		FileScanner scanner = new FileScanner();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		FileScanner scanner = new FileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(false, b);
 	}
@@ -440,7 +445,8 @@ public class DNALParserTests extends BaseTest {
 	public void testF1() {
 		List<String> fileL = buildFile(1);
 
-		FileScanner scanner = new FileScanner();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		FileScanner scanner = new FileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(0, scanner.valueL);
@@ -449,7 +455,8 @@ public class DNALParserTests extends BaseTest {
 	public void testF2() {
 		List<String> fileL = buildFile(2);
 
-		FileScanner scanner = new FileScanner();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		FileScanner scanner = new FileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(1, scanner.valueL);
@@ -460,7 +467,8 @@ public class DNALParserTests extends BaseTest {
 	public void testF3() {
 		List<String> fileL = buildFile(3);
 
-		FileScanner scanner = new FileScanner();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		FileScanner scanner = new FileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(1, scanner.valueL);
@@ -472,7 +480,8 @@ public class DNALParserTests extends BaseTest {
 	public void testF4() {
 		List<String> fileL = buildFile(4);
 
-		FileScanner scanner = new FileScanner();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		FileScanner scanner = new FileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(2, scanner.valueL);
@@ -485,7 +494,8 @@ public class DNALParserTests extends BaseTest {
 	public void testF5() {
 		List<String> fileL = buildFile(5);
 
-		FileScanner scanner = new FileScanner();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		FileScanner scanner = new FileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(1, scanner.valueL);
@@ -497,7 +507,8 @@ public class DNALParserTests extends BaseTest {
 	public void testF6() {
 		List<String> fileL = buildFile(6);
 
-		FileScanner scanner = new FileScanner();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		FileScanner scanner = new FileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(2, scanner.valueL);
@@ -510,7 +521,8 @@ public class DNALParserTests extends BaseTest {
 	public void testF7() {
 		List<String> fileL = buildFile(7);
 
-		FileScanner scanner = new FileScanner();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		FileScanner scanner = new FileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(1, scanner.valueL);

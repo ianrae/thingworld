@@ -48,11 +48,7 @@ public class OverallParserTests extends BaseTest {
 		
 		public void dumpErrors() {
 			this.errorTracker.dumpErrors();
-			if (tscanner != null) {
-			}
-//				log(String.format("%s: %s", err.fieldName, err.error));
 		}
-		
 
 		public boolean scan(List<String> fileL) {
 			OTState state = OTState.WANT_START;
@@ -129,7 +125,7 @@ public class OverallParserTests extends BaseTest {
 					return OTState.ERROR;
 				}
 				
-				RegistryTests.TypeValidator typeValidator = new TypeValidator();
+				RegistryTests.TypeValidator typeValidator = new TypeValidator(errorTracker);
 				b = typeValidator.validate(tscanner.typeL);
 				if (! b) {
 					return OTState.ERROR;

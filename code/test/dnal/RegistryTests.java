@@ -10,10 +10,12 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.mef.dnal.core.DValue;
+import org.mef.dnal.parser.ParseErrorTracker;
 import org.mef.dnal.validation.ValidationError;
 import org.thingworld.sfx.SfxTextReader;
 
 import testhelper.BaseTest;
+import dnal.DNALLoaderTests.DNALLoader;
 import dnal.DNALParserTests.FileScanner;
 import dnal.TypeParserTests.DType;
 import dnal.TypeParserTests.DTypeEntry;
@@ -86,8 +88,10 @@ public class RegistryTests extends BaseTest {
 		public TypeRegistry registry;
 		public List<ValidationError> errors = new ArrayList<>();
 		public int addedCount;
+		private ParseErrorTracker errorTracker = new ParseErrorTracker();
 
-		public TypeValidator() {
+		public TypeValidator(ParseErrorTracker errorTracker) {
+			this.errorTracker = errorTracker;
 			RegistryBuilder builder = new RegistryBuilder();
 			registry = builder.buildRegistry();
 		}
@@ -170,6 +174,8 @@ public class RegistryTests extends BaseTest {
 			ValidationError err = new ValidationError();
 			err.fieldName = dtype.name;
 			err.error = errMsg;
+			
+			errorTracker.addError(String.format("validation error: %s: %s", err.fieldName, err.error));
 			errors.add(err);
 		}
 	}
@@ -187,7 +193,8 @@ public class RegistryTests extends BaseTest {
 	@Test
 	public void testTypeValidatorSub() {
 		List<DType> typeL = buildList("Customer", "struct", true, "int");
-		TypeValidator validator = new TypeValidator();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		TypeValidator validator = new TypeValidator(errorTracker);
 		boolean b = validator.validate(typeL);
 		checkValidator(validator, b, true, 1);
 	}
@@ -195,14 +202,17 @@ public class RegistryTests extends BaseTest {
 	@Test
 	public void testTypeValidatorSubBad() {
 		List<DType> typeL = buildList("Customer", "struct", true, "zzzz");
-		TypeValidator validator = new TypeValidator();
+		
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		TypeValidator validator = new TypeValidator(errorTracker);
 		boolean b = validator.validate(typeL);
 		checkValidator(validator, b, false, 0);
 	}
 	@Test
 	public void testTypeValidatorSubNotStruct() {
 		List<DType> typeL = buildList("Customer", "int", true, "int");
-		TypeValidator validator = new TypeValidator();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		TypeValidator validator = new TypeValidator(errorTracker);
 		boolean b = validator.validate(typeL);
 		checkValidator(validator, b, false, 0);
 	}
@@ -216,7 +226,8 @@ public class RegistryTests extends BaseTest {
 	
 	private void goodOne(String name, String baseType) {
 		List<DType> typeL = buildList(name, baseType);
-		TypeValidator validator = new TypeValidator();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		TypeValidator validator = new TypeValidator(errorTracker);
 		boolean b = validator.validate(typeL);
 		dumpErrors(validator);
 		assertEquals(true, b);
@@ -230,7 +241,8 @@ public class RegistryTests extends BaseTest {
 	}
 	private void badOne(String name, String baseType) {
 		List<DType> typeL = buildList(name, baseType);
-		TypeValidator validator = new TypeValidator();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		TypeValidator validator = new TypeValidator(errorTracker);
 		boolean b = validator.validate(typeL);
 		dumpErrors(validator);
 		assertEquals(false, b);

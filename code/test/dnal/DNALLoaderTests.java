@@ -42,7 +42,7 @@ public class DNALLoaderTests extends BaseTest {
 		}
 		public boolean load(List<String> lines) {
 
-			FileScanner scanner = new FileScanner();
+			FileScanner scanner = new FileScanner(errorTracker);
 			boolean b = scanner.scan(lines);
 			if (b) {
 				b = validate(scanner.valueL);
@@ -63,23 +63,30 @@ public class DNALLoaderTests extends BaseTest {
 					ValidationResult result = validator.validate(dval, dval.rawValue);
 					if (! result.isValid) {
 						failCount++;
-						errors.addAll(result.errors);
+						for(ValidationError err: result.errors) {
+							addError(err);
+						}
 					} else if (dval.finalValue == null) {
 						ValidationError err = new ValidationError();
 						err.fieldName = dval.name;
 						err.error = "null finalValue";
-						errors.add(err);
+						addError(err);
 						failCount++;
 					}
 				} else {
 					ValidationError err = new ValidationError();
 					err.fieldName = dval.name;
 					err.error = "missing validator for type: " + dval.type;
-					errors.add(err);
+					addError(err);
 					failCount++;
 				}
 			}
 			return (failCount == 0);
+		}
+		
+		private void addError(ValidationError err) {
+			errorTracker.addError(String.format("validation error: %s: %s", err.fieldName, err.error));
+			errors.add(err);
 		}
 
 		public List<DValue> getDataL() {
