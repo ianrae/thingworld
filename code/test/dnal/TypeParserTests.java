@@ -151,7 +151,7 @@ public class TypeParserTests extends BaseTest {
 		public String packageName;
 		public String name;
 		public String baseType;
-		public List<DTypeEntry> entries;
+		public List<DTypeEntry> entries = new ArrayList<>();
 	}	
 	
 	public static enum FTState {
@@ -166,7 +166,7 @@ public class TypeParserTests extends BaseTest {
 
 	public static class TypeFileScanner {
 		private ParseErrorTracker errorTracker = new ParseErrorTracker();
-		public List<DTypeEntry> valueL = new ArrayList<>();
+		public List<DType> typeL = new ArrayList<>();
 		private String currentType;
 		private int lineNum;
 		private DType currentDType;
@@ -253,7 +253,6 @@ public class TypeParserTests extends BaseTest {
 		}
 		private FTState handleTypeName(String tok) {
 			this.currentDType.name = tok;
-			log("pack: " + currentType);
 			return FTState.WANT_EXTENDS;
 		}
 		private FTState handleExtends(String tok) {
@@ -275,26 +274,22 @@ public class TypeParserTests extends BaseTest {
 			}
 
 			TypeLineScanner scanner = new TypeLineScanner(currentType);
-//			if (this.continuingDType != null) {
-//				scanner = new TypeLineScanner(currentPackage, continuingDType);
-//			}
 			boolean b = scanner.scan(tok);
 			if (! b) {
 				this.errorTracker.addError(String.format("line %d failed", lineNum));
 				return FTState.ERROR;
 			} else {
-				this.valueL.add(scanner.getDTypeEntry());
-				this.currentDType = null; //scanner.getDTypeEntry();
+				currentDType.entries.add(scanner.getDTypeEntry());
+				this.typeL.add(currentDType);
+				this.currentDType = null; 
 			}
 			
 			return FTState.INSIDE;
 		}
 
-
 		private void log(String s) {
 			System.out.println(s);
 		}
-
 	}
 
 	@Test
@@ -313,19 +308,21 @@ public class TypeParserTests extends BaseTest {
 		TypeFileScanner scanner = new TypeFileScanner();
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
-		checkEntrySize(0, scanner.valueL);
+		checkSize(0, scanner.typeL);
+		checkDType(scanner.currentDType, "int", "Timeout");
 	}
-//	@Test
-//	public void testF2() {
-//		List<String> fileL = buildFile(2);
-//
-//		TypeFileScanner scanner = new TypeFileScanner();
-//		boolean b = scanner.scan(fileL);
-//		assertEquals(true, b);
-//		checkSize(1, scanner.valueL);
-//		checkDType(scanner.valueL.get(0), "int", "size", "45");
-//	}
-//	
+	@Test
+	public void testF2() {
+		List<String> fileL = buildFile(2);
+
+		TypeFileScanner scanner = new TypeFileScanner();
+		boolean b = scanner.scan(fileL);
+		assertEquals(true, b);
+		checkSize(1, scanner.typeL);
+		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
+		checkDType(scanner.typeL.get(0), "int", "Timeout");
+	}
+	
 //	@Test
 //	public void testF3() {
 //		List<String> fileL = buildFile(3);
@@ -398,6 +395,10 @@ public class TypeParserTests extends BaseTest {
 	private void checkPackage(DType dValue, String string) {
 		assertEquals(string, dValue.packageName);
 	}
+	private void checkDType(DType dtype, String type, String name) {
+		assertEquals(type, dtype.baseType);
+		assertEquals(name, dtype.name);
+	}
 
 
 	private List<String> buildFile(int scenario) {
@@ -415,8 +416,8 @@ public class TypeParserTests extends BaseTest {
 			break;
 		case 2:
 			L.add("");
-			L.add("package a.b.c");
-			L.add(" int size: 45");
+			L.add("type Timeout extends int");
+			L.add(" int size");
 			L.add("end");
 			L.add("");
 			break;
