@@ -66,7 +66,6 @@ public class RegistryTests extends BaseTest {
 	public static class TypeValidator {
 		public TypeRegistry registry;
 		public List<ValidationError> errors = new ArrayList<>();
-		//		private List<DType> typeL;
 		public int addedCount;
 
 		public TypeValidator() {
@@ -77,6 +76,7 @@ public class RegistryTests extends BaseTest {
 		public boolean validate(List<DType> typeL) {
 			for(DType dtype: typeL) {
 				boolean ok = false;
+				
 				ITypeValidator validator = registry.find(dtype.name);
 				if (validator == null) {
 					ok = true;
@@ -86,14 +86,18 @@ public class RegistryTests extends BaseTest {
 				
 				validator = registry.find(dtype.baseType);
 				if (validator == null) {
-					ok = false;
-					addError(dtype, "unknown base type: " + dtype.baseType);
+					ok = dtype.baseType.equals("struct");
+					if (! ok) {
+						addError(dtype, "unknown base type: " + dtype.baseType);
+					}
 				} else {
 				}
 				
 				if (dtype.entries != null) {
 					for(DTypeEntry sub: dtype.entries) {
-						
+						if (! ensureExists(dtype, sub.type)) {
+							ok = false;
+						}
 					}
 				}
 				
@@ -106,6 +110,17 @@ public class RegistryTests extends BaseTest {
 				}
 			}
 			return (errors.size() == 0);
+		}
+		
+		private boolean ensureExists(DType dtype, String typeName) {
+			boolean ok = false;
+			ITypeValidator validator = registry.find(typeName);
+			if (validator == null) {
+				addError(dtype, "unknown type: " + typeName);
+			} else {
+				ok = true;
+			}
+			return ok;
 		}
 
 		private void addError(DType dtype, String errMsg) {
@@ -126,7 +141,16 @@ public class RegistryTests extends BaseTest {
 		badOne("Timeout", "nosuchtype");
 		badOne("string", "int");
 	}
-
+	@Test
+	public void testTypeValidatorSub() {
+		List<DType> typeL = buildList("Customr", "struct");
+		TypeValidator validator = new TypeValidator();
+		boolean b = validator.validate(typeL);
+		dumpErrors(validator);
+		assertEquals(true, b);
+		assertEquals(1, validator.addedCount);
+	}
+	
 	private void goodOne(String name, String baseType) {
 		List<DType> typeL = buildList(name, baseType);
 		TypeValidator validator = new TypeValidator();
@@ -152,10 +176,24 @@ public class RegistryTests extends BaseTest {
 
 
 	List<DType> buildList(String name, String baseType) {
+		return buildList(name, baseType, false);
+	}
+	List<DType> buildList(String name, String baseType, boolean subTypes) {
 		DType dtype = new DType();
 		dtype.baseType = baseType;
 		dtype.name = name;
 		dtype.packageName = null;
+		
+		if (subTypes) {
+			DTypeEntry entry = new DTypeEntry();
+			entry.name = "item1";
+			entry.type = "int";
+			dtype.entries.add(entry);
+			entry = new DTypeEntry();
+			entry.name = "item2";
+			entry.type = "int";
+			dtype.entries.add(entry);
+		}
 
 		List<DType> typeL = new ArrayList<>();
 		typeL.add(dtype);
