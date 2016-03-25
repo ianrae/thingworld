@@ -18,7 +18,7 @@ import testhelper.BaseTest;
 
 
 public class OverallParserTests extends BaseTest {
-	
+
 	public static enum OTState {
 		WANT_START,
 		INSIDE_TYPES,
@@ -38,20 +38,20 @@ public class OverallParserTests extends BaseTest {
 			lineNum = 0;
 			for(String line : fileL) {
 				log(String.format("[%s] line%d: %s",  state.toString(), lineNum++, line));
-				
+
 				line = line.trim();
 				if (line.isEmpty()) {
 					continue;
 				}
-				
+
 				if (line.startsWith("//")) {
 					continue;
 				}
-				
+
 				state = doLine(state, line);
 			}
-			
-			if (currentSubset != null) {
+
+			if (currentSubset != null && currentSubset.size() > 0) {
 				log("loader..");
 				DNALLoaderTests.DNALLoader loader = new DNALLoader();
 				boolean b = loader.load(currentSubset);
@@ -62,35 +62,26 @@ public class OverallParserTests extends BaseTest {
 
 			return (state == OTState.INSIDE_DATA) && (errorTracker.areNoErrors());
 		}
-		
-		private OTState doLine(OTState state, String line) {
-			Scanner scan = new Scanner(line);
 
-			while(scan.hasNext()) {
-				String tok = scan.next();
-				log(tok);
-				tok = tok.trim();
-				switch(state) {
-				case WANT_START:
-					state = handleStart(tok);
-					break;
-				case INSIDE_TYPES:
-					state = handleInsideTypes(tok);
-					break;
-				case INSIDE_DATA:
-					state = handleInside(tok);
-					break;
-				default:
-					if (tok.startsWith("//")) {
-						return state;
-					} else {
-						errorTracker.addError("unexpected token:" + tok + " state:" + state);
-					}
-					break;
+		private OTState doLine(OTState state, String line) {
+			switch(state) {
+			case WANT_START:
+				state = handleStart(line);
+				break;
+			case INSIDE_TYPES:
+				state = handleInsideTypes(line);
+				break;
+			case INSIDE_DATA:
+				state = handleInside(line);
+				break;
+			default:
+				if (line.startsWith("//")) {
+					return state;
+				} else {
+					errorTracker.addError("unexpected token:" + line + " state:" + state);
 				}
+				break;
 			}
-			
-			scan.close();
 			return state;
 		}
 
@@ -104,7 +95,7 @@ public class OverallParserTests extends BaseTest {
 		}
 		private OTState handleInsideTypes(String tok) {
 			if (tok.startsWith("ENDTYPES")) {
-				
+
 				TypeParserTests.TypeFileScanner scanner = new TypeFileScanner();
 				boolean b = scanner.scan(currentSubset);
 				currentSubset = new ArrayList<>();
@@ -145,64 +136,64 @@ public class OverallParserTests extends BaseTest {
 		OverallFileScanner scanner = new OverallFileScanner();
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
-//		checkSize(1, scanner.typeL);
-////		checkEntrySize(0, scanner.typeL.get(0).entries);
-//		checkDType(scanner.typeL.get(0), "int", "Timeout");
+		//		checkSize(1, scanner.typeL);
+		////		checkEntrySize(0, scanner.typeL.get(0).entries);
+		//		checkDType(scanner.typeL.get(0), "int", "Timeout");
 	}
-//	@Test
-//	public void testF2() {
-//		List<String> fileL = buildFile(2);
-//
-//		OverallFileScanner scanner = new OverallFileScanner();
-//		boolean b = scanner.scan(fileL);
-//		assertEquals(true, b);
-//		checkSize(1, scanner.typeL);
-////		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
-//		checkDType(scanner.typeL.get(0), "int", "Timeout");
-//	}
-//	
-//	@Test
-//	public void testF4() {
-//		List<String> fileL = buildFile(4);
-//
-//		OverallFileScanner scanner = new OverallFileScanner();
-//		boolean b = scanner.scan(fileL);
-//		assertEquals(true, b);
-//		checkSize(1, scanner.typeL);
-//		checkEntrySize(2, scanner.typeL.get(0).entries);
-//		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
-//		checkDTypeEntry(scanner.typeL.get(0).entries.get(1), "int", "col");
-//		checkDType(scanner.typeL.get(0), "int", "Timeout");
-//	}
-//	@Test
-//	public void testF6() {
-//		List<String> fileL = buildFile(6);
-//
-//		OverallFileScanner scanner = new OverallFileScanner();
-//		boolean b = scanner.scan(fileL);
-//		assertEquals(true, b);
-//		checkSize(2, scanner.typeL);
-//		checkEntrySize(1, scanner.typeL.get(0).entries);
-//		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
-//		checkDType(scanner.typeL.get(0), "int", "Timeout");
-//
-//		checkEntrySize(1, scanner.typeL.get(1).entries);
-//		checkDTypeEntry(scanner.typeL.get(1).entries.get(0), "int", "wid");
-//		checkDType(scanner.typeL.get(1), "int", "ZTimeout");
-//	}
-//	@Test
-//	public void testF7() {
-//		List<String> fileL = buildFile(7);
-//
-//		OverallFileScanner scanner = new OverallFileScanner();
-//		boolean b = scanner.scan(fileL);
-//		assertEquals(true, b);
-//		checkSize(1, scanner.typeL);
-//		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
-//		checkDType(scanner.typeL.get(0), "int", "Timeout");
-//	}
-	
-	
+	//	@Test
+	//	public void testF2() {
+	//		List<String> fileL = buildFile(2);
+	//
+	//		OverallFileScanner scanner = new OverallFileScanner();
+	//		boolean b = scanner.scan(fileL);
+	//		assertEquals(true, b);
+	//		checkSize(1, scanner.typeL);
+	////		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
+	//		checkDType(scanner.typeL.get(0), "int", "Timeout");
+	//	}
+	//	
+	//	@Test
+	//	public void testF4() {
+	//		List<String> fileL = buildFile(4);
+	//
+	//		OverallFileScanner scanner = new OverallFileScanner();
+	//		boolean b = scanner.scan(fileL);
+	//		assertEquals(true, b);
+	//		checkSize(1, scanner.typeL);
+	//		checkEntrySize(2, scanner.typeL.get(0).entries);
+	//		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
+	//		checkDTypeEntry(scanner.typeL.get(0).entries.get(1), "int", "col");
+	//		checkDType(scanner.typeL.get(0), "int", "Timeout");
+	//	}
+	//	@Test
+	//	public void testF6() {
+	//		List<String> fileL = buildFile(6);
+	//
+	//		OverallFileScanner scanner = new OverallFileScanner();
+	//		boolean b = scanner.scan(fileL);
+	//		assertEquals(true, b);
+	//		checkSize(2, scanner.typeL);
+	//		checkEntrySize(1, scanner.typeL.get(0).entries);
+	//		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
+	//		checkDType(scanner.typeL.get(0), "int", "Timeout");
+	//
+	//		checkEntrySize(1, scanner.typeL.get(1).entries);
+	//		checkDTypeEntry(scanner.typeL.get(1).entries.get(0), "int", "wid");
+	//		checkDType(scanner.typeL.get(1), "int", "ZTimeout");
+	//	}
+	//	@Test
+	//	public void testF7() {
+	//		List<String> fileL = buildFile(7);
+	//
+	//		OverallFileScanner scanner = new OverallFileScanner();
+	//		boolean b = scanner.scan(fileL);
+	//		assertEquals(true, b);
+	//		checkSize(1, scanner.typeL);
+	//		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
+	//		checkDType(scanner.typeL.get(0), "int", "Timeout");
+	//	}
+
+
 	private void checkSize(int expectedSize, List<DType> list) {
 		assertEquals(expectedSize, list.size());
 	}
@@ -238,15 +229,15 @@ public class OverallParserTests extends BaseTest {
 			L.add("end");
 			L.add("");
 			break;
-//		case 3:
-//			L.add("");
-//			L.add("package a.b.c");
-//			L.add(" int size: {");
-//			L.add(" int wid: 45 }");
-////			L.add(" }");
-//			L.add("end");
-//			L.add("");
-//			break;
+			//		case 3:
+			//			L.add("");
+			//			L.add("package a.b.c");
+			//			L.add(" int size: {");
+			//			L.add(" int wid: 45 }");
+			////			L.add(" }");
+			//			L.add("end");
+			//			L.add("");
+			//			break;
 		case 4:
 			L.add("");
 			L.add("type Timeout extends int");
@@ -255,16 +246,16 @@ public class OverallParserTests extends BaseTest {
 			L.add("end");
 			L.add("");
 			break;
-//		case 5:
-//			L.add("");
-//			L.add("package a.b.c");
-//			L.add(" int size: {");
-//			L.add(" int height: 66 ");
-//			L.add(" int wid: 45 }");
-////			L.add(" }");
-//			L.add("end");
-//			L.add("");
-//			break;
+			//		case 5:
+			//			L.add("");
+			//			L.add("package a.b.c");
+			//			L.add(" int size: {");
+			//			L.add(" int height: 66 ");
+			//			L.add(" int wid: 45 }");
+			////			L.add(" }");
+			//			L.add("end");
+			//			L.add("");
+			//			break;
 		case 6:
 			L.add("");
 			L.add("type Timeout extends int");
@@ -285,5 +276,5 @@ public class OverallParserTests extends BaseTest {
 		}
 		return L;
 	}
-	
+
 }
