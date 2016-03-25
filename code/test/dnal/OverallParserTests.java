@@ -11,6 +11,7 @@ import org.thingworld.sfx.SfxTextReader;
 
 import dnal.DNALLoaderTests.DNALLoader;
 import dnal.RegistryTests.RegistryBuilder;
+import dnal.RegistryTests.TypeValidator;
 import dnal.TypeParserTests.DType;
 import dnal.TypeParserTests.DTypeEntry;
 import dnal.TypeParserTests.TypeFileScanner;
@@ -118,6 +119,12 @@ public class OverallParserTests extends BaseTest {
 				if (! b) {
 					return OTState.ERROR;
 				}
+				
+				RegistryTests.TypeValidator typeValidator = new TypeValidator();
+				b = typeValidator.validate(tscanner.typeL);
+				if (! b) {
+					return OTState.ERROR;
+				}
 				return OTState.INSIDE_DATA;
 			}
 			currentSubset.add(tok);
@@ -188,6 +195,18 @@ public class OverallParserTests extends BaseTest {
 		assertEquals("size", scanner.dloader.getDataL().get(0).name);
 	}
 	@Test
+	public void testF4() {
+		List<String> fileL = buildFile(4);
+
+		OverallFileScanner scanner = new OverallFileScanner();
+		boolean b = scanner.scan(fileL);
+		assertEquals(false, b);
+		checkSize(1, scanner.tscanner.typeL);
+		checkEntrySize(0, scanner.tscanner.typeL.get(0).entries);
+		checkDType(scanner.tscanner.typeL.get(0), "zzz", "Timeout");
+		assertEquals(null, scanner.dloader);
+	}
+	@Test
 	public void testFile2() {
 		String path = "./test/testfiles/file2.dnal";
 		OverallFileScanner scanner = new OverallFileScanner();
@@ -249,6 +268,13 @@ public class OverallParserTests extends BaseTest {
 			L.add(" int size: 45");
 			L.add("end");
 			L.add("");
+			break;
+		case 4:
+			L.add("TYPES");
+			L.add("type Timeout extends zzz");
+			L.add(" ");
+			L.add("end");
+			L.add("ENDTYPES");
 			break;
 		}
 		return L;
