@@ -25,12 +25,10 @@ public class APITests {
 	
 	public static class DNALAPI {
 		
-		private DNALLoader loader;
 		private List<DValue> dataL;
 		private Map<String,DValue> map = new HashMap<>();
 
 		public DNALAPI(DNALLoader loader) throws DNALException {
-			this.loader = loader;
 			if (! loader.isValid()) {
 				throw new DNALException("loader has invalid data");
 			}
@@ -75,6 +73,17 @@ public class APITests {
 		String s = api.getString("a.b.c.firstName");
 		assertEquals("sue", s);
 		assertEquals(true, api.getBoolean("a.b.c.flag"));
+	}
+	@Test
+	public void testBox() {
+		Boolean bb = Boolean.TRUE;
+		Object obj = bb;
+		boolean b = (Boolean)obj;
+		assertEquals(true, b);
+//
+//		obj = null;
+//		b = (Boolean)obj;
+//		assertEquals(true, b);
 	}
 	
 	private DNALLoader buildLoader() {
