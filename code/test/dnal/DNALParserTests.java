@@ -106,10 +106,31 @@ public class DNALParserTests extends BaseTest {
 				currentDValue.rawValue = line.substring(pos + 1, endpos);
 				newState = LSState.NO_MORE;
 			} else {
-				if (tok.endsWith(",") || tok.endsWith(";")) {
-					tok = tok.substring(0, tok.length() - 1);
+				//old
+//				if (tok.endsWith(",") || tok.endsWith(";")) {
+//					tok = tok.substring(0, tok.length() - 1);
+//				}
+				
+				//new is to take rest of line as value but remove trailing comment or ,;
+				line = line.trim();
+				int pos = line.indexOf(':');
+				line = stripEndOfLineDelimitersIfNeeded(line);
+				int endpos = line.indexOf("//", pos + 1);
+				if (endpos > 0) {
+					line = line.substring(0, endpos).trim();
+					line = stripEndOfLineDelimitersIfNeeded(line);
 				}
-				currentDValue.rawValue = tok;
+				
+				if (line.trim().endsWith("}")) {
+					continueFlag = false;
+					line = line.substring(0, line.length() - 1);
+					currentDValue.rawValue = line.substring(pos + 1).trim();
+					finalDvalue.valueList.add(currentDValue);
+					return LSState.NO_MORE;
+				}
+				
+				currentDValue.rawValue = line.substring(pos + 1).trim();
+				newState = LSState.NO_MORE;
 			}
 
 			if (continueFlag) {
@@ -118,6 +139,12 @@ public class DNALParserTests extends BaseTest {
 				finalDvalue = currentDValue;
 			}
 			return newState;
+		}
+		private String stripEndOfLineDelimitersIfNeeded(String line) {
+			if (line.endsWith(",") || line.endsWith(";")) {
+				line = line.substring(0, line.length() - 1);
+			}
+			return line;
 		}
 		private LSState handleEnd(String tok) {
 			if (continueFlag) {
@@ -169,6 +196,24 @@ public class DNALParserTests extends BaseTest {
 	public void testStringWithQuotes() {
 		DValue dval = doScan("string name: \"a big taxi\"");
 		checkDVal(dval, "string", "name", "a big taxi");
+
+		dval = doScan("string name: \"a big taxi\";");
+		checkDVal(dval, "string", "name", "a big taxi");
+
+	}
+	@Test
+	public void testStringWithoutQuotes() {
+		DValue dval = doScan("string name: a big taxi");
+		checkDVal(dval, "string", "name", "a big taxi");
+
+		dval = doScan("string name:   a big  taxi ");
+		checkDVal(dval, "string", "name", "a big  taxi");
+
+		dval = doScan("string name:   a big  taxi, ");
+		checkDVal(dval, "string", "name", "a big  taxi");
+
+		dval = doScan("string name:   a big  taxi, //a comment ");
+		checkDVal(dval, "string", "name", "a big  taxi");
 	}
 
 

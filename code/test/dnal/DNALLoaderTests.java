@@ -125,7 +125,7 @@ public class DNALLoaderTests extends BaseTest {
 		assertEquals("flag", loader.getDataL().get(2).name);
 
 		checkInt(100, loader.getDataL().get(0));
-		assertEquals("sue", loader.getDataL().get(1).finalValue);
+		assertEquals("sue mary", loader.getDataL().get(1).finalValue);
 		checkBool(true, loader.getDataL().get(2));
 	}
 	
