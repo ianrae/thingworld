@@ -9,6 +9,5 @@ ENDTYPES
 package a.b.c
   Position pos: {
      int x: 10
-     int y: 20 
-   }
+     int y: 20  }
 end

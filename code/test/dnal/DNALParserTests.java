@@ -37,6 +37,9 @@ public class DNALParserTests extends BaseTest {
 
 		public boolean scan(String line) {
 			LSState state = LSState.WANT_TYPE;
+			if (continueFlag) {
+				state = handleType(null);
+			}
 			Scanner scan = new Scanner(line);
 
 			while(scan.hasNext()) {
@@ -179,7 +182,6 @@ public class DNALParserTests extends BaseTest {
 	@Test
 	public void test() {
 		Scanner scan = new Scanner("a b cd e;\r\nf");
-
 		while(scan.hasNext()) {
 			String tok = scan.next();
 			log(tok);
@@ -233,41 +235,42 @@ public class DNALParserTests extends BaseTest {
 		checkScanFail("int size ");
 	}
 
+	//THIS ONE!!
 	@Test
 	public void testLineScanner3() {
-		DValue dval = doScan("int size: {");
-		checkDVal(dval, "int", "size", null);
+		DValue dval = doScan("Position pos: {");
+		checkDVal(dval, "Position", "pos", null);
 		assertTrue(dval.valueList != null);
-		continueScan(dval, "int col: 45 }", false);
-		checkDVal(dval, "int", "size", null);
+		continueScan(dval, "x: 45 }", false);
+		checkDVal(dval, "Position", "pos", null);
 		assertEquals(1, dval.valueList.size());
-		checkDVal(dval.valueList.get(0), "int", "col", "45");
+		checkDVal(dval.valueList.get(0), null, "x", "45");
 	}
 
 	@Test
 	public void testLineScanner4() {
-		DValue dval = doScan("int size: {");
-		checkDVal(dval, "int", "size", null);
+		DValue dval = doScan("Position pos: {");
+		checkDVal(dval, "Position", "pos", null);
 		assertTrue(dval.valueList != null);
-		continueScan(dval, "int col: 45 ", true);
-		checkDVal(dval, "int", "size", null);
+		continueScan(dval, "x: 45 ", true);
+		checkDVal(dval, "Position", "pos", null);
 		assertEquals(1, dval.valueList.size());
-		checkDVal(dval.valueList.get(0), "int", "col", "45");
+		checkDVal(dval.valueList.get(0), null, "x", "45");
 
-		continueScan(dval, "int wid: 14 }", false);
-		checkDVal(dval, "int", "size", null);
+		continueScan(dval, "y: 14 }", false);
+		checkDVal(dval, "Position", "pos", null);
 		assertEquals(2, dval.valueList.size());
-		checkDVal(dval.valueList.get(1), "int", "wid", "14");
+		checkDVal(dval.valueList.get(1), null, "y", "14");
 
 	}
 
 	@Test
 	public void testLineScanner3Missing() {
-		DValue dval = doScan("int size: {");
-		checkDVal(dval, "int", "size", null);
+		DValue dval = doScan("Position pos: {");
+		checkDVal(dval, "Position", "pos", null);
 		assertTrue(dval.valueList != null);
-		continueScan(dval, "int col: 45 ", true);
-		checkDVal(dval, "int", "size", null);
+		continueScan(dval, " col: 45 ", true);
+		checkDVal(dval, "Position", "pos", null);
 		assertEquals(1, dval.valueList.size());
 	}
 
@@ -478,7 +481,7 @@ public class DNALParserTests extends BaseTest {
 		assertEquals(true, b);
 		checkSize(1, scanner.valueL);
 		checkDVal(scanner.valueL.get(0), "int", "size", null);
-		checkDVal(scanner.valueL.get(0).valueList.get(0), "int", "wid", "45");
+		checkDVal(scanner.valueL.get(0).valueList.get(0), null, "wid", "45");
 		assertEquals(1, scanner.valueL.get(0).valueList.size());
 	}
 	@Test
@@ -505,7 +508,7 @@ public class DNALParserTests extends BaseTest {
 		assertEquals(true, b);
 		checkSize(1, scanner.valueL);
 		checkDVal(scanner.valueL.get(0), "int", "size", null);
-		checkDVal(scanner.valueL.get(0).valueList.get(0), "int", "height", "66");
+		checkDVal(scanner.valueL.get(0).valueList.get(0), null, "height", "66");
 		checkSize(2, scanner.valueL.get(0).valueList);
 	}
 	@Test
@@ -571,7 +574,7 @@ public class DNALParserTests extends BaseTest {
 			L.add("");
 			L.add("package a.b.c");
 			L.add(" int size: {");
-			L.add(" int wid: 45 }");
+			L.add("  wid: 45 }");
 //			L.add(" }");
 			L.add("end");
 			L.add("");
@@ -588,8 +591,8 @@ public class DNALParserTests extends BaseTest {
 			L.add("");
 			L.add("package a.b.c");
 			L.add(" int size: {");
-			L.add(" int height: 66 ");
-			L.add(" int wid: 45 }");
+			L.add("   height: 66 ");
+			L.add("   wid: 45 }");
 //			L.add(" }");
 			L.add("end");
 			L.add("");
