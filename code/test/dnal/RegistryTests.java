@@ -93,7 +93,11 @@ public class RegistryTests extends BaseTest {
 				} else {
 				}
 				
-				if (dtype.entries != null) {
+				if (dtype.entries != null && dtype.entries.size() > 0) {
+					if (! isStruct(dtype)) {
+						addError(dtype, String.format("'%s' is not a struct", dtype.name));
+					}
+					
 					for(DTypeEntry sub: dtype.entries) {
 						if (! ensureExists(dtype, sub.type)) {
 							ok = false;
@@ -112,6 +116,19 @@ public class RegistryTests extends BaseTest {
 			return (errors.size() == 0);
 		}
 		
+		private boolean isStruct(DType dtype) {
+			DType original = dtype;
+			
+			while(true) {
+				if (dtype.baseType.equals("struct")) {
+					return true;
+				}
+					
+				//ITypeValidator validator = registry.find(dtype.baseType);
+				throw new IllegalArgumentException("not supported");
+			}
+		}
+
 		private boolean ensureExists(DType dtype, String typeName) {
 			boolean ok = false;
 			ITypeValidator validator = registry.find(typeName);
@@ -143,13 +160,24 @@ public class RegistryTests extends BaseTest {
 	}
 	@Test
 	public void testTypeValidatorSub() {
-		List<DType> typeL = buildList("Customr", "struct");
+		List<DType> typeL = buildList("Customer", "struct", true, "int");
 		TypeValidator validator = new TypeValidator();
 		boolean b = validator.validate(typeL);
 		dumpErrors(validator);
 		assertEquals(true, b);
 		assertEquals(1, validator.addedCount);
 	}
+	@Test
+	public void testTypeValidatorSubBad() {
+		List<DType> typeL = buildList("Customer", "struct", true, "zzzz");
+		TypeValidator validator = new TypeValidator();
+		boolean b = validator.validate(typeL);
+		dumpErrors(validator);
+		assertEquals(false, b);
+		assertEquals(0, validator.addedCount);
+	}
+	
+	//---
 	
 	private void goodOne(String name, String baseType) {
 		List<DType> typeL = buildList(name, baseType);
@@ -176,9 +204,9 @@ public class RegistryTests extends BaseTest {
 
 
 	List<DType> buildList(String name, String baseType) {
-		return buildList(name, baseType, false);
+		return buildList(name, baseType, false, null);
 	}
-	List<DType> buildList(String name, String baseType, boolean subTypes) {
+	List<DType> buildList(String name, String baseType, boolean subTypes, String sub1Type) {
 		DType dtype = new DType();
 		dtype.baseType = baseType;
 		dtype.name = name;
@@ -187,7 +215,7 @@ public class RegistryTests extends BaseTest {
 		if (subTypes) {
 			DTypeEntry entry = new DTypeEntry();
 			entry.name = "item1";
-			entry.type = "int";
+			entry.type = sub1Type;
 			dtype.entries.add(entry);
 			entry = new DTypeEntry();
 			entry.name = "item2";
