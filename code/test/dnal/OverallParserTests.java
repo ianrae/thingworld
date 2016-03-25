@@ -9,8 +9,10 @@ import java.util.Scanner;
 import org.junit.Test;
 import org.mef.dnal.parser.ParseErrorTracker;
 
+import dnal.DNALLoaderTests.DNALLoader;
 import dnal.TypeParserTests.DType;
 import dnal.TypeParserTests.DTypeEntry;
+import dnal.TypeParserTests.TypeFileScanner;
 import dnal.TypeParserTests.TypeLineScanner;
 import testhelper.BaseTest;
 
@@ -21,16 +23,14 @@ public class OverallParserTests extends BaseTest {
 		WANT_START,
 		INSIDE_TYPES,
 		INSIDE_DATA,
-		END,
 		ERROR
 	}
 
 	public static class OverallFileScanner {
 		private ParseErrorTracker errorTracker = new ParseErrorTracker();
-//		public List<DType> typeL = new ArrayList<>();
-//		private String currentType;
 		private int lineNum;
-//		private DType currentDType;
+		private List<String> currentSubset;
+		private TypeFileScanner scanner;
 
 		public boolean scan(List<String> fileL) {
 			OTState state = OTState.WANT_START;
@@ -48,22 +48,22 @@ public class OverallParserTests extends BaseTest {
 					continue;
 				}
 				
-//				if (state == OTState.INSIDE) {
-//					state = handleInside(line);
-//					if (state == OTState.END) {
-//						state = handleEnd(line);
-//					}					
-//					continue;
-//				}
-				
-				//handle package line
-				state = doTypeLine(state, line);
+				state = doLine(state, line);
+			}
+			
+			if (currentSubset != null) {
+				log("loader..");
+				DNALLoaderTests.DNALLoader loader = new DNALLoader();
+				boolean b = loader.load(currentSubset);
+				if (! b) {
+					state = OTState.ERROR;
+				}
 			}
 
-			return (state == OTState.END || state == OTState.INSIDE_DATA) && (errorTracker.areNoErrors());
+			return (state == OTState.INSIDE_DATA) && (errorTracker.areNoErrors());
 		}
 		
-		private OTState doTypeLine(OTState state, String line) {
+		private OTState doLine(OTState state, String line) {
 			Scanner scan = new Scanner(line);
 
 			while(scan.hasNext()) {
@@ -80,9 +80,6 @@ public class OverallParserTests extends BaseTest {
 				case INSIDE_DATA:
 					state = handleInside(tok);
 					break;
-				case END:
-					state = handleEnd(tok);
-					break;
 				default:
 					if (tok.startsWith("//")) {
 						return state;
@@ -92,44 +89,38 @@ public class OverallParserTests extends BaseTest {
 					break;
 				}
 			}
+			
 			scan.close();
 			return state;
 		}
 
-		private OTState handleInsideTypes(String tok) {
-			if (tok.startsWith("ENDTYPES")) {
-				return OTState.INSIDE_DATA;
-			}
-			return OTState.INSIDE_TYPES;
-		}
 
 		private OTState handleStart(String tok) {
 			if (tok.startsWith("TYPES")) {
+				currentSubset = new ArrayList<>();
 				return OTState.INSIDE_TYPES;
 			}
-			return OTState.END;
+			return OTState.INSIDE_DATA;
 		}
-
-		private OTState handleEnd(String tok) {
-//			this.typeL.add(currentDType);
-//			this.currentDType = null; 
-			return OTState.END;
+		private OTState handleInsideTypes(String tok) {
+			if (tok.startsWith("ENDTYPES")) {
+				
+				TypeParserTests.TypeFileScanner scanner = new TypeFileScanner();
+				boolean b = scanner.scan(currentSubset);
+				currentSubset = new ArrayList<>();
+				if (! b) {
+					return OTState.ERROR;
+				}
+				return OTState.INSIDE_DATA;
+			}
+			currentSubset.add(tok);
+			return OTState.INSIDE_TYPES;
 		}
-		
 		private OTState handleInside(String tok) {
 			if (tok.startsWith("//")) {
 				return OTState.INSIDE_DATA;
 			}
 
-//			TypeLineScanner scanner = new TypeLineScanner(null); //handle package later
-//			boolean b = scanner.scan(tok);
-//			if (! b) {
-//				this.errorTracker.addError(String.format("line %d failed", lineNum));
-//				return OTState.ERROR;
-//			} else {
-////				currentDType.entries.add(scanner.getDTypeEntry());
-//			}
-			
 			return OTState.INSIDE_DATA;
 		}
 
