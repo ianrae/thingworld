@@ -13,7 +13,7 @@ import testhelper.BaseTest;
 
 public class TypeParserTests extends BaseTest {
 	
-	public static class DType {
+	public static class DTypeEntry {
 		public String packageName;
 		public String name;
 		public String type;
@@ -27,8 +27,8 @@ public class TypeParserTests extends BaseTest {
 		ERROR
 	}
 	public static class TypeLineScanner {
-		private DType currentDType;
-		private DType finalDvalue;
+		private DTypeEntry currentDTypeEntry;
+		private DTypeEntry finalDvalue;
 		private ParseErrorTracker errorTracker = new ParseErrorTracker();
 		private String packageName;
 
@@ -68,7 +68,7 @@ public class TypeParserTests extends BaseTest {
 			return (state == LTState.END || state == LTState.NO_MORE) && (errorTracker.areNoErrors());
 		}
 
-		public DType getDType() {
+		public DTypeEntry getDTypeEntry() {
 			if (errorTracker.hasErrors()) {
 				return null;
 			}
@@ -76,17 +76,17 @@ public class TypeParserTests extends BaseTest {
 		}
 
 		private LTState handleType(String tok) {
-			currentDType = new DType();
-			currentDType.type = tok;
-			currentDType.packageName = this.packageName;
+			currentDTypeEntry = new DTypeEntry();
+			currentDTypeEntry.type = tok;
+			currentDTypeEntry.packageName = this.packageName;
 			return LTState.WANT_NAME;
 		}
 		private LTState handleName(String tok) {
 			if (tok.endsWith(",") || tok.endsWith(";")) {
 				tok = tok.substring(0, tok.length() - 1);
 			}
-			currentDType.name = tok;
-			finalDvalue = currentDType;
+			currentDTypeEntry.name = tok;
+			finalDvalue = currentDTypeEntry;
 			return LTState.END;
 		}
 		private LTState handleEnd(String tok) {
@@ -105,15 +105,15 @@ public class TypeParserTests extends BaseTest {
 
 	@Test
 	public void testTypeLineScanner() {
-		DType dtype = doScan("int size");
-		checkDType(dtype, "int", "size");
+		DTypeEntry dtype = doScan("int size");
+		checkDTypeEntry(dtype, "int", "size");
 
 		//, and ; allowed but ignored
 		dtype = doScan("int size,");
-		checkDType(dtype, "int", "size");
+		checkDTypeEntry(dtype, "int", "size");
 
 		dtype = doScan("int size;");
-		checkDType(dtype, "int", "size");
+		checkDTypeEntry(dtype, "int", "size");
 	}
 
 	@Test
@@ -128,25 +128,32 @@ public class TypeParserTests extends BaseTest {
 		TypeLineScanner scanner = new TypeLineScanner(null);
 		boolean b = scanner.scan(input);
 		assertEquals(false, b);
-		DType dtype = scanner.getDType();
+		DTypeEntry dtype = scanner.getDTypeEntry();
 		assertEquals(null, dtype);
 	}
 
-	private void checkDType(DType dtype, String type, String name) {
+	private void checkDTypeEntry(DTypeEntry dtype, String type, String name) {
 		assertEquals(type, dtype.type);
 		assertEquals(name, dtype.name);
 	}
 
-	private DType doScan(String input) {
+	private DTypeEntry doScan(String input) {
 		TypeLineScanner scanner = new TypeLineScanner(null);
 		boolean b = scanner.scan(input);
 		assertEquals(true, b);
-		DType dtype = scanner.getDType();
+		DTypeEntry dtype = scanner.getDTypeEntry();
 		return dtype;
 	}
 
 	
 	///////////////////////////////////
+	public static class DType{
+		public String packageName;
+		public String name;
+		public String baseType;
+		public List<DTypeEntry> entries;
+	}	
+	
 	public static enum FTState {
 		WANT_TYPE,
 		WANT_TYPENAME,
@@ -159,10 +166,10 @@ public class TypeParserTests extends BaseTest {
 
 	public static class TypeFileScanner {
 		private ParseErrorTracker errorTracker = new ParseErrorTracker();
-		public List<DType> valueL = new ArrayList<>();
+		public List<DTypeEntry> valueL = new ArrayList<>();
 		private String currentType;
 		private int lineNum;
-		private DType continuingDType;
+		private DType currentDType;
 
 		public boolean scan(List<String> fileL) {
 			FTState state = FTState.WANT_TYPE;
@@ -231,7 +238,7 @@ public class TypeParserTests extends BaseTest {
 		private FTState handleEnd(String tok) {
 			if (tok.startsWith("package")) {
 				this.currentType = null;
-				this.continuingDType = null;
+				this.currentDType = null;
 				return FTState.WANT_TYPENAME;
 			}
 			return FTState.END;
@@ -239,12 +246,13 @@ public class TypeParserTests extends BaseTest {
 
 		private FTState handleType(String tok) {
 			if (tok.startsWith("type")) {
+				this.currentDType = new DType();
 				return FTState.WANT_TYPENAME;
 			}
 			return FTState.ERROR;
 		}
 		private FTState handleTypeName(String tok) {
-			this.currentType = tok;
+			this.currentDType.name = tok;
 			log("pack: " + currentType);
 			return FTState.WANT_EXTENDS;
 		}
@@ -255,7 +263,7 @@ public class TypeParserTests extends BaseTest {
 			return FTState.ERROR;
 		}
 		private FTState handleBaseType(String tok) {
-			this.continuingDType.type = tok;
+			this.currentDType.baseType = tok;
 			return FTState.INSIDE;
 		}
 		
@@ -275,8 +283,8 @@ public class TypeParserTests extends BaseTest {
 				this.errorTracker.addError(String.format("line %d failed", lineNum));
 				return FTState.ERROR;
 			} else {
-				this.valueL.add(scanner.getDType());
-				this.continuingDType = scanner.getDType();
+				this.valueL.add(scanner.getDTypeEntry());
+				this.currentDType = null; //scanner.getDTypeEntry();
 			}
 			
 			return FTState.INSIDE;
@@ -305,7 +313,7 @@ public class TypeParserTests extends BaseTest {
 		TypeFileScanner scanner = new TypeFileScanner();
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
-		checkSize(0, scanner.valueL);
+		checkEntrySize(0, scanner.valueL);
 	}
 //	@Test
 //	public void testF2() {
@@ -382,6 +390,9 @@ public class TypeParserTests extends BaseTest {
 //	
 	
 	private void checkSize(int expectedSize, List<DType> list) {
+		assertEquals(expectedSize, list.size());
+	}
+	private void checkEntrySize(int expectedSize, List<DTypeEntry> list) {
 		assertEquals(expectedSize, list.size());
 	}
 	private void checkPackage(DType dValue, String string) {
