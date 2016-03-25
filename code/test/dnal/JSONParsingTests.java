@@ -51,7 +51,8 @@ public class JSONParsingTests extends BaseTest
 	}
 	private void check(String input, String expected) {
 		JSONStringParser jparser = new JSONStringParser();
-		String json = jparser.findJSONString(input, 0);
+		int pos = input.indexOf(':');
+		String json = jparser.findJSONString(input, pos);
 		log(json);
 		assertEquals(expected, json);
 	}

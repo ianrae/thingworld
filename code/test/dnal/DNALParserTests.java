@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import org.junit.Test;
 import org.mef.dnal.core.DValue;
+import org.mef.dnal.parser.JSONStringParser;
 import org.mef.dnal.parser.LSState;
 import org.mef.dnal.parser.ParseErrorTracker;
 
@@ -101,9 +102,13 @@ public class DNALParserTests extends BaseTest {
 			//new impl. if is quoted then parse quoted bit as value.
 			LSState newState = LSState.END;
 			if (tok.startsWith("\"")) {
-				int pos = line.indexOf('"');
-				int endpos = line.indexOf('"', pos + 1);
-				currentDValue.rawValue = line.substring(pos + 1, endpos);
+//				int pos = line.indexOf('"');
+//				int endpos = line.indexOf('"', pos + 1);
+//				currentDValue.rawValue = line.substring(pos + 1, endpos);
+				
+				JSONStringParser jparser = new JSONStringParser();
+				currentDValue.rawValue = jparser.findJSONString(line, line.indexOf(':'));
+				
 				newState = LSState.NO_MORE;
 			} else {
 				//old
@@ -200,6 +205,9 @@ public class DNALParserTests extends BaseTest {
 		dval = doScan("string name: \"a big taxi\";");
 		checkDVal(dval, "string", "name", "a big taxi");
 
+		String s = fix("string name: 'bob \\'jim\\' smith' //comment");
+		dval = doScan(s);
+		checkDVal(dval, "string", "name", "bob \\\"jim\\\" smith");
 	}
 	@Test
 	public void testStringWithoutQuotes() {
@@ -589,4 +597,10 @@ public class DNALParserTests extends BaseTest {
 		}
 		return L;
 	}
+	protected static String fix(String s)
+	{
+		s = s.replace('\'', '"');
+		return s;
+	}
+
 }
