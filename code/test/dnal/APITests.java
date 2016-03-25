@@ -50,6 +50,10 @@ public class APITests {
 			DValue dval = getVal(id, "int");
 			return (Integer)dval.finalValue;
 		}
+		public boolean getBoolean(String id) throws DNALException {
+			DValue dval = getVal(id, "boolean");
+			return (Boolean)dval.finalValue;
+		}
 		private DValue getVal(String id, String type) throws DNALException {
 			DValue dval = map.get(id);
 			if (dval == null) {
@@ -70,6 +74,7 @@ public class APITests {
 		assertEquals(100, k);
 		String s = api.getString("a.b.c.firstName");
 		assertEquals("sue", s);
+		assertEquals(true, api.getBoolean("a.b.c.flag"));
 	}
 	
 	private DNALLoader buildLoader() {
@@ -85,6 +90,7 @@ public class APITests {
 		TypeRegistry registry = new TypeRegistry();
 		registry.add("int", new MockIntValidator());
 		registry.add("string", new TypeTests.MockStringValidator());
+		registry.add("boolean", new TypeTests.MockBooleanValidator());
 		return registry;
 	}
 }

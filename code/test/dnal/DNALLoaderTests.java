@@ -72,6 +72,12 @@ public class DNALLoaderTests extends BaseTest {
 						failCount++;
 						errors.addAll(result.errors);
 					}
+				} else {
+					ValidationError err = new ValidationError();
+					err.fieldName = dval.name;
+					err.error = "missing validator for type: " + dval.type;
+					errors.add(err);
+					failCount++;
 				}
 			}
 			return (failCount == 0);
@@ -119,15 +125,29 @@ public class DNALLoaderTests extends BaseTest {
 		loader.registry = buildRegistry();
 		boolean b = loader.load(path);
 		assertEquals(true, b);
-		assertEquals(2, loader.getDataL().size());
+		assertEquals(3, loader.getDataL().size());
 		assertEquals("size", loader.getDataL().get(0).name);
 		assertEquals("firstName", loader.getDataL().get(1).name);
+		assertEquals("flag", loader.getDataL().get(2).name);
+
+		checkInt(100, loader.getDataL().get(0));
+		assertEquals("sue", loader.getDataL().get(1).finalValue);
+		checkBool(true, loader.getDataL().get(2));
 	}
 	
+	private void checkBool(boolean b, DValue dval) {
+		Boolean bb = (Boolean) dval.finalValue;
+		assertEquals(b, bb.booleanValue());
+	}
+	private void checkInt(int i, DValue dval) {
+		Integer n = (Integer) dval.finalValue;
+		assertEquals(i, n.intValue());
+	}
 	private TypeRegistry buildRegistry() {
 		TypeRegistry registry = new TypeRegistry();
 		registry.add("int", new MockIntValidator());
 		registry.add("string", new TypeTests.MockStringValidator());
+		registry.add("boolean", new TypeTests.MockBooleanValidator());
 		return registry;
 	}
 	

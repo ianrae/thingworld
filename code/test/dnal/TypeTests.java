@@ -72,6 +72,28 @@ public class TypeTests {
 			}
 		}
 	}
+	public static class MockBooleanValidator extends ValidatorBase {
+
+		@Override
+		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
+			try {
+				String s = inputObj.toString();
+				if (s.equalsIgnoreCase("true")) {
+					result.isValid = true;
+					result.validObj = Boolean.TRUE;
+					dval.finalValue = result.validObj;
+				} else if (s.equalsIgnoreCase("false")) {
+					result.isValid = true;
+					result.validObj = Boolean.FALSE;
+					dval.finalValue = result.validObj;
+				} else {
+					addError(result, dval, String.format("%s is neither 'true' nor 'false'"));
+				}
+			} catch(Exception e) {
+				addError(result, dval, "not an boolean");
+			}
+		}
+	}
 
 	@Test
 	public void test() {
