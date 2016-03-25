@@ -10,6 +10,7 @@ import org.mef.dnal.core.DValue;
 import testhelper.BaseTest;
 import dnal.OverallParserTests.OverallFileScanner;
 import dnal.TypeGeneratorTests.TypeGenerator;
+import dnal.dio.PositionDIO;
 import dnal.dio.PositionMutator;
 
 public class FinalTests extends BaseTest {
@@ -56,12 +57,14 @@ public class FinalTests extends BaseTest {
 		List<DValue> dataL = scanner.dloader.getDataL();
 		assertEquals(1, dataL.size());
 		assertEquals("pos", dataL.get(0).name);
-		log(dataL.get(0).finalValue.toString()); //!! remove later
+		PositionDIO pos = (PositionDIO) dataL.get(0).finalValue;
+		assertEquals(10, pos.getX());
+		assertEquals(20, pos.getY());
 	}
 	
 	private TypeGenerator createGenerator() {
 		TypeGenerator gen = new TypeGenerator();
-		gen.register("Position", new PositionMutator());
+		gen.register("Position", PositionMutator.class);
 		return gen;
 	}
 	private String buildPath(String filename) {

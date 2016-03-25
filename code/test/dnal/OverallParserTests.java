@@ -258,7 +258,7 @@ public class OverallParserTests extends BaseTest {
 	}
 	private TypeGenerator createGenerator() {
 		TypeGenerator gen = new TypeGenerator();
-		gen.register("Position", new PositionMutator());
+		gen.register("Position", PositionMutator.class);
 		return gen;
 	}
 

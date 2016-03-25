@@ -17,23 +17,27 @@ import dnal.dio.PositionMutator;
 public class TypeGeneratorTests {
 	
 	public static class TypeGenerator {
-		private Map<String, Object> map = new HashMap<>();
+		private Map<String, Class<?>> map = new HashMap<>();
 		
-		public void register(String type, Object mutator) {
-			map.put(type, mutator);
+		public void register(String type, Class<?> clazz) {
+			map.put(type, clazz);
 		}
 		
 		public Object createObject(DValue dval) {
-			Object mutobj = map.get(dval.type);
-			if (mutobj == null) {
+			Class<?> clazz = map.get(dval.type);
+			if (clazz == null) {
 				return null;
 			}
 			
 			//!!!!
 			if (dval.type.equals("Position")) {
-				PositionMutator mutator = new PositionMutator();
-				//lookup by name not index!!
-				
+				PositionMutator mutator = null;
+				try {
+					mutator = (PositionMutator) clazz.newInstance();
+				} catch (InstantiationException | IllegalAccessException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				Integer x = (Integer) findVal(dval, "x");
 				Integer y = (Integer) findVal(dval, "y");
 				mutator.setX(x);
@@ -72,7 +76,7 @@ public class TypeGeneratorTests {
 		dval.valueList.add(createSub("y", 200));
 		
 		TypeGenerator gen = new TypeGenerator();
-		gen.register("Position", new PositionMutator());
+		gen.register("Position", PositionMutator.class);
 		
 		Object obj = gen.createObject(dval);
 		PositionDIO pos = (PositionDIO) obj;
