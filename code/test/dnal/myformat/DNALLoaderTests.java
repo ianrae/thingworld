@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mef.dnal.core.DValue;
+import org.mef.dnal.core.IDNALLoader;
 import org.mef.dnal.parser.ParseErrorTracker;
 import org.mef.dnal.validation.ValidationError;
 import org.thingworld.sfx.SfxTextReader;
@@ -19,13 +20,6 @@ import dnal.RegistryTests.TypeRegistry;
 import dnal.myformat.DNALParserTests.FileScanner;
 
 public class DNALLoaderTests extends BaseTest {
-	
-	public interface IDNALLoader {
-		boolean load(String path);
-		boolean isValid();
-		boolean load(List<String> lines);
-		List<DValue> getDataL();
-	}
 	
 	public static class DNALLoader implements IDNALLoader {
 		private List<DValue> dataL;

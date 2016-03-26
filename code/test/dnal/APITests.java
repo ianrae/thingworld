@@ -8,13 +8,13 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.mef.dnal.core.DValue;
+import org.mef.dnal.core.IDNALLoader;
 import org.mef.dnal.parser.ParseErrorTracker;
 
 import dnal.DNALLoadValidatorTests.DNALLoadValidator;
 import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
 import dnal.myformat.DNALLoaderTests.DNALLoader;
-import dnal.myformat.DNALLoaderTests.IDNALLoader;
 
 public class APITests {
 

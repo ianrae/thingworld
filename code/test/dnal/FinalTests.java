@@ -1,19 +1,18 @@
 package dnal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
 import org.junit.Test;
 import org.mef.dnal.core.DValue;
+import org.mef.dnal.core.IDNALLoader;
 import org.mef.dnal.core.ITypeFileScanner;
 import org.mef.dnal.parser.ParseErrorTracker;
 
 import testhelper.BaseTest;
 import dnal.OverallParserTests.OverallFileScanner;
 import dnal.TypeGeneratorTests.ITypeGenerator;
-import dnal.TypeGeneratorTests.TypeGenerator;
-import dnal.dio.PositionDIO;
 import dnal.dio.PositionMutator;
 import dnal.myformat.DNALLoaderTests.DNALLoader;
 import dnal.myformat.TypeParserTests.TypeFileScanner;
@@ -105,7 +104,7 @@ public class FinalTests extends BaseTest {
 	private OverallFileScanner createScanner() {
 		ITypeGenerator gen = createGenerator();
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		DNALLoader dloader = new DNALLoader(errorTracker);
+		IDNALLoader dloader = new DNALLoader(errorTracker);
 		ITypeFileScanner tscanner = new TypeFileScanner(errorTracker);
 		OverallFileScanner scanner = new OverallFileScanner(errorTracker, dloader, gen, tscanner);
 		return scanner;
