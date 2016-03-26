@@ -1,6 +1,6 @@
 package dnal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ import org.thingworld.sfx.SfxTextReader;
 import testhelper.BaseTest;
 import dnal.DNALLoadValidatorTests.DNALLoadValidator;
 import dnal.DNALLoaderTests.DNALLoader;
+import dnal.DNALLoaderTests.IDNALLoader;
 import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
 import dnal.RegistryTests.TypeValidator;
@@ -33,18 +34,20 @@ public class OverallParserTests extends BaseTest {
 	}
 
 	public static class OverallFileScanner {
-		private ParseErrorTracker errorTracker = new ParseErrorTracker();
+		private ParseErrorTracker errorTracker;
 		private int lineNum;
 		private List<String> currentSubset;
 		public TypeFileScanner tscanner;
-		public DNALLoader dloader;
+		public IDNALLoader dloader;
 		private DNALLoadValidator loadValidator;
 		private boolean success;
 		private TypeRegistry registry;
 		private ITypeGenerator generator;
 
-		public OverallFileScanner(ITypeGenerator gen) {
+		public OverallFileScanner(ParseErrorTracker errorTracker, IDNALLoader dloader, ITypeGenerator gen) {
+			this.errorTracker = errorTracker;
 			this.generator = gen;
+			this.dloader = dloader;
 		}
 		public boolean load(String path) {
 			SfxTextReader reader = new SfxTextReader();
@@ -84,8 +87,6 @@ public class OverallParserTests extends BaseTest {
 
 			if (currentSubset != null && currentSubset.size() > 0) {
 				log("loader..");
-				dloader = new DNALLoader(errorTracker);
-				//				dloader.registry = registry;
 				boolean b = dloader.load(currentSubset);
 				if (! b) {
 					state = OTState.ERROR;
@@ -173,30 +174,28 @@ public class OverallParserTests extends BaseTest {
 		List<String> fileL = buildFile(0);
 
 		ITypeGenerator gen = createGenerator();
-		OverallFileScanner scanner = new OverallFileScanner(gen);
+		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.scan(fileL);
 		assertEquals(false, b);
 	}
-
+	
 	@Test
 	public void testF1() {
 		List<String> fileL = buildFile(1);
 
-		ITypeGenerator gen = createGenerator();
-		OverallFileScanner scanner = new OverallFileScanner(gen);
+		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(1, scanner.tscanner.typeL);
 		checkEntrySize(0, scanner.tscanner.typeL.get(0).entries);
 		checkDType(scanner.tscanner.typeL.get(0), "int", "Timeout");
-		assertEquals(null, scanner.dloader);
+		assertNotNull(null, scanner.dloader);
 	}
 	@Test
 	public void testF2() {
 		List<String> fileL = buildFile(2);
 
-		ITypeGenerator gen = createGenerator();
-		OverallFileScanner scanner = new OverallFileScanner(gen);
+		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		checkSize(1, scanner.tscanner.typeL);
@@ -210,8 +209,7 @@ public class OverallParserTests extends BaseTest {
 	public void testF3() {
 		List<String> fileL = buildFile(3);
 
-		ITypeGenerator gen = createGenerator();
-		OverallFileScanner scanner = new OverallFileScanner(gen);
+		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		assertEquals(null, scanner.tscanner);
@@ -226,32 +224,37 @@ public class OverallParserTests extends BaseTest {
 	public void testF4() {
 		List<String> fileL = buildFile(4);
 
-		ITypeGenerator gen = createGenerator();
-		OverallFileScanner scanner = new OverallFileScanner(gen);
+		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.scan(fileL);
 		assertEquals(false, b);
 		checkSize(1, scanner.tscanner.typeL);
 		checkEntrySize(0, scanner.tscanner.typeL.get(0).entries);
 		checkDType(scanner.tscanner.typeL.get(0), "zzz", "Timeout");
-		assertEquals(null, scanner.dloader);
+		assertNotNull(null, scanner.dloader);
 	}
 	@Test
 	public void testFile2() {
 		String path = "./test/testfiles/file2.dnal";
-		ITypeGenerator gen = createGenerator();
-		OverallFileScanner scanner = new OverallFileScanner(gen);
+		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 	}
 	@Test
 	public void testFile3() {
 		String path = "./test/testfiles/file3.dnal";
-		ITypeGenerator gen = createGenerator();
-		OverallFileScanner scanner = new OverallFileScanner(gen);
+		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 	}
 
+
+	private OverallFileScanner createScanner() {
+		ITypeGenerator gen = createGenerator();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		DNALLoader dloader = new DNALLoader(errorTracker);
+		OverallFileScanner scanner = new OverallFileScanner(errorTracker, dloader, gen);
+		return scanner;
+	}
 
 	private void checkSize(int expectedSize, List<DType> list) {
 		assertEquals(expectedSize, list.size());

@@ -6,8 +6,10 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mef.dnal.core.DValue;
+import org.mef.dnal.parser.ParseErrorTracker;
 
 import testhelper.BaseTest;
+import dnal.DNALLoaderTests.DNALLoader;
 import dnal.OverallParserTests.OverallFileScanner;
 import dnal.TypeGeneratorTests.ITypeGenerator;
 import dnal.TypeGeneratorTests.TypeGenerator;
@@ -19,8 +21,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testPrimitives() {
 		String path = buildPath("primitives.dnal");
-		ITypeGenerator gen = createGenerator();
-		OverallFileScanner scanner = new OverallFileScanner(gen);
+		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.dloader.getDataL();
@@ -30,8 +31,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testPrimitivesBad() {
 		String path = buildPath("primitivesBad.dnal");
-		ITypeGenerator gen = createGenerator();
-		OverallFileScanner scanner = new OverallFileScanner(gen);
+		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(false, b);
 		scanner.dumpErrors();
@@ -39,8 +39,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testList() {
 		String path = buildPath("lists.dnal");
-		ITypeGenerator gen = createGenerator();
-		OverallFileScanner scanner = new OverallFileScanner(gen);
+		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.dloader.getDataL();
@@ -52,8 +51,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testSimple() {
 		String path = buildPath("simple.dnal");
-		ITypeGenerator gen = createGenerator();
-		OverallFileScanner scanner = new OverallFileScanner(gen);
+		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.dloader.getDataL();
@@ -63,8 +61,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testSimpleList() {
 		String path = buildPath("simplelist.dnal");
-		ITypeGenerator gen = createGenerator();
-		OverallFileScanner scanner = new OverallFileScanner(gen);
+		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.dloader.getDataL();
@@ -75,8 +72,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testSimpleEnum() {
 		String path = buildPath("simpleenum.dnal");
-		ITypeGenerator gen = createGenerator();
-		OverallFileScanner scanner = new OverallFileScanner(gen);
+		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.dloader.getDataL();
@@ -88,8 +84,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testStruct() {
 		String path = buildPath("struct.dnal");
-		ITypeGenerator gen = createGenerator();
-		OverallFileScanner scanner = new OverallFileScanner(gen);
+		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.dloader.getDataL();
@@ -105,6 +100,14 @@ public class FinalTests extends BaseTest {
 		log(fakepos);
 	}
 	
+	private OverallFileScanner createScanner() {
+		ITypeGenerator gen = createGenerator();
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		DNALLoader dloader = new DNALLoader(errorTracker);
+		OverallFileScanner scanner = new OverallFileScanner(errorTracker, dloader, gen);
+		return scanner;
+	}
+
 	private ITypeGenerator createGenerator() {
 //		ITypeGenerator gen = new TypeGenerator();
 		ITypeGenerator gen = new TypeGeneratorTests.MockTypeGenerator();

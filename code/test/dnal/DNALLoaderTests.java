@@ -21,26 +21,33 @@ import dnal.myformat.TypeTests.ValidationResult;
 
 public class DNALLoaderTests extends BaseTest {
 	
+	public interface IDNALLoader {
+		boolean load(String path);
+		boolean isValid();
+		boolean load(List<String> lines);
+		List<DValue> getDataL();
+	}
 	
-	public static class DNALLoader {
-//		public TypeRegistry registry;
+	public static class DNALLoader implements IDNALLoader {
 		private List<DValue> dataL;
 		private boolean success;
 		private ParseErrorTracker errorTracker = new ParseErrorTracker();
-//		private DNALLoadValidator loadValidator;
 
 		public DNALLoader(ParseErrorTracker errorTracker) {
 			this.errorTracker = errorTracker;
 		}
+		@Override
 		public boolean load(String path) {
 			SfxTextReader reader = new SfxTextReader();
 			List<String> lines = reader.readFile(path);
 			success = load(lines);
 			return success;
 		}
+		@Override
 		public boolean isValid() {
 			return success;
 		}
+		@Override
 		public boolean load(List<String> lines) {
 
 			FileScanner scanner = new FileScanner(errorTracker);
@@ -56,25 +63,17 @@ public class DNALLoaderTests extends BaseTest {
 			return b;
 		}
 
-//		private boolean validate(List<DValue> valueL) {
-//			loadValidator = new DNALLoadValidator(errorTracker);
-//			loadValidator.registry = registry;
-//			return loadValidator.validate(valueL);
-//		}
-		
+		@Override
 		public List<DValue> getDataL() {
 			return dataL;
 		}
-//		public List<ValidationError> getErrors() {
-//			return loadValidator.errors;
-//		}
 	}
 
 	@Test
 	public void test() {
 		List<String> lines = buildFile(0);
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		DNALLoader loader = new DNALLoader(errorTracker);
+		IDNALLoader loader = new DNALLoader(errorTracker);
 		boolean b = loader.load(lines);
 		b = doValidation(b, loader, errorTracker);
 		assertEquals(true, b);
@@ -82,7 +81,7 @@ public class DNALLoaderTests extends BaseTest {
 	}
 	
 	private DNALLoadValidator loadValidator;
-	private boolean doValidation(boolean b, DNALLoader loader, ParseErrorTracker errorTracker) {
+	private boolean doValidation(boolean b, IDNALLoader loader, ParseErrorTracker errorTracker) {
 		if (!b) {
 			return false;
 		}
@@ -94,7 +93,7 @@ public class DNALLoaderTests extends BaseTest {
 	public void test1() {
 		List<String> lines = buildFile(1);
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		DNALLoader loader = new DNALLoader(errorTracker);
+		IDNALLoader loader = new DNALLoader(errorTracker);
 		boolean b = loader.load(lines);
 		b = doValidation(b, loader, errorTracker);
 		assertEquals(false, b);
@@ -106,7 +105,7 @@ public class DNALLoaderTests extends BaseTest {
 	public void testFile() {
 		String path = "./test/testfiles/file1.dnal";
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		DNALLoader loader = new DNALLoader(errorTracker);
+		IDNALLoader loader = new DNALLoader(errorTracker);
 		boolean b = loader.load(path);
 		b = doValidation(b, loader, errorTracker);
 		assertEquals(true, b);
@@ -117,7 +116,7 @@ public class DNALLoaderTests extends BaseTest {
 	public void testFile2() {
 		String path = "./test/testfiles/file2.dnal";
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		DNALLoader loader = new DNALLoader(errorTracker);
+		IDNALLoader loader = new DNALLoader(errorTracker);
 		boolean b = loader.load(path);
 		b = doValidation(b, loader, errorTracker);
 		assertEquals(true, b);
