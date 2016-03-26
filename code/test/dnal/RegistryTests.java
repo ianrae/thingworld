@@ -23,6 +23,7 @@ import dnal.TypeParserTests.DType;
 import dnal.TypeParserTests.DTypeEntry;
 import dnal.TypeTests.ITypeValidator;
 import dnal.TypeTests.MockIntValidator;
+import dnal.TypeTests.MockListStringValidator;
 import dnal.TypeTests.ValidationResult;
 import dnal.TypeTests.ValidatorBase;
 import dnal.dio.PositionDIO;
@@ -189,15 +190,39 @@ public class RegistryTests extends BaseTest {
 				
 				
 				if (ok) {
-					MockCustomTypeValidator custom = new MockCustomTypeValidator();
-					custom.registry = registry;
-					registry.add(dtype.name, dtype.baseType, custom, dtype);
+					if (isList(dtype)) {
+						MockListStringValidator custom = new MockListStringValidator();
+						registry.add(dtype.name, dtype.baseType, custom, dtype);
+					} else {
+						MockCustomTypeValidator custom = new MockCustomTypeValidator();
+						custom.registry = registry;
+						registry.add(dtype.name, dtype.baseType, custom, dtype);
+					}
 					addedCount++;
 				}
 			}
 			return (errors.size() == 0);
 		}
 		
+		private boolean isList(DType dtype) {
+			String currentBaseType = dtype.baseType;
+
+			for(int i = 0; i < 100; i++) {
+				if (currentBaseType.startsWith("list<")) {
+					return true;
+				}
+					
+				String baseType = registry.findBaseType(currentBaseType);
+				if (baseType == null) {
+					return false;
+				}
+				currentBaseType = baseType;
+			}
+			//!!runaway
+			System.out.println("RUNAWAY!!");
+			return false;
+		}
+
 		private boolean isStruct(DType dtype) {
 			String currentBaseType = dtype.baseType;
 

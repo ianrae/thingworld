@@ -1,0 +1,9 @@
+//a basic dnal file
+TYPES
+ type Names extends list<string>
+ end
+ENDTYPES
+
+package a.b.c
+ Names  prov: [ "on", "que" ]
+end

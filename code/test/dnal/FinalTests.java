@@ -60,6 +60,18 @@ public class FinalTests extends BaseTest {
 		assertEquals(2, dataL.size());
 		assertEquals("time", dataL.get(1).name);
 	}
+	@Test
+	public void testSimpleList() {
+		String path = buildPath("simplelist.dnal");
+		ITypeGenerator gen = createGenerator();
+		OverallFileScanner scanner = new OverallFileScanner(gen);
+		boolean b = scanner.load(path);
+		assertEquals(true, b);
+		List<DValue> dataL = scanner.dloader.getDataL();
+		assertEquals(1, dataL.size());
+		assertEquals("prov", dataL.get(0).name);
+		assertEquals("on", dataL.get(0).tmplist.get(0));
+	}
 
 	@Test
 	public void testStruct() {
