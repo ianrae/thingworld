@@ -12,6 +12,8 @@ import testhelper.BaseTest;
 import dnal.OverallParserTests.OverallFileScanner;
 import dnal.TypeGeneratorTests.ITypeGenerator;
 import dnal.TypeGeneratorTests.TypeGenerator;
+import dnal.TypeParserTests.ITypeFileScanner;
+import dnal.TypeParserTests.TypeFileScanner;
 import dnal.dio.PositionDIO;
 import dnal.dio.PositionMutator;
 import dnal.myformat.DNALLoaderTests.DNALLoader;
@@ -104,7 +106,8 @@ public class FinalTests extends BaseTest {
 		ITypeGenerator gen = createGenerator();
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
 		DNALLoader dloader = new DNALLoader(errorTracker);
-		OverallFileScanner scanner = new OverallFileScanner(errorTracker, dloader, gen);
+		ITypeFileScanner tscanner = new TypeFileScanner(errorTracker);
+		OverallFileScanner scanner = new OverallFileScanner(errorTracker, dloader, gen, tscanner);
 		return scanner;
 	}
 

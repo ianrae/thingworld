@@ -45,10 +45,11 @@ public class OverallParserTests extends BaseTest {
 		private TypeRegistry registry;
 		private ITypeGenerator generator;
 
-		public OverallFileScanner(ParseErrorTracker errorTracker, IDNALLoader dloader, ITypeGenerator gen) {
+		public OverallFileScanner(ParseErrorTracker errorTracker, IDNALLoader dloader, ITypeGenerator gen, ITypeFileScanner tscanner) {
 			this.errorTracker = errorTracker;
 			this.generator = gen;
 			this.dloader = dloader;
+			this.tscanner = tscanner;
 		}
 		public boolean load(String path) {
 			SfxTextReader reader = new SfxTextReader();
@@ -139,7 +140,6 @@ public class OverallParserTests extends BaseTest {
 		private OTState handleInsideTypes(String tok) {
 			if (tok.startsWith("ENDTYPES")) {
 
-				tscanner = new TypeFileScanner(this.errorTracker);
 				boolean b = tscanner.scan(currentSubset);
 				currentSubset = new ArrayList<>();
 				if (! b) {
@@ -213,7 +213,6 @@ public class OverallParserTests extends BaseTest {
 		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
-		assertEquals(null, scanner.tscanner);
 		//		checkSize(1, scanner.tscanner.typeL);
 		//		checkEntrySize(0, scanner.tscanner.typeL.get(0).entries);
 		//		checkDType(scanner.tscanner.typeL.get(0), "int", "Timeout");
@@ -253,7 +252,8 @@ public class OverallParserTests extends BaseTest {
 		ITypeGenerator gen = createGenerator();
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
 		DNALLoader dloader = new DNALLoader(errorTracker);
-		OverallFileScanner scanner = new OverallFileScanner(errorTracker, dloader, gen);
+		ITypeFileScanner tscanner = new TypeFileScanner(errorTracker);
+		OverallFileScanner scanner = new OverallFileScanner(errorTracker, dloader, gen, tscanner);
 		return scanner;
 	}
 
