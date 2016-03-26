@@ -10,6 +10,7 @@ import org.mef.dnal.parser.ParseErrorTracker;
 import org.thingworld.sfx.SfxTextReader;
 
 import testhelper.BaseTest;
+import dnal.DNALLoadValidatorTests.DNALLoadValidator;
 import dnal.DNALLoaderTests.DNALLoader;
 import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
@@ -37,10 +38,11 @@ public class OverallParserTests extends BaseTest {
 		private List<String> currentSubset;
 		public TypeFileScanner tscanner;
 		public DNALLoader dloader;
+		private DNALLoadValidator loadValidator;
 		private boolean success;
 		private TypeRegistry registry;
 		private ITypeGenerator generator;
-		
+
 		public OverallFileScanner(ITypeGenerator gen) {
 			this.generator = gen;
 		}
@@ -53,7 +55,7 @@ public class OverallParserTests extends BaseTest {
 		public boolean isValid() {
 			return success;
 		}
-		
+
 		public void dumpErrors() {
 			this.errorTracker.dumpErrors();
 		}
@@ -83,10 +85,17 @@ public class OverallParserTests extends BaseTest {
 			if (currentSubset != null && currentSubset.size() > 0) {
 				log("loader..");
 				dloader = new DNALLoader(errorTracker);
-				dloader.registry = registry;
+				//				dloader.registry = registry;
 				boolean b = dloader.load(currentSubset);
 				if (! b) {
 					state = OTState.ERROR;
+				} else {
+					loadValidator = new DNALLoadValidator(errorTracker);
+					loadValidator.registry = registry;
+					b = loadValidator.validate(dloader.getDataL());
+					if (! b) {
+						state = OTState.ERROR;
+					}
 				}
 			}
 
@@ -134,7 +143,7 @@ public class OverallParserTests extends BaseTest {
 				if (! b) {
 					return OTState.ERROR;
 				}
-				
+
 				RegistryTests.TypeValidator typeValidator = new TypeValidator(errorTracker, registry);
 				b = typeValidator.validate(tscanner.typeL);
 				if (! b) {
@@ -193,7 +202,7 @@ public class OverallParserTests extends BaseTest {
 		checkSize(1, scanner.tscanner.typeL);
 		checkEntrySize(0, scanner.tscanner.typeL.get(0).entries);
 		checkDType(scanner.tscanner.typeL.get(0), "int", "Timeout");
-		
+
 		assertEquals(1, scanner.dloader.getDataL().size());
 		assertEquals("size", scanner.dloader.getDataL().get(0).name);
 	}
@@ -206,10 +215,10 @@ public class OverallParserTests extends BaseTest {
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
 		assertEquals(null, scanner.tscanner);
-//		checkSize(1, scanner.tscanner.typeL);
-//		checkEntrySize(0, scanner.tscanner.typeL.get(0).entries);
-//		checkDType(scanner.tscanner.typeL.get(0), "int", "Timeout");
-		
+		//		checkSize(1, scanner.tscanner.typeL);
+		//		checkEntrySize(0, scanner.tscanner.typeL.get(0).entries);
+		//		checkDType(scanner.tscanner.typeL.get(0), "int", "Timeout");
+
 		assertEquals(1, scanner.dloader.getDataL().size());
 		assertEquals("size", scanner.dloader.getDataL().get(0).name);
 	}
@@ -242,8 +251,8 @@ public class OverallParserTests extends BaseTest {
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 	}
-	
-	
+
+
 	private void checkSize(int expectedSize, List<DType> list) {
 		assertEquals(expectedSize, list.size());
 	}

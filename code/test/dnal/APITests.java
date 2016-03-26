@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.mef.dnal.core.DValue;
 import org.mef.dnal.parser.ParseErrorTracker;
 
+import dnal.DNALLoadValidatorTests.DNALLoadValidator;
 import dnal.DNALLoaderTests.DNALLoader;
 import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
@@ -91,9 +92,13 @@ public class APITests {
 		String path = "./test/testfiles/file2.dnal";
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
 		DNALLoader loader = new DNALLoader(errorTracker);
-		loader.registry = buildRegistry();
 		boolean b = loader.load(path);
 		assertEquals(true, b);
+		if (b) {
+			DNALLoadValidator loadValidator = new DNALLoadValidator(errorTracker);
+			loadValidator.registry = buildRegistry();
+			b = loadValidator.validate(loader.getDataL());
+		}
 		return loader;
 	}
 	
