@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.mef.dnal.core.DType;
+import org.mef.dnal.core.DTypeEntry;
 import org.mef.dnal.parser.ParseErrorTracker;
 import org.thingworld.sfx.SfxTextReader;
 
@@ -16,8 +18,6 @@ import dnal.RegistryTests.TypeRegistry;
 import dnal.RegistryTests.TypeValidator;
 import dnal.TypeGeneratorTests.ITypeGenerator;
 import dnal.TypeGeneratorTests.TypeGenerator;
-import dnal.TypeParserTests.DType;
-import dnal.TypeParserTests.DTypeEntry;
 import dnal.TypeParserTests.TypeFileScanner;
 import dnal.dio.PositionMutator;
 import dnal.myformat.DNALLoaderTests.DNALLoader;

@@ -12,11 +12,11 @@ import org.mef.dnal.validation.ValidationError;
 import org.thingworld.sfx.SfxTextReader;
 
 import testhelper.BaseTest;
-import dnal.DNALLoadValidatorTests;
-import dnal.RegistryTests;
 import dnal.DNALLoadValidatorTests.DNALLoadValidator;
+import dnal.RegistryTests;
 import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
+import dnal.myformat.DNALParserTests.FileScanner;
 
 public class DNALLoaderTests extends BaseTest {
 	
@@ -49,12 +49,8 @@ public class DNALLoaderTests extends BaseTest {
 		@Override
 		public boolean load(List<String> lines) {
 
-			FileScanner scanner = new FileScanner(errorTracker);
+			DNALParserTests.FileScanner scanner = new FileScanner(errorTracker);
 			boolean b = scanner.scan(lines);
-//			if (b) {
-//				b = validate(scanner.valueL);
-//			}
-			
 			if (b) {
 				dataL = scanner.valueL;
 			}

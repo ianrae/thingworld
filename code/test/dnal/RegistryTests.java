@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.mef.dnal.core.DType;
+import org.mef.dnal.core.DTypeEntry;
 import org.mef.dnal.core.DValue;
 import org.mef.dnal.parser.ParseErrorTracker;
 import org.mef.dnal.validation.ValidationError;
@@ -17,8 +19,6 @@ import org.thingworld.sfx.SfxTextReader;
 import testhelper.BaseTest;
 import dnal.TypeGeneratorTests.ITypeGenerator;
 import dnal.TypeGeneratorTests.TypeGenerator;
-import dnal.TypeParserTests.DType;
-import dnal.TypeParserTests.DTypeEntry;
 import dnal.dio.PositionDIO;
 import dnal.myformat.TypeTests;
 import dnal.myformat.DNALLoaderTests.DNALLoader;

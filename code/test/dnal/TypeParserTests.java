@@ -7,17 +7,14 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.junit.Test;
+import org.mef.dnal.core.DType;
+import org.mef.dnal.core.DTypeEntry;
 import org.mef.dnal.parser.ParseErrorTracker;
+
 import testhelper.BaseTest;
 
 
 public class TypeParserTests extends BaseTest {
-	
-	public static class DTypeEntry {
-		public String packageName;
-		public String name;
-		public String type;
-	}	
 	
 	public enum LTState {
 		WANT_TYPE,
@@ -145,14 +142,6 @@ public class TypeParserTests extends BaseTest {
 		return dtype;
 	}
 
-	
-	///////////////////////////////////
-	public static class DType{
-		public String packageName;
-		public String name;
-		public String baseType;
-		public List<DTypeEntry> entries = new ArrayList<>();
-	}	
 	
 	public static enum FTState {
 		WANT_TYPE,
