@@ -5,12 +5,18 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Map.Entry;
 
 import org.junit.Test;
+import org.mef.dnal.core.DTypeEntry;
 import org.mef.dnal.core.DValue;
 import org.mef.dnal.core.IDNALLoader;
 import org.mef.dnal.parser.ParseErrorTracker;
 import org.thingworld.sfx.SfxTextReader;
+
+import com.moandjiezana.toml.Toml;
 
 import testhelper.BaseTest;
 import dnal.DNALLoadValidatorTests.DNALLoadValidator;
@@ -21,7 +27,7 @@ import dnal.RegistryTests.TypeRegistry;
 public class TomlDNALLoaderTests extends BaseTest {
 	
 	public static class TomlDNALLoader implements IDNALLoader {
-		private List<DValue> dataL;
+		private List<DValue> dataL = new ArrayList<>();
 		private boolean success;
 		private ParseErrorTracker errorTracker = new ParseErrorTracker();
 
@@ -40,20 +46,107 @@ public class TomlDNALLoaderTests extends BaseTest {
 		public boolean isValid() {
 			return success;
 		}
+		private void log(String s) {
+			System.out.println(s);
+		}
 		@Override
 		public boolean load(List<String> lines) {
 
-			boolean b = false;
-			if (b) {
-//				dataL = scanner.valueL;
+			String input = lines.get(0);
+			Toml toml = new Toml().read(input);
+			
+			for(Entry<String, Object> entry: toml.entrySet()) {
+				log(entry.getKey());
+				createDValue(toml, entry);
 			}
 			
+			boolean b = true;
 			return b;
 		}
 
+		private void createDValue(Toml rootToml, Entry<String, Object> entry) {
+			DValue dval = new DValue();
+			String keyx = entry.getKey();
+			dval.type = "struct";
+			dval.name = keyx;
+			Toml toml = rootToml.getTable(keyx);
+			Map<String, Object> map = toml.to(Map.class);		
+			for(String key: map.keySet()) {
+				log(key);
+				DValue dvalx = parseEntry(key);
+				if (dval.valueList == null) {
+					dval.valueList = new ArrayList<>();
+				}
+		
+				String raw = getAsString(toml, map, key);
+				dvalx.rawValue = raw;
+				dvalx.finalValue = getAsFinalValue(toml, map, key);
+				dval.valueList.add(dvalx);
+			}
+			dataL.add(dval);
+		}
+		
+		
+		private Object getAsFinalValue(Toml toml, Map<String, Object> map,
+				String key) {
+			Object obj = map.get(key);
+			if (obj == null) {
+				return null;
+			}
+			
+			if (obj instanceof Double) {
+				Double d = (Double) obj;
+				return Long.valueOf(d.longValue());
+			}
+			
+			return obj;
+		}
+		private String getAsString(Toml toml, Map<String, Object> map, String key) {
+			Object obj = map.get(key);
+			if (obj == null) {
+				return null;
+			}
+			
+			if (obj instanceof Double) {
+				Double d = (Double) obj;
+				return Long.valueOf(d.longValue()).toString();
+			}
+			
+			return obj.toString();
+		}
 		@Override
 		public List<DValue> getDataL() {
 			return dataL;
+		}
+		
+		private DValue parseEntry(String input) {
+			input = input.replace("__", " "); //!!
+			Scanner scan = new Scanner(input);
+			DValue dval = new DValue();
+			
+			
+			int state = 0;
+			while(scan.hasNext()) {
+				String tok = scan.next();
+				log(tok);
+				tok = tok.trim();
+				switch(state) {
+				case 0:
+					dval.type = tok;
+					state = 1;
+					break;
+				case 1:
+					dval.name = tok;
+					state = 2;
+					break;
+				case 2:
+				default:
+					errorTracker.addError("unexpected token:" + tok + " state:" + state);
+					break;
+				}
+			}
+			scan.close();
+			return dval;
 		}
 	}
 
@@ -65,17 +158,47 @@ public class TomlDNALLoaderTests extends BaseTest {
 		boolean b = loader.load(lines);
 		b = doValidation(b, loader, errorTracker);
 		assertEquals(true, b);
+		assertEquals(0, loader.getDataL().size());
+	}
+	@Test
+	public void test1() {
+		List<String> lines = buildFile(1);
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		IDNALLoader loader = new TomlDNALLoader(errorTracker);
+		boolean b = loader.load(lines);
+		b = doValidation(b, loader, errorTracker);
+		errorTracker.dumpErrors();
+		assertEquals(true, b);
 		assertEquals(1, loader.getDataL().size());
+		checkStructVal(loader, 0, "Foo");
+		checkDValInt(loader, 0, 0, "int", 45);
 	}
 	
+	private void checkDValInt(IDNALLoader loader, int i, int j, String string,
+			int k) {
+		Integer n = (Integer) loader.getDataL().get(i).valueList.get(j).finalValue;
+		assertEquals(k, n.intValue());
+		assertEquals("int", loader.getDataL().get(i).valueList.get(j).type);
+	}
+	private void checkStructVal(IDNALLoader loader, int i, String string) {
+		assertEquals(string, loader.getDataL().get(i).name);
+		assertEquals("struct", loader.getDataL().get(i).type);
+	}
+
 	private DNALLoadValidator loadValidator;
 	private boolean doValidation(boolean b, IDNALLoader loader, ParseErrorTracker errorTracker) {
 		if (!b) {
 			return false;
 		}
+		
+		if (loader.getDataL().size() == 0) {
+			return true;
+		}
+		
 		loadValidator = new DNALLoadValidator(errorTracker);
 		loadValidator.registry = buildRegistry();
-		return loadValidator.validate(loader.getDataL());
+		b = loadValidator.validate(loader.getDataL());
+		return b;
 	}
 //	@Test
 //	public void test1() {
@@ -142,8 +265,13 @@ public class TomlDNALLoaderTests extends BaseTest {
 			break;
 		case 1:
 			add("[Foo]");
-			add("a = 1");
-			add("'int size' = 45");
+			add("int__size = 45");
+//			add("\"int size\" = 45");
+			break;
+		case 2:
+			add("[Foo]");
+			add("string__size = 'five'");
+//			add("\"int size\" = 45");
 			break;
 //		case 2:
 ////			add("[TYPE]");

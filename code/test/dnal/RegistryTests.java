@@ -26,6 +26,7 @@ import dnal.myformat.DNALParserTests.FileScanner;
 import dnal.myformat.TypeTests.ITypeValidator;
 import dnal.myformat.TypeTests.MockIntValidator;
 import dnal.myformat.TypeTests.MockListStringValidator;
+import dnal.myformat.TypeTests.MockStructValidator;
 import dnal.myformat.TypeTests.ValidationResult;
 import dnal.myformat.TypeTests.ValidatorBase;
 
@@ -82,6 +83,11 @@ public class RegistryTests extends BaseTest {
 
 			//!!later support lists of other types
 			registry.add("list<string>", "PRIMITIVE", new TypeTests.MockListStringValidator(), null);
+			
+			//toml
+			MockStructValidator structVal = new MockStructValidator();
+			structVal.registry = registry;
+			registry.add("struct", "PRIMITIVE", structVal, null);
 			return registry;
 		}
 	}

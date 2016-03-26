@@ -149,6 +149,37 @@ public class TypeTests {
 		}
 	}
 
+	public static class MockStructValidator extends SimpleValidatorBase {
+		public TypeRegistry registry;
+
+		@Override
+		protected void doSubValue(ValidationResult result, DValue dval) {
+			ITypeValidator subval = registry.find(dval.type);
+			if (subval == null) {
+				this.addError(result, dval, "missing val for sub: " + dval.name);
+			} else {
+				ValidationResult tmp = subval.validate(dval, dval.rawValue);
+				result.isValid = tmp.isValid;
+				result.errors.addAll(tmp.errors);
+//				dval.finalValue = tmp.validObj;
+			}
+		}
+
+		@Override
+		protected void prepareForSubObj(DValue dval) {
+		}
+
+		@Override
+		protected void buildSubObj(DValue dval) {
+		}
+
+		@Override
+		protected void doValue(ValidationResult result, DValue dval,
+				Object inputObj) {
+			super.doSubValue(result, dval);
+		}
+	}
+
 	@Test
 	public void test() {
 		shouldFail(null);
