@@ -153,8 +153,13 @@ public class TypeParserTests extends BaseTest {
 		END,
 		ERROR
 	}
+	
+	public interface ITypeFileScanner {
+		List<DType> getDTypes();
+		boolean scan(List<String> fileL);
+	}
 
-	public static class TypeFileScanner {
+	public static class TypeFileScanner implements ITypeFileScanner {
 		private ParseErrorTracker errorTracker;
 		public List<DType> typeL = new ArrayList<>();
 //		private String currentType;
@@ -165,6 +170,7 @@ public class TypeParserTests extends BaseTest {
 			this.errorTracker = errorTracker;
 		}
 
+		@Override
 		public boolean scan(List<String> fileL) {
 			FTState state = FTState.WANT_TYPE;
 
@@ -314,13 +320,18 @@ public class TypeParserTests extends BaseTest {
 		private void log(String s) {
 			System.out.println(s);
 		}
+
+		@Override
+		public List<DType> getDTypes() {
+			return typeL;
+		}
 	}
 
 	@Test
 	public void testF0() {
 		List<String> fileL = buildFile(0);
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		TypeFileScanner scanner = new TypeFileScanner(errorTracker);
+		ITypeFileScanner scanner = new TypeFileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(false, b);
 	}
@@ -330,24 +341,24 @@ public class TypeParserTests extends BaseTest {
 		List<String> fileL = buildFile(1);
 
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		TypeFileScanner scanner = new TypeFileScanner(errorTracker);
+		ITypeFileScanner scanner = new TypeFileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
-		checkSize(1, scanner.typeL);
-		checkEntrySize(0, scanner.typeL.get(0).entries);
-		checkDType(scanner.typeL.get(0), "int", "Timeout");
+		checkSize(1, scanner.getDTypes());
+		checkEntrySize(0, scanner.getDTypes().get(0).entries);
+		checkDType(scanner.getDTypes().get(0), "int", "Timeout");
 	}
 	@Test
 	public void testF2() {
 		List<String> fileL = buildFile(2);
 
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		TypeFileScanner scanner = new TypeFileScanner(errorTracker);
+		ITypeFileScanner scanner = new TypeFileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
-		checkSize(1, scanner.typeL);
-		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
-		checkDType(scanner.typeL.get(0), "int", "Timeout");
+		checkSize(1, scanner.getDTypes());
+		checkDTypeEntry(scanner.getDTypes().get(0).entries.get(0), "int", "size");
+		checkDType(scanner.getDTypes().get(0), "int", "Timeout");
 	}
 	
 	@Test
@@ -355,43 +366,43 @@ public class TypeParserTests extends BaseTest {
 		List<String> fileL = buildFile(4);
 
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		TypeFileScanner scanner = new TypeFileScanner(errorTracker);
+		ITypeFileScanner scanner = new TypeFileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
-		checkSize(1, scanner.typeL);
-		checkEntrySize(2, scanner.typeL.get(0).entries);
-		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
-		checkDTypeEntry(scanner.typeL.get(0).entries.get(1), "int", "col");
-		checkDType(scanner.typeL.get(0), "int", "Timeout");
+		checkSize(1, scanner.getDTypes());
+		checkEntrySize(2, scanner.getDTypes().get(0).entries);
+		checkDTypeEntry(scanner.getDTypes().get(0).entries.get(0), "int", "size");
+		checkDTypeEntry(scanner.getDTypes().get(0).entries.get(1), "int", "col");
+		checkDType(scanner.getDTypes().get(0), "int", "Timeout");
 	}
 	@Test
 	public void testF6() {
 		List<String> fileL = buildFile(6);
 
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		TypeFileScanner scanner = new TypeFileScanner(errorTracker);
+		ITypeFileScanner scanner = new TypeFileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
-		checkSize(2, scanner.typeL);
-		checkEntrySize(1, scanner.typeL.get(0).entries);
-		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
-		checkDType(scanner.typeL.get(0), "int", "Timeout");
+		checkSize(2, scanner.getDTypes());
+		checkEntrySize(1, scanner.getDTypes().get(0).entries);
+		checkDTypeEntry(scanner.getDTypes().get(0).entries.get(0), "int", "size");
+		checkDType(scanner.getDTypes().get(0), "int", "Timeout");
 
-		checkEntrySize(1, scanner.typeL.get(1).entries);
-		checkDTypeEntry(scanner.typeL.get(1).entries.get(0), "int", "wid");
-		checkDType(scanner.typeL.get(1), "int", "ZTimeout");
+		checkEntrySize(1, scanner.getDTypes().get(1).entries);
+		checkDTypeEntry(scanner.getDTypes().get(1).entries.get(0), "int", "wid");
+		checkDType(scanner.getDTypes().get(1), "int", "ZTimeout");
 	}
 	@Test
 	public void testF7() {
 		List<String> fileL = buildFile(7);
 
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		TypeFileScanner scanner = new TypeFileScanner(errorTracker);
+		ITypeFileScanner scanner = new TypeFileScanner(errorTracker);
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
-		checkSize(1, scanner.typeL);
-		checkDTypeEntry(scanner.typeL.get(0).entries.get(0), "int", "size");
-		checkDType(scanner.typeL.get(0), "int", "Timeout");
+		checkSize(1, scanner.getDTypes());
+		checkDTypeEntry(scanner.getDTypes().get(0).entries.get(0), "int", "size");
+		checkDType(scanner.getDTypes().get(0), "int", "Timeout");
 	}
 	
 	

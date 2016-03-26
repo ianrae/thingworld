@@ -18,6 +18,7 @@ import dnal.RegistryTests.TypeRegistry;
 import dnal.RegistryTests.TypeValidator;
 import dnal.TypeGeneratorTests.ITypeGenerator;
 import dnal.TypeGeneratorTests.TypeGenerator;
+import dnal.TypeParserTests.ITypeFileScanner;
 import dnal.TypeParserTests.TypeFileScanner;
 import dnal.dio.PositionMutator;
 import dnal.myformat.DNALLoaderTests.DNALLoader;
@@ -37,7 +38,7 @@ public class OverallParserTests extends BaseTest {
 		private ParseErrorTracker errorTracker;
 		private int lineNum;
 		private List<String> currentSubset;
-		public TypeFileScanner tscanner;
+		public ITypeFileScanner tscanner;
 		public IDNALLoader dloader;
 		private DNALLoadValidator loadValidator;
 		private boolean success;
@@ -146,7 +147,7 @@ public class OverallParserTests extends BaseTest {
 				}
 
 				RegistryTests.TypeValidator typeValidator = new TypeValidator(errorTracker, registry);
-				b = typeValidator.validate(tscanner.typeL);
+				b = typeValidator.validate(tscanner.getDTypes());
 				if (! b) {
 					return OTState.ERROR;
 				}
@@ -186,9 +187,9 @@ public class OverallParserTests extends BaseTest {
 		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
-		checkSize(1, scanner.tscanner.typeL);
-		checkEntrySize(0, scanner.tscanner.typeL.get(0).entries);
-		checkDType(scanner.tscanner.typeL.get(0), "int", "Timeout");
+		checkSize(1, scanner.tscanner.getDTypes());
+		checkEntrySize(0, scanner.tscanner.getDTypes().get(0).entries);
+		checkDType(scanner.tscanner.getDTypes().get(0), "int", "Timeout");
 		assertNotNull(null, scanner.dloader);
 	}
 	@Test
@@ -198,9 +199,9 @@ public class OverallParserTests extends BaseTest {
 		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.scan(fileL);
 		assertEquals(true, b);
-		checkSize(1, scanner.tscanner.typeL);
-		checkEntrySize(0, scanner.tscanner.typeL.get(0).entries);
-		checkDType(scanner.tscanner.typeL.get(0), "int", "Timeout");
+		checkSize(1, scanner.tscanner.getDTypes());
+		checkEntrySize(0, scanner.tscanner.getDTypes().get(0).entries);
+		checkDType(scanner.tscanner.getDTypes().get(0), "int", "Timeout");
 
 		assertEquals(1, scanner.dloader.getDataL().size());
 		assertEquals("size", scanner.dloader.getDataL().get(0).name);
@@ -227,9 +228,9 @@ public class OverallParserTests extends BaseTest {
 		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.scan(fileL);
 		assertEquals(false, b);
-		checkSize(1, scanner.tscanner.typeL);
-		checkEntrySize(0, scanner.tscanner.typeL.get(0).entries);
-		checkDType(scanner.tscanner.typeL.get(0), "zzz", "Timeout");
+		checkSize(1, scanner.tscanner.getDTypes());
+		checkEntrySize(0, scanner.tscanner.getDTypes().get(0).entries);
+		checkDType(scanner.tscanner.getDTypes().get(0), "zzz", "Timeout");
 		assertNotNull(null, scanner.dloader);
 	}
 	@Test
