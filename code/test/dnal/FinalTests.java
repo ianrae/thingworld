@@ -9,12 +9,12 @@ import org.mef.dnal.core.DValue;
 import org.mef.dnal.parser.ParseErrorTracker;
 
 import testhelper.BaseTest;
-import dnal.DNALLoaderTests.DNALLoader;
 import dnal.OverallParserTests.OverallFileScanner;
 import dnal.TypeGeneratorTests.ITypeGenerator;
 import dnal.TypeGeneratorTests.TypeGenerator;
 import dnal.dio.PositionDIO;
 import dnal.dio.PositionMutator;
+import dnal.myformat.DNALLoaderTests.DNALLoader;
 
 public class FinalTests extends BaseTest {
 

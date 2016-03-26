@@ -1,4 +1,4 @@
-package dnal;
+package dnal.myformat;
 
 import static org.junit.Assert.assertEquals;
 
@@ -12,12 +12,11 @@ import org.mef.dnal.validation.ValidationError;
 import org.thingworld.sfx.SfxTextReader;
 
 import testhelper.BaseTest;
+import dnal.DNALLoadValidatorTests;
+import dnal.RegistryTests;
 import dnal.DNALLoadValidatorTests.DNALLoadValidator;
 import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
-import dnal.myformat.DNALParserTests.FileScanner;
-import dnal.myformat.TypeTests.ITypeValidator;
-import dnal.myformat.TypeTests.ValidationResult;
 
 public class DNALLoaderTests extends BaseTest {
 	

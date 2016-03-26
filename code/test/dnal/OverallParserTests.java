@@ -11,8 +11,6 @@ import org.thingworld.sfx.SfxTextReader;
 
 import testhelper.BaseTest;
 import dnal.DNALLoadValidatorTests.DNALLoadValidator;
-import dnal.DNALLoaderTests.DNALLoader;
-import dnal.DNALLoaderTests.IDNALLoader;
 import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
 import dnal.RegistryTests.TypeValidator;
@@ -22,6 +20,8 @@ import dnal.TypeParserTests.DType;
 import dnal.TypeParserTests.DTypeEntry;
 import dnal.TypeParserTests.TypeFileScanner;
 import dnal.dio.PositionMutator;
+import dnal.myformat.DNALLoaderTests.DNALLoader;
+import dnal.myformat.DNALLoaderTests.IDNALLoader;
 
 
 public class OverallParserTests extends BaseTest {

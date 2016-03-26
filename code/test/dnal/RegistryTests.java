@@ -15,13 +15,13 @@ import org.mef.dnal.validation.ValidationError;
 import org.thingworld.sfx.SfxTextReader;
 
 import testhelper.BaseTest;
-import dnal.DNALLoaderTests.DNALLoader;
 import dnal.TypeGeneratorTests.ITypeGenerator;
 import dnal.TypeGeneratorTests.TypeGenerator;
 import dnal.TypeParserTests.DType;
 import dnal.TypeParserTests.DTypeEntry;
 import dnal.dio.PositionDIO;
 import dnal.myformat.TypeTests;
+import dnal.myformat.DNALLoaderTests.DNALLoader;
 import dnal.myformat.DNALParserTests.FileScanner;
 import dnal.myformat.TypeTests.ITypeValidator;
 import dnal.myformat.TypeTests.MockIntValidator;

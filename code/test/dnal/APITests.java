@@ -11,9 +11,10 @@ import org.mef.dnal.core.DValue;
 import org.mef.dnal.parser.ParseErrorTracker;
 
 import dnal.DNALLoadValidatorTests.DNALLoadValidator;
-import dnal.DNALLoaderTests.DNALLoader;
 import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
+import dnal.myformat.DNALLoaderTests.DNALLoader;
+import dnal.myformat.DNALLoaderTests.IDNALLoader;
 
 public class APITests {
 
@@ -30,7 +31,7 @@ public class APITests {
 		private List<DValue> dataL;
 		private Map<String,DValue> map = new HashMap<>();
 
-		public DNALAPI(DNALLoader loader) throws DNALException {
+		public DNALAPI(IDNALLoader loader) throws DNALException {
 			if (! loader.isValid()) {
 				throw new DNALException("loader has invalid data");
 			}
