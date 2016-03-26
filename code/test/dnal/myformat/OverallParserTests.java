@@ -1,4 +1,4 @@
-package dnal;
+package dnal.myformat;
 
 import static org.junit.Assert.*;
 
@@ -9,11 +9,15 @@ import org.junit.Test;
 import org.mef.dnal.core.DType;
 import org.mef.dnal.core.DTypeEntry;
 import org.mef.dnal.core.IDNALLoader;
+import org.mef.dnal.core.IOverallFileScanner;
 import org.mef.dnal.core.ITypeFileScanner;
 import org.mef.dnal.parser.ParseErrorTracker;
 import org.thingworld.sfx.SfxTextReader;
 
 import testhelper.BaseTest;
+import dnal.DNALLoadValidatorTests;
+import dnal.RegistryTests;
+import dnal.TypeGeneratorTests;
 import dnal.DNALLoadValidatorTests.DNALLoadValidator;
 import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
@@ -21,8 +25,6 @@ import dnal.RegistryTests.TypeValidator;
 import dnal.TypeGeneratorTests.ITypeGenerator;
 import dnal.TypeGeneratorTests.TypeGenerator;
 import dnal.dio.PositionMutator;
-import dnal.myformat.DNALLoaderTests.DNALLoader;
-import dnal.myformat.TypeParserTests.TypeFileScanner;
 
 
 public class OverallParserTests extends BaseTest {
@@ -34,12 +36,6 @@ public class OverallParserTests extends BaseTest {
 		ERROR
 	}
 
-	public interface IOverallFileScanner {
-		boolean load(String path);
-		boolean isValid();
-		void dumpErrors();
-		boolean scan(List<String> fileL);
-	}
 	public static class OverallFileScanner implements IOverallFileScanner {
 		private ParseErrorTracker errorTracker;
 		private int lineNum;
@@ -267,8 +263,8 @@ public class OverallParserTests extends BaseTest {
 	private OverallFileScanner createScanner() {
 		ITypeGenerator gen = createGenerator();
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		DNALLoader dloader = new DNALLoader(errorTracker);
-		ITypeFileScanner tscanner = new TypeFileScanner(errorTracker);
+		IDNALLoader dloader = new DNALLoaderTests.DNALLoader(errorTracker);
+		ITypeFileScanner tscanner = new TypeParserTests.TypeFileScanner(errorTracker);
 		OverallFileScanner scanner = new OverallFileScanner(errorTracker, dloader, gen, tscanner);
 		return scanner;
 	}

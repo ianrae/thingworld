@@ -11,10 +11,10 @@ import org.mef.dnal.core.ITypeFileScanner;
 import org.mef.dnal.parser.ParseErrorTracker;
 
 import testhelper.BaseTest;
-import dnal.OverallParserTests.OverallFileScanner;
 import dnal.TypeGeneratorTests.ITypeGenerator;
 import dnal.dio.PositionMutator;
 import dnal.myformat.DNALLoaderTests.DNALLoader;
+import dnal.myformat.OverallParserTests.OverallFileScanner;
 import dnal.myformat.TypeParserTests.TypeFileScanner;
 
 public class FinalTests extends BaseTest {
