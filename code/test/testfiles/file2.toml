@@ -1,0 +1,8 @@
+# a basic dnal file
+
+[Foo]
+ int__size = 100
+ string__firstName = "sue mary"
+ boolean__flag = true
+
+

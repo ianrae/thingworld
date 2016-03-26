@@ -10,7 +10,6 @@ import java.util.Scanner;
 import java.util.Map.Entry;
 
 import org.junit.Test;
-import org.mef.dnal.core.DTypeEntry;
 import org.mef.dnal.core.DValue;
 import org.mef.dnal.core.IDNALLoader;
 import org.mef.dnal.parser.ParseErrorTracker;
@@ -171,14 +170,98 @@ public class TomlDNALLoaderTests extends BaseTest {
 		assertEquals(true, b);
 		assertEquals(1, loader.getDataL().size());
 		checkStructVal(loader, 0, "Foo");
-		checkDValInt(loader, 0, 0, "int", 45);
+		checkDValInt(loader, 0, 0, "size", 45);
+	}
+	@Test
+	public void test2() {
+		List<String> lines = buildFile(2);
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		IDNALLoader loader = new TomlDNALLoader(errorTracker);
+		boolean b = loader.load(lines);
+		b = doValidation(b, loader, errorTracker);
+		errorTracker.dumpErrors();
+		assertEquals(true, b);
+		assertEquals(1, loader.getDataL().size());
+		checkStructVal(loader, 0, "Foo");
+		checkDValString(loader, 0, 0, "size", "five");
+	}
+	@Test
+	public void test3() {
+		List<String> lines = buildFile(3);
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		IDNALLoader loader = new TomlDNALLoader(errorTracker);
+		boolean b = loader.load(lines);
+		b = doValidation(b, loader, errorTracker);
+		errorTracker.dumpErrors();
+		assertEquals(true, b);
+		assertEquals(1, loader.getDataL().size());
+		checkStructVal(loader, 0, "Foo");
+		checkDValBoolean(loader, 0, 0, "size", true);
+	}
+	@Test
+	public void test4() {
+		List<String> lines = buildFile(4);
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		IDNALLoader loader = new TomlDNALLoader(errorTracker);
+		boolean b = loader.load(lines);
+		b = doValidation(b, loader, errorTracker);
+		errorTracker.dumpErrors();
+		assertEquals(false, b);
+		assertEquals(1, loader.getDataL().size());
 	}
 	
-	private void checkDValInt(IDNALLoader loader, int i, int j, String string,
-			int k) {
+	
+	@Test
+	public void testFile2() {
+		String path = "./test/testfiles/file2.toml";
+		ParseErrorTracker errorTracker = new ParseErrorTracker();
+		IDNALLoader loader = new TomlDNALLoader(errorTracker);
+		boolean b = loader.load(path);
+		b = doValidation(b, loader, errorTracker);
+		errorTracker.dumpErrors();
+		assertEquals(true, b);
+		assertEquals(1, loader.getDataL().size());
+		checkStructVal(loader, 0, "Foo");
+		checkDValInt(loader, 0, 0, "size", 100);
+		checkDValString(loader, 0, 1, "firstName", "sue mary");
+		checkDValBoolean(loader, 0, 2, "flag", true);
+	}
+	
+//	@Test
+//	public void testFile2() {
+//		String path = "./test/testfiles/file2.dnal";
+//		ParseErrorTracker errorTracker = new ParseErrorTracker();
+//		IDNALLoader loader = new TomlDNALLoader(errorTracker);
+//		boolean b = loader.load(path);
+//		b = doValidation(b, loader, errorTracker);
+//		assertEquals(true, b);
+//		assertEquals(3, loader.getDataL().size());
+//		assertEquals("size", loader.getDataL().get(0).name);
+//		assertEquals("firstName", loader.getDataL().get(1).name);
+//		assertEquals("flag", loader.getDataL().get(2).name);
+//
+//		checkInt(100, loader.getDataL().get(0));
+//		assertEquals("sue mary", loader.getDataL().get(1).finalValue);
+//		checkBool(true, loader.getDataL().get(2));
+//	}
+	
+	private void checkDValBoolean(IDNALLoader loader, int i, int j, String name, Boolean expected) {
+		Boolean b = (Boolean) loader.getDataL().get(i).valueList.get(j).finalValue;
+		assertEquals(expected, b);
+		assertEquals("boolean", loader.getDataL().get(i).valueList.get(j).type);
+		assertEquals(name, loader.getDataL().get(i).valueList.get(j).name);
+	}
+	private void checkDValString(IDNALLoader loader, int i, int j, String name, String expected) {
+		String s = (String) loader.getDataL().get(i).valueList.get(j).finalValue;
+		assertEquals(expected, s);
+		assertEquals("string", loader.getDataL().get(i).valueList.get(j).type);
+		assertEquals(name, loader.getDataL().get(i).valueList.get(j).name);
+	}
+	private void checkDValInt(IDNALLoader loader, int i, int j, String name, int k) {
 		Integer n = (Integer) loader.getDataL().get(i).valueList.get(j).finalValue;
 		assertEquals(k, n.intValue());
 		assertEquals("int", loader.getDataL().get(i).valueList.get(j).type);
+		assertEquals(name, loader.getDataL().get(i).valueList.get(j).name);
 	}
 	private void checkStructVal(IDNALLoader loader, int i, String string) {
 		assertEquals(string, loader.getDataL().get(i).name);
@@ -199,55 +282,6 @@ public class TomlDNALLoaderTests extends BaseTest {
 		loadValidator.registry = buildRegistry();
 		b = loadValidator.validate(loader.getDataL());
 		return b;
-	}
-//	@Test
-//	public void test1() {
-//		List<String> lines = buildFile(1);
-//		ParseErrorTracker errorTracker = new ParseErrorTracker();
-//		IDNALLoader loader = new TomlDNALLoader(errorTracker);
-//		boolean b = loader.load(lines);
-//		b = doValidation(b, loader, errorTracker);
-//		assertEquals(false, b);
-//		for(ValidationError err: loadValidator.errors) {
-//			log(String.format("%s: %s", err.fieldName, err.error));
-//		}
-//	}
-//	@Test
-//	public void testFile() {
-//		String path = "./test/testfiles/file1.dnal";
-//		ParseErrorTracker errorTracker = new ParseErrorTracker();
-//		IDNALLoader loader = new TomlDNALLoader(errorTracker);
-//		boolean b = loader.load(path);
-//		b = doValidation(b, loader, errorTracker);
-//		assertEquals(true, b);
-//		assertEquals(1, loader.getDataL().size());
-//		assertEquals("size", loader.getDataL().get(0).name);
-//	}
-//	@Test
-//	public void testFile2() {
-//		String path = "./test/testfiles/file2.dnal";
-//		ParseErrorTracker errorTracker = new ParseErrorTracker();
-//		IDNALLoader loader = new TomlDNALLoader(errorTracker);
-//		boolean b = loader.load(path);
-//		b = doValidation(b, loader, errorTracker);
-//		assertEquals(true, b);
-//		assertEquals(3, loader.getDataL().size());
-//		assertEquals("size", loader.getDataL().get(0).name);
-//		assertEquals("firstName", loader.getDataL().get(1).name);
-//		assertEquals("flag", loader.getDataL().get(2).name);
-//
-//		checkInt(100, loader.getDataL().get(0));
-//		assertEquals("sue mary", loader.getDataL().get(1).finalValue);
-//		checkBool(true, loader.getDataL().get(2));
-//	}
-	
-	private void checkBool(boolean b, DValue dval) {
-		Boolean bb = (Boolean) dval.finalValue;
-		assertEquals(b, bb.booleanValue());
-	}
-	private void checkInt(int i, DValue dval) {
-		Integer n = (Integer) dval.finalValue;
-		assertEquals(i, n.intValue());
 	}
 	private TypeRegistry buildRegistry() {
 		RegistryTests.RegistryBuilder builder = new RegistryBuilder();
@@ -271,7 +305,14 @@ public class TomlDNALLoaderTests extends BaseTest {
 		case 2:
 			add("[Foo]");
 			add("string__size = 'five'");
-//			add("\"int size\" = 45");
+			break;
+		case 3:
+			add("[Foo]");
+			add("boolean__size = true");
+			break;
+		case 4:
+			add("[Foo]");
+			add("int__size = 'zoo'");
 			break;
 //		case 2:
 ////			add("[TYPE]");
