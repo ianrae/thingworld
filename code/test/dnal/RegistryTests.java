@@ -168,7 +168,7 @@ public class RegistryTests extends BaseTest {
 				
 				validator = registry.find(dtype.baseType);
 				if (validator == null) {
-					ok = dtype.baseType.equals("struct");
+					ok = isStruct(dtype) || isEnum(dtype);
 					if (! ok) {
 						addError(dtype, "unknown base type: " + dtype.baseType);
 					}
@@ -176,16 +176,17 @@ public class RegistryTests extends BaseTest {
 				}
 				
 				if (dtype.entries != null && dtype.entries.size() > 0) {
-					if (! isStruct(dtype)) {
+					if (isStruct(dtype)) {
+						for(DTypeEntry sub: dtype.entries) {
+							if (! ensureExists(dtype, sub.type)) {
+								ok = false;
+							}
+						}
+					} else if (isEnum(dtype)) {
+					} else {
 						addError(dtype, String.format("'%s' is not a struct", dtype.name));
 						ok = false;
-					}
-					
-					for(DTypeEntry sub: dtype.entries) {
-						if (! ensureExists(dtype, sub.type)) {
-							ok = false;
-						}
-					}
+					} 
 				}
 				
 				
@@ -204,6 +205,10 @@ public class RegistryTests extends BaseTest {
 			return (errors.size() == 0);
 		}
 		
+		private boolean isEnum(DType dtype) {
+			return isSomeBaseType(dtype, "enum");
+		}
+
 		private boolean isList(DType dtype) {
 			String currentBaseType = dtype.baseType;
 
@@ -224,10 +229,13 @@ public class RegistryTests extends BaseTest {
 		}
 
 		private boolean isStruct(DType dtype) {
+			return isSomeBaseType(dtype, "struct");
+		}
+		private boolean isSomeBaseType(DType dtype, String targetBaseType) {
 			String currentBaseType = dtype.baseType;
 
 			for(int i = 0; i < 100; i++) {
-				if (currentBaseType.equals("struct")) {
+				if (currentBaseType.startsWith(targetBaseType)) {
 					return true;
 				}
 					

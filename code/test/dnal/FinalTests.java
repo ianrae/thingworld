@@ -72,6 +72,18 @@ public class FinalTests extends BaseTest {
 		assertEquals("prov", dataL.get(0).name);
 		assertEquals("on", dataL.get(0).tmplist.get(0));
 	}
+	@Test
+	public void testSimpleEnum() {
+		String path = buildPath("simpleenum.dnal");
+		ITypeGenerator gen = createGenerator();
+		OverallFileScanner scanner = new OverallFileScanner(gen);
+		boolean b = scanner.load(path);
+		assertEquals(true, b);
+		List<DValue> dataL = scanner.dloader.getDataL();
+		assertEquals(1, dataL.size());
+		assertEquals("col", dataL.get(0).name);
+		assertEquals("RED", dataL.get(0).finalValue);
+	}
 
 	@Test
 	public void testStruct() {

@@ -160,6 +160,7 @@ public class TypeParserTests extends BaseTest {
 		WANT_EXTENDS,
 		WANT_BASETYPE,
 		INSIDE,
+		INSIDE_ENUM,
 		END,
 		ERROR
 	}
@@ -193,6 +194,12 @@ public class TypeParserTests extends BaseTest {
 				
 				if (state == FTState.INSIDE) {
 					state = handleInside(line);
+					if (state == FTState.END) {
+						state = handleEnd(line);
+					}					
+					continue;
+				} else if (state == FTState.INSIDE_ENUM) {
+					state = handleInsideEnum(line);
 					if (state == FTState.END) {
 						state = handleEnd(line);
 					}					
@@ -274,6 +281,9 @@ public class TypeParserTests extends BaseTest {
 		}
 		private FTState handleBaseType(String tok) {
 			this.currentDType.baseType = tok;
+			if (tok.equals("enum")) {
+				return FTState.INSIDE_ENUM;
+			}
 			return FTState.INSIDE;
 		}
 		
@@ -294,6 +304,22 @@ public class TypeParserTests extends BaseTest {
 			}
 			
 			return FTState.INSIDE;
+		}
+		private FTState handleInsideEnum(String tok) {
+			if (tok.equals("end")) {
+				return FTState.END;
+			} else if (tok.startsWith("//")) {
+				return FTState.INSIDE_ENUM;
+			}
+			
+			DTypeEntry entry = new DTypeEntry();
+			entry.name = tok;
+			entry.packageName = null;
+			entry.type = "enumval";
+
+			currentDType.entries.add(entry);
+			
+			return FTState.INSIDE_ENUM;
 		}
 
 		private void log(String s) {
