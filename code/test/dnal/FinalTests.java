@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.Test;
 import org.mef.dnal.core.DValue;
 import org.mef.dnal.core.IDNALLoader;
+import org.mef.dnal.core.IOverallFileScanner;
 import org.mef.dnal.core.ITypeFileScanner;
 import org.mef.dnal.parser.ParseErrorTracker;
 
@@ -22,7 +23,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testPrimitives() {
 		String path = buildPath("primitives.dnal");
-		OverallFileScanner scanner = createScanner();
+		IOverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.getDloader().getDataL();
@@ -32,7 +33,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testPrimitivesBad() {
 		String path = buildPath("primitivesBad.dnal");
-		OverallFileScanner scanner = createScanner();
+		IOverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(false, b);
 		scanner.dumpErrors();
@@ -40,7 +41,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testList() {
 		String path = buildPath("lists.dnal");
-		OverallFileScanner scanner = createScanner();
+		IOverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.getDloader().getDataL();
@@ -52,7 +53,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testSimple() {
 		String path = buildPath("simple.dnal");
-		OverallFileScanner scanner = createScanner();
+		IOverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.getDloader().getDataL();
@@ -62,7 +63,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testSimpleList() {
 		String path = buildPath("simplelist.dnal");
-		OverallFileScanner scanner = createScanner();
+		IOverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.getDloader().getDataL();
@@ -73,7 +74,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testSimpleEnum() {
 		String path = buildPath("simpleenum.dnal");
-		OverallFileScanner scanner = createScanner();
+		IOverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.getDloader().getDataL();
@@ -85,7 +86,7 @@ public class FinalTests extends BaseTest {
 	@Test
 	public void testStruct() {
 		String path = buildPath("struct.dnal");
-		OverallFileScanner scanner = createScanner();
+		IOverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
 		List<DValue> dataL = scanner.getDloader().getDataL();
@@ -101,7 +102,7 @@ public class FinalTests extends BaseTest {
 		log(fakepos);
 	}
 	
-	private OverallFileScanner createScanner() {
+	private IOverallFileScanner createScanner() {
 		ITypeGenerator gen = createGenerator();
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
 		IDNALLoader dloader = new DNALLoader(errorTracker);

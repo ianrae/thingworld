@@ -7,4 +7,5 @@ public interface IOverallFileScanner {
 	boolean isValid();
 	void dumpErrors();
 	boolean scan(List<String> fileL);
+	IDNALLoader getDloader();
 }
