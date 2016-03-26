@@ -16,17 +16,18 @@ import org.thingworld.sfx.SfxTextReader;
 
 import testhelper.BaseTest;
 import dnal.DNALLoaderTests.DNALLoader;
-import dnal.DNALParserTests.FileScanner;
 import dnal.TypeGeneratorTests.ITypeGenerator;
 import dnal.TypeGeneratorTests.TypeGenerator;
 import dnal.TypeParserTests.DType;
 import dnal.TypeParserTests.DTypeEntry;
-import dnal.TypeTests.ITypeValidator;
-import dnal.TypeTests.MockIntValidator;
-import dnal.TypeTests.MockListStringValidator;
-import dnal.TypeTests.ValidationResult;
-import dnal.TypeTests.ValidatorBase;
 import dnal.dio.PositionDIO;
+import dnal.myformat.TypeTests;
+import dnal.myformat.DNALParserTests.FileScanner;
+import dnal.myformat.TypeTests.ITypeValidator;
+import dnal.myformat.TypeTests.MockIntValidator;
+import dnal.myformat.TypeTests.MockListStringValidator;
+import dnal.myformat.TypeTests.ValidationResult;
+import dnal.myformat.TypeTests.ValidatorBase;
 
 public class RegistryTests extends BaseTest {
 	

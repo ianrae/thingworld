@@ -12,11 +12,11 @@ import org.mef.dnal.validation.ValidationError;
 import org.thingworld.sfx.SfxTextReader;
 
 import testhelper.BaseTest;
-import dnal.DNALParserTests.FileScanner;
 import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
-import dnal.TypeTests.ITypeValidator;
-import dnal.TypeTests.ValidationResult;
+import dnal.myformat.DNALParserTests.FileScanner;
+import dnal.myformat.TypeTests.ITypeValidator;
+import dnal.myformat.TypeTests.ValidationResult;
 
 public class DNALLoaderTests extends BaseTest {
 	

@@ -6,7 +6,7 @@ import org.mef.dnal.core.DValue;
 import org.mef.dnal.validation.ValidationBase;
 import org.mef.dnal.validation.ValidationException;
 
-import dnal.EarlyDNALTests.MutatorBase;
+import dnal.myformat.EarlyDNALTests.MutatorBase;
 
 public class PositionMutator extends MutatorBase<PositionDIO> {
 	private int x;
