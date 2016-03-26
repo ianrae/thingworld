@@ -1,4 +1,4 @@
-package dnal;
+package dnal.myformat;
 
 import static org.junit.Assert.*;
 
@@ -9,6 +9,7 @@ import java.util.Scanner;
 import org.junit.Test;
 import org.mef.dnal.core.DType;
 import org.mef.dnal.core.DTypeEntry;
+import org.mef.dnal.core.ITypeFileScanner;
 import org.mef.dnal.parser.ParseErrorTracker;
 
 import testhelper.BaseTest;
@@ -154,11 +155,6 @@ public class TypeParserTests extends BaseTest {
 		ERROR
 	}
 	
-	public interface ITypeFileScanner {
-		List<DType> getDTypes();
-		boolean scan(List<String> fileL);
-	}
-
 	public static class TypeFileScanner implements ITypeFileScanner {
 		private ParseErrorTracker errorTracker;
 		public List<DType> typeL = new ArrayList<>();

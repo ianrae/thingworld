@@ -6,17 +6,17 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mef.dnal.core.DValue;
+import org.mef.dnal.core.ITypeFileScanner;
 import org.mef.dnal.parser.ParseErrorTracker;
 
 import testhelper.BaseTest;
 import dnal.OverallParserTests.OverallFileScanner;
 import dnal.TypeGeneratorTests.ITypeGenerator;
 import dnal.TypeGeneratorTests.TypeGenerator;
-import dnal.TypeParserTests.ITypeFileScanner;
-import dnal.TypeParserTests.TypeFileScanner;
 import dnal.dio.PositionDIO;
 import dnal.dio.PositionMutator;
 import dnal.myformat.DNALLoaderTests.DNALLoader;
+import dnal.myformat.TypeParserTests.TypeFileScanner;
 
 public class FinalTests extends BaseTest {
 

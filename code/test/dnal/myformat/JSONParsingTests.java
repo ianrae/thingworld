@@ -1,4 +1,4 @@
-package dnal;
+package dnal.myformat;
 
 import static org.junit.Assert.assertEquals;
 
