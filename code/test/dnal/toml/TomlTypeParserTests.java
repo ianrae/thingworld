@@ -15,8 +15,6 @@ import org.mef.dnal.core.ITypeFileScanner;
 import org.mef.dnal.parser.ParseErrorTracker;
 
 import com.moandjiezana.toml.Toml;
-
-import dnal.myformat.TypeParserTests.LTState;
 import testhelper.BaseTest;
 
 
@@ -38,7 +36,7 @@ public class TomlTypeParserTests extends BaseTest {
 			Toml toml2 = toml.getTable("TYPE");
 			if (toml2 != null) {
 				for(Entry<String, Object> entry: toml2.entrySet()) {
-					log("2: " + entry.getKey());
+//					log("2: " + entry.getKey());
 					createDType(toml, entry);
 				}
 			}
@@ -56,9 +54,11 @@ public class TomlTypeParserTests extends BaseTest {
 			dtype.baseType = (s == null) ? "struct" : s;
 
 			List<String> membL = toml.getList("MEMBERS");
-			for(String field: membL) {
-				DTypeEntry entry = parseEntry(field);
-				dtype.entries.add(entry);
+			if (membL != null) {
+				for(String field: membL) {
+					DTypeEntry entry = parseEntry(field);
+					dtype.entries.add(entry);
+				}
 			}
 			
 			this.typeL.add(dtype);
@@ -149,50 +149,18 @@ public class TomlTypeParserTests extends BaseTest {
 		checkEntry(scanner, i, 0, "string", "firstName");
 		checkEntry(scanner, i, 1, "string", "lastName");
 	}
-//	@Test
-//	public void testF4() {
-//		List<String> fileL = buildFile(4);
-//
-//		ParseErrorTracker errorTracker = new ParseErrorTracker();
-//		ITypeFileScanner scanner = new TypeFileScanner(errorTracker);
-//		boolean b = scanner.scan(fileL);
-//		assertEquals(true, b);
-//		checkSize(1, scanner.getDTypes());
-//		checkEntrySize(2, scanner.getDTypes().get(0).entries);
-//		checkDTypeEntry(scanner.getDTypes().get(0).entries.get(0), "int", "size");
-//		checkDTypeEntry(scanner.getDTypes().get(0).entries.get(1), "int", "col");
-//		checkDType(scanner.getDTypes().get(0), "int", "Timeout");
-//	}
-//	@Test
-//	public void testF6() {
-//		List<String> fileL = buildFile(6);
-//
-//		ParseErrorTracker errorTracker = new ParseErrorTracker();
-//		ITypeFileScanner scanner = new TypeFileScanner(errorTracker);
-//		boolean b = scanner.scan(fileL);
-//		assertEquals(true, b);
-//		checkSize(2, scanner.getDTypes());
-//		checkEntrySize(1, scanner.getDTypes().get(0).entries);
-//		checkDTypeEntry(scanner.getDTypes().get(0).entries.get(0), "int", "size");
-//		checkDType(scanner.getDTypes().get(0), "int", "Timeout");
-//
-//		checkEntrySize(1, scanner.getDTypes().get(1).entries);
-//		checkDTypeEntry(scanner.getDTypes().get(1).entries.get(0), "int", "wid");
-//		checkDType(scanner.getDTypes().get(1), "int", "ZTimeout");
-//	}
-//	@Test
-//	public void testF7() {
-//		List<String> fileL = buildFile(7);
-//
-//		ParseErrorTracker errorTracker = new ParseErrorTracker();
-//		ITypeFileScanner scanner = new TypeFileScanner(errorTracker);
-//		boolean b = scanner.scan(fileL);
-//		assertEquals(true, b);
-//		checkSize(1, scanner.getDTypes());
-//		checkDTypeEntry(scanner.getDTypes().get(0).entries.get(0), "int", "size");
-//		checkDType(scanner.getDTypes().get(0), "int", "Timeout");
-//	}
-//	
+	@Test
+	public void testF3() {
+		List<String> fileL = buildFile(3);
+
+		ITypeFileScanner scanner = createScanner();
+		boolean b = scanner.scan(fileL);
+		assertEquals(true, b);
+		checkSize(1, scanner.getDTypes());
+		checkEntrySize(0, scanner.getDTypes().get(0).entries);
+		int i = 0;
+		checkDType(scanner, i, "int", "Timeout");
+	}
 	
 	private void checkEntry(ITypeFileScanner scanner, int i, int j,
 			String string, String string2) {
@@ -212,9 +180,6 @@ public class TomlTypeParserTests extends BaseTest {
 	}
 	private void checkEntrySize(int expectedSize, List<DTypeEntry> list) {
 		assertEquals(expectedSize, list.size());
-	}
-	private void checkPackage(DType dValue, String string) {
-		assertEquals(string, dValue.packageName);
 	}
 	private void checkDType(DType dtype, String type, String name) {
 		assertEquals(type, dtype.baseType);
@@ -255,6 +220,10 @@ public class TomlTypeParserTests extends BaseTest {
 			add("'string lastName'");
 			add("]");
 			break;
+		case 3:
+			add("[TYPE.Timeout]");
+			add("BASE = 'int'");
+			break;
 		default:
 			break;
 		}
@@ -271,55 +240,6 @@ public class TomlTypeParserTests extends BaseTest {
 	{
 		s = s.replace('\'', '"');
 		return s;
-	}
-
-	private List<String> xxxbuildFile(int scenario) {
-		List<String> L = new ArrayList<>();
-		switch(scenario) {
-		case 0:
-			L.add("");
-			break;
-		case 1:
-			L.add("");
-			L.add("type Timeout extends int");
-			L.add(" ");
-			L.add("end");
-			L.add("");
-			break;
-		case 2:
-			L.add("");
-			L.add("type Timeout extends int");
-			L.add(" int size");
-			L.add("end");
-			L.add("");
-			break;
-		case 4:
-			L.add("");
-			L.add("type Timeout extends int");
-			L.add(" int size");
-			L.add(" int col");
-			L.add("end");
-			L.add("");
-			break;
-		case 6:
-			L.add("");
-			L.add("type Timeout extends int");
-			L.add(" int size");
-			L.add("end");
-			L.add("type ZTimeout extends int");
-			L.add(" int wid");
-			L.add("end");
-			L.add("");
-			break;
-		case 7:
-			L.add("//a comment");
-			L.add("type Timeout extends int //another one");
-			L.add(" int size //third one");
-			L.add("end");
-			L.add(""); 
-			break;
-		}
-		return L;
 	}
 	
 }
