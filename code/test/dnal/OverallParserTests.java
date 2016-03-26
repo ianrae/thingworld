@@ -34,12 +34,18 @@ public class OverallParserTests extends BaseTest {
 		ERROR
 	}
 
-	public static class OverallFileScanner {
+	public interface IOverallFileScanner {
+		boolean load(String path);
+		boolean isValid();
+		void dumpErrors();
+		boolean scan(List<String> fileL);
+	}
+	public static class OverallFileScanner implements IOverallFileScanner {
 		private ParseErrorTracker errorTracker;
 		private int lineNum;
 		private List<String> currentSubset;
-		public ITypeFileScanner tscanner;
-		public IDNALLoader dloader;
+		private ITypeFileScanner tscanner;
+		private IDNALLoader dloader;
 		private DNALLoadValidator loadValidator;
 		private boolean success;
 		private TypeRegistry registry;
@@ -51,20 +57,24 @@ public class OverallParserTests extends BaseTest {
 			this.dloader = dloader;
 			this.tscanner = tscanner;
 		}
+		@Override
 		public boolean load(String path) {
 			SfxTextReader reader = new SfxTextReader();
 			List<String> lines = reader.readFile(path);
 			success = scan(lines);
 			return success;
 		}
+		@Override
 		public boolean isValid() {
 			return success;
 		}
 
+		@Override
 		public void dumpErrors() {
 			this.errorTracker.dumpErrors();
 		}
 
+		@Override
 		public boolean scan(List<String> fileL) {
 			OTState state = OTState.WANT_START;
 			RegistryTests.RegistryBuilder builder = new RegistryBuilder();
@@ -167,6 +177,12 @@ public class OverallParserTests extends BaseTest {
 
 		private void log(String s) {
 			System.out.println(s);
+		}
+		public ITypeFileScanner getTscanner() {
+			return tscanner;
+		}
+		public IDNALLoader getDloader() {
+			return dloader;
 		}
 	}
 

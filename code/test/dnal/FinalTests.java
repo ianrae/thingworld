@@ -25,7 +25,7 @@ public class FinalTests extends BaseTest {
 		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
-		List<DValue> dataL = scanner.dloader.getDataL();
+		List<DValue> dataL = scanner.getDloader().getDataL();
 		assertEquals(3, dataL.size());
 		assertEquals("firstName", dataL.get(1).name);
 	}
@@ -43,7 +43,7 @@ public class FinalTests extends BaseTest {
 		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
-		List<DValue> dataL = scanner.dloader.getDataL();
+		List<DValue> dataL = scanner.getDloader().getDataL();
 		assertEquals(1, dataL.size());
 		assertEquals("prov", dataL.get(0).name);
 		assertEquals("ont", dataL.get(0).tmplist.get(0));
@@ -55,7 +55,7 @@ public class FinalTests extends BaseTest {
 		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
-		List<DValue> dataL = scanner.dloader.getDataL();
+		List<DValue> dataL = scanner.getDloader().getDataL();
 		assertEquals(2, dataL.size());
 		assertEquals("time", dataL.get(1).name);
 	}
@@ -65,7 +65,7 @@ public class FinalTests extends BaseTest {
 		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
-		List<DValue> dataL = scanner.dloader.getDataL();
+		List<DValue> dataL = scanner.getDloader().getDataL();
 		assertEquals(1, dataL.size());
 		assertEquals("prov", dataL.get(0).name);
 		assertEquals("on", dataL.get(0).tmplist.get(0));
@@ -76,7 +76,7 @@ public class FinalTests extends BaseTest {
 		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
-		List<DValue> dataL = scanner.dloader.getDataL();
+		List<DValue> dataL = scanner.getDloader().getDataL();
 		assertEquals(1, dataL.size());
 		assertEquals("col", dataL.get(0).name);
 		assertEquals("RED", dataL.get(0).finalValue);
@@ -88,7 +88,7 @@ public class FinalTests extends BaseTest {
 		OverallFileScanner scanner = createScanner();
 		boolean b = scanner.load(path);
 		assertEquals(true, b);
-		List<DValue> dataL = scanner.dloader.getDataL();
+		List<DValue> dataL = scanner.getDloader().getDataL();
 		assertEquals(1, dataL.size());
 		assertEquals("pos", dataL.get(0).name);
 		
