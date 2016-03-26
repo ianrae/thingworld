@@ -66,7 +66,7 @@ public class DNALLoaderTests extends BaseTest {
 						for(ValidationError err: result.errors) {
 							addError(err);
 						}
-					} else if (dval.finalValue == null) {
+					} else if (dval.finalValue == null && dval.tmplist == null) {
 						ValidationError err = new ValidationError();
 						err.fieldName = dval.name;
 						err.error = "null finalValue";

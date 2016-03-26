@@ -56,6 +56,9 @@ public class DNALParserTests extends BaseTest {
 				case WANT_VAL:
 					state = handleVal(tok, line);
 					break;
+				case LIST:
+					state = handleList(tok);
+					break;
 				case END:
 					state = handleEnd(tok);
 					break;
@@ -73,6 +76,23 @@ public class DNALParserTests extends BaseTest {
 			return (state == LSState.END || state == LSState.PARTIAL || state == LSState.NO_MORE) && (errorTracker.areNoErrors());
 		}
 
+		private LSState handleList(String tok) {
+			if (tok.equals("]")) {
+				finalDvalue = currentDValue;
+				return LSState.END;
+			}
+			
+			if (! tok.startsWith("\"")) {
+				errorTracker.addError("list elements must use quotes: " + tok);
+				return LSState.ERROR;
+			}
+
+			JSONStringParser jparser = new JSONStringParser();
+			String s = jparser.findJSONString(tok, 0);
+			
+			currentDValue.tmplist.add(s);
+			return LSState.LIST;
+		}
 		public DValue getDValue() {
 			if (errorTracker.hasErrors()) {
 				return null;
@@ -120,6 +140,11 @@ public class DNALParserTests extends BaseTest {
 //				if (tok.endsWith(",") || tok.endsWith(";")) {
 //					tok = tok.substring(0, tok.length() - 1);
 //				}
+				
+				if (tok.equals("[")) {
+					currentDValue.tmplist = new ArrayList<>();
+					return LSState.LIST;
+				}
 				
 				//new is to take rest of line as value but remove trailing comment or ,;
 				line = line.trim();
@@ -228,6 +253,14 @@ public class DNALParserTests extends BaseTest {
 		checkDVal(dval, "string", "name", "a big  taxi");
 	}
 
+	@Test
+	public void testStringList() {
+		//for now list must be on one list with [ ] as separate tokens
+		//list elements must use quotes and commas
+		DValue dval = doScan(fix("list<string> name: [ 'a', 'b', 'c' ]"));
+		checkDValList(dval, "list<string>", "name", 3, "a");
+		assertEquals("b", dval.tmplist.get(1));
+	}
 
 	@Test
 	public void testLineScanner2() {
@@ -288,6 +321,14 @@ public class DNALParserTests extends BaseTest {
 		assertEquals(type, dval.type);
 		assertEquals(name, dval.name);
 		assertEquals(val, dval.rawValue);
+	}
+	private void checkDValList(DValue dval, String type, String name, int listlen, String val0) {
+		assertEquals(type, dval.type);
+		assertEquals(name, dval.name);
+		assertEquals(listlen, dval.tmplist.size());
+		if (listlen > 0) {
+			assertEquals(val0, dval.tmplist.get(0));
+		}
 	}
 
 	private DValue doScan(String input) {

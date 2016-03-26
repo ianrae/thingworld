@@ -77,6 +77,9 @@ public class RegistryTests extends BaseTest {
 			registry.add("int", "PRIMITIVE", new MockIntValidator(), null);
 			registry.add("string", "PRIMITIVE", new TypeTests.MockStringValidator(), null);
 			registry.add("boolean", "PRIMITIVE", new TypeTests.MockBooleanValidator(), null);
+
+			//!!later support lists of other types
+			registry.add("list<string>", "PRIMITIVE", new TypeTests.MockListStringValidator(), null);
 			return registry;
 		}
 	}

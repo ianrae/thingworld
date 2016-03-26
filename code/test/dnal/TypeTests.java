@@ -45,6 +45,8 @@ public class TypeTests {
 					buildSubObj(dval);
 					
 					result.isValid = (failCount == 0);
+				} else if (dval.tmplist != null) {
+					doValue(result, dval, inputObj);
 				} else {
 					addError(result, dval, "value is null");
 				}
@@ -125,6 +127,24 @@ public class TypeTests {
 				}
 			} catch(Exception e) {
 				addError(result, dval, "not an boolean");
+			}
+		}
+	}
+	
+	public static class MockListStringValidator extends SimpleValidatorBase {
+
+		@Override
+		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
+			MockStringValidator inner = new MockStringValidator();
+			result.isValid = true;
+			for(String s: dval.tmplist) {
+				DValue innerdval = new DValue();
+				innerdval.type = "string";
+				innerdval.rawValue = s;
+				ValidationResult result2 =inner.validate(innerdval, s);
+				if (!result2.isValid) {
+					result.isValid = false;
+				}
 			}
 		}
 	}

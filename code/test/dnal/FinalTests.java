@@ -37,6 +37,19 @@ public class FinalTests extends BaseTest {
 		scanner.dumpErrors();
 	}
 	@Test
+	public void testList() {
+		String path = buildPath("lists.dnal");
+		ITypeGenerator gen = createGenerator();
+		OverallFileScanner scanner = new OverallFileScanner(gen);
+		boolean b = scanner.load(path);
+		assertEquals(true, b);
+		List<DValue> dataL = scanner.dloader.getDataL();
+		assertEquals(1, dataL.size());
+		assertEquals("prov", dataL.get(0).name);
+		assertEquals("ont", dataL.get(0).tmplist.get(0));
+	}
+	
+	@Test
 	public void testSimple() {
 		String path = buildPath("simple.dnal");
 		ITypeGenerator gen = createGenerator();
