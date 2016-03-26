@@ -437,15 +437,6 @@ public class TypeParserTests extends BaseTest {
 			L.add("end");
 			L.add("");
 			break;
-//		case 3:
-//			L.add("");
-//			L.add("package a.b.c");
-//			L.add(" int size: {");
-//			L.add(" int wid: 45 }");
-////			L.add(" }");
-//			L.add("end");
-//			L.add("");
-//			break;
 		case 4:
 			L.add("");
 			L.add("type Timeout extends int");
@@ -454,16 +445,6 @@ public class TypeParserTests extends BaseTest {
 			L.add("end");
 			L.add("");
 			break;
-//		case 5:
-//			L.add("");
-//			L.add("package a.b.c");
-//			L.add(" int size: {");
-//			L.add(" int height: 66 ");
-//			L.add(" int wid: 45 }");
-////			L.add(" }");
-//			L.add("end");
-//			L.add("");
-//			break;
 		case 6:
 			L.add("");
 			L.add("type Timeout extends int");
