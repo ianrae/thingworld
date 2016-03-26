@@ -12,6 +12,7 @@ import org.mef.dnal.validation.ValidationError;
 import org.thingworld.sfx.SfxTextReader;
 
 import testhelper.BaseTest;
+import dnal.DNALLoadValidatorTests.DNALLoadValidator;
 import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
 import dnal.myformat.DNALParserTests.FileScanner;
@@ -23,10 +24,10 @@ public class DNALLoaderTests extends BaseTest {
 	
 	public static class DNALLoader {
 		public TypeRegistry registry;
-		public List<ValidationError> errors = new ArrayList<>();
 		private List<DValue> dataL;
 		private boolean success;
 		private ParseErrorTracker errorTracker = new ParseErrorTracker();
+		private DNALLoadValidator loadValidator;
 
 		public DNALLoader(ParseErrorTracker errorTracker) {
 			this.errorTracker = errorTracker;
@@ -56,41 +57,16 @@ public class DNALLoaderTests extends BaseTest {
 		}
 
 		private boolean validate(List<DValue> valueL) {
-			int failCount = 0;
-			for(DValue dval: valueL) {
-				ITypeValidator validator = registry.find(dval.type);
-				if (validator != null) {
-					ValidationResult result = validator.validate(dval, dval.rawValue);
-					if (! result.isValid) {
-						failCount++;
-						for(ValidationError err: result.errors) {
-							addError(err);
-						}
-					} else if (dval.finalValue == null && dval.tmplist == null) {
-						ValidationError err = new ValidationError();
-						err.fieldName = dval.name;
-						err.error = "null finalValue";
-						addError(err);
-						failCount++;
-					}
-				} else {
-					ValidationError err = new ValidationError();
-					err.fieldName = dval.name;
-					err.error = "missing validator for type: " + dval.type;
-					addError(err);
-					failCount++;
-				}
-			}
-			return (failCount == 0);
+			loadValidator = new DNALLoadValidator(errorTracker);
+			loadValidator.registry = registry;
+			return loadValidator.validate(valueL);
 		}
 		
-		private void addError(ValidationError err) {
-			errorTracker.addError(String.format("validation error: %s: %s", err.fieldName, err.error));
-			errors.add(err);
-		}
-
 		public List<DValue> getDataL() {
 			return dataL;
+		}
+		public List<ValidationError> getErrors() {
+			return loadValidator.errors;
 		}
 	}
 
@@ -112,7 +88,7 @@ public class DNALLoaderTests extends BaseTest {
 		loader.registry = buildRegistry();
 		boolean b = loader.load(lines);
 		assertEquals(false, b);
-		for(ValidationError err: loader.errors) {
+		for(ValidationError err: loader.getErrors()) {
 			log(String.format("%s: %s", err.fieldName, err.error));
 		}
 	}

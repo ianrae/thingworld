@@ -1,20 +1,14 @@
 package dnal;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
 import org.mef.dnal.core.DValue;
 import org.mef.dnal.parser.ParseErrorTracker;
 import org.mef.dnal.validation.ValidationError;
-import org.thingworld.sfx.SfxTextReader;
 
 import testhelper.BaseTest;
-import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
-import dnal.myformat.DNALParserTests.FileScanner;
 import dnal.myformat.TypeTests.ITypeValidator;
 import dnal.myformat.TypeTests.ValidationResult;
 
