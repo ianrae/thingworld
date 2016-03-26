@@ -12,7 +12,8 @@ libraryDependencies ++= Seq(
   cache,
   javaWs,
   "twixt" % "twixt_2.11" % "0.2.1",
-  "uk.com.robust-it" % "cloning" % "1.9.2"  
+  "uk.com.robust-it" % "cloning" % "1.9.2",  
+  "com.moandjiezana.toml" % "toml4j" % "0.5.1"
 )
 
 // Play provides two styles of routers, one expects its actions to be injected, the
