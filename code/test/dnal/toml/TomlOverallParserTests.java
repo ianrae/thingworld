@@ -152,32 +152,16 @@ public class TomlOverallParserTests extends BaseTest {
 		List<DValue> list = scanner.dloader.getDataL();
 		this.checkDValInt(scanner.dloader, 0, 0, "Timeout", "size", 10);
 	}
-//	@Test
-//	public void testF3() {
-//		List<String> fileL = buildFile(3);
-//
-//		TomlOverallFileScanner scanner = createScanner();
-//		boolean b = scanner.scan(fileL);
-//		assertEquals(true, b);
-//		//		checkSize(1, scanner.tscanner.typeL);
-//		//		checkEntrySize(0, scanner.tscanner.typeL.get(0).entries);
-//		//		checkDType(scanner.tscanner.typeL.get(0), "int", "Timeout");
-//
-//		assertEquals(1, scanner.dloader.getDataL().size());
-//		assertEquals("size", scanner.dloader.getDataL().get(0).name);
-//	}
-//	@Test
-//	public void testF4() {
-//		List<String> fileL = buildFile(4);
-//
-//		TomlOverallFileScanner scanner = createScanner();
-//		boolean b = scanner.scan(fileL);
-//		assertEquals(false, b);
-//		checkSize(1, scanner.tscanner.getDTypes());
-//		checkEntrySize(0, scanner.tscanner.getDTypes().get(0).entries);
-//		checkDType(scanner.tscanner.getDTypes().get(0), "zzz", "Timeout");
-//		assertNotNull(null, scanner.dloader);
-//	}
+	@Test
+	public void testF3() {
+		List<String> fileL = buildFile(3);
+
+		TomlOverallFileScanner scanner = createScanner();
+		boolean b = scanner.scan(fileL);
+		assertEquals(true, b);
+		checkSizes(scanner, 0, 1);
+		this.checkDValInt(scanner.dloader, 0, 0, "int", "size", 10);
+	}
 //	@Test
 //	public void testFile2() {
 //		String path = "./test/testfiles/file2.dnal";
@@ -259,15 +243,11 @@ public class TomlOverallParserTests extends BaseTest {
 			add("[Foo]");
 			add("Timeout__size = 10");
 			break;
-//		case 2:
-//			add("[TYPE.Position]");
-//			add("a = 1");
-//			add("BASE = 'struct'");
-//			add("MEMBERS = [");
-//			add("'int x',");
-//			add("'int y'");
-//			add("]");
-//			break;
+		case 3:
+			add("");
+			add("[Foo]");
+			add("int__size = 10");
+			break;
 //		case 3:
 ////			add("[TYPE]");
 //			add("[TYPE.Position]");
@@ -303,47 +283,5 @@ public class TomlOverallParserTests extends BaseTest {
 		return s;
 	}
 
-	private List<String> xxxxbuildFile(int scenario) {
-		List<String> L = new ArrayList<>();
-		switch(scenario) {
-		case 0:
-			L.add("");
-			break;
-		case 1:
-			L.add("TYPES");
-			L.add("type Timeout extends int");
-			L.add(" ");
-			L.add("end");
-			L.add("ENDTYPES");
-			break;
-		case 2:
-			L.add("TYPES");
-			L.add("type Timeout extends int");
-			L.add(" ");
-			L.add("end");
-			L.add("ENDTYPES");
-			L.add("");
-			L.add("package a.b.c");
-			L.add(" int size: 45");
-			L.add("end");
-			L.add("");
-			break;
-		case 3:
-			L.add("");
-			L.add("package a.b.c");
-			L.add(" int size: 45");
-			L.add("end");
-			L.add("");
-			break;
-		case 4:
-			L.add("TYPES");
-			L.add("type Timeout extends zzz");
-			L.add(" ");
-			L.add("end");
-			L.add("ENDTYPES");
-			break;
-		}
-		return L;
-	}
 
 }
