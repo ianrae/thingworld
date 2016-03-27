@@ -3,7 +3,9 @@ package dnal.toml;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.junit.Test;
 import org.mef.dnal.core.DType;
@@ -13,6 +15,8 @@ import org.mef.dnal.core.IOverallFileScanner;
 import org.mef.dnal.core.ITypeFileScanner;
 import org.mef.dnal.parser.ParseErrorTracker;
 import org.thingworld.sfx.SfxTextReader;
+
+import com.moandjiezana.toml.Toml;
 
 import testhelper.BaseTest;
 import dnal.DNALLoadValidatorTests;
@@ -38,8 +42,6 @@ public class TomlOverallParserTests extends BaseTest {
 
 	public static class TomlOverallFileScanner implements IOverallFileScanner {
 		private ParseErrorTracker errorTracker;
-		private int lineNum;
-		private List<String> currentSubset;
 		private ITypeFileScanner tscanner;
 		private IDNALLoader dloader;
 		private DNALLoadValidator loadValidator;
@@ -72,103 +74,29 @@ public class TomlOverallParserTests extends BaseTest {
 
 		@Override
 		public boolean scan(List<String> fileL) {
-			OTState state = OTState.WANT_START;
 			RegistryTests.RegistryBuilder builder = new RegistryBuilder();
 			this.registry = builder.buildRegistry();
 			this.registry.generator = generator;
-
-			lineNum = 0;
-			for(String line : fileL) {
-				log(String.format("[%s] line%d: %s",  state.toString(), lineNum++, line));
-
-				line = line.trim();
-				if (line.isEmpty()) {
-					continue;
-				}
-
-				if (line.startsWith("//")) {
-					continue;
-				}
-
-				state = doLine(state, line);
+			
+			boolean b = tscanner.scan(fileL);
+			if (!b) {
+				return b;
 			}
-
-			if (currentSubset != null && currentSubset.size() > 0) {
-				log("loader..");
-				boolean b = dloader.load(currentSubset);
-				if (! b) {
-					state = OTState.ERROR;
-				} else {
-					loadValidator = new DNALLoadValidator(errorTracker);
-					loadValidator.registry = registry;
-					b = loadValidator.validate(dloader.getDataL());
-					if (! b) {
-						state = OTState.ERROR;
-					}
-				}
+			RegistryTests.TypeValidator typeValidator = new TypeValidator(errorTracker, registry);
+			b = typeValidator.validate(tscanner.getDTypes());
+			if (!b) {
+				return b;
 			}
-
-			return (state == OTState.INSIDE_DATA) && (errorTracker.areNoErrors());
-		}
-
-		private OTState doLine(OTState state, String line) {
-			switch(state) {
-			case WANT_START:
-				state = handleStart(line);
-				break;
-			case INSIDE_TYPES:
-				state = handleInsideTypes(line);
-				break;
-			case INSIDE_DATA:
-				state = handleInside(line);
-				break;
-			default:
-				if (line.startsWith("//")) {
-					return state;
-				} else {
-					errorTracker.addError("unexpected token:" + line + " state:" + state);
-				}
-				break;
+			
+			b = dloader.load(fileL);
+			if (!b) {
+				return b;
 			}
-			return state;
-		}
-
-
-		private OTState handleStart(String tok) {
-			if (tok.startsWith("TYPES")) {
-				currentSubset = new ArrayList<>();
-				return OTState.INSIDE_TYPES;
-			}
-			currentSubset = new ArrayList<>();
-			currentSubset.add(tok);
-			return OTState.INSIDE_DATA;
-		}
-		private OTState handleInsideTypes(String tok) {
-			if (tok.startsWith("ENDTYPES")) {
-
-				boolean b = tscanner.scan(currentSubset);
-				currentSubset = new ArrayList<>();
-				if (! b) {
-					return OTState.ERROR;
-				}
-
-				RegistryTests.TypeValidator typeValidator = new TypeValidator(errorTracker, registry);
-				b = typeValidator.validate(tscanner.getDTypes());
-				if (! b) {
-					return OTState.ERROR;
-				}
-				return OTState.INSIDE_DATA;
-			}
-			currentSubset.add(tok);
-			return OTState.INSIDE_TYPES;
-		}
-		private OTState handleInside(String tok) {
-			if (tok.startsWith("//")) {
-				return OTState.INSIDE_DATA;
-			}
-			currentSubset.add(tok);
-
-			return OTState.INSIDE_DATA;
+			
+			loadValidator = new DNALLoadValidator(errorTracker);
+			loadValidator.registry = registry;
+			b = loadValidator.validate(dloader.getDataL());
+			return b;
 		}
 
 		private void log(String s) {
@@ -189,75 +117,81 @@ public class TomlOverallParserTests extends BaseTest {
 		ITypeGenerator gen = createGenerator();
 		TomlOverallFileScanner scanner = createScanner();
 		boolean b = scanner.scan(fileL);
-		assertEquals(false, b);
+		assertEquals(true, b);
+		checkSizes(scanner, 0, 0);
 	}
 	
-	@Test
-	public void testF1() {
-		List<String> fileL = buildFile(1);
-
-		TomlOverallFileScanner scanner = createScanner();
-		boolean b = scanner.scan(fileL);
-		assertEquals(true, b);
-		checkSize(1, scanner.tscanner.getDTypes());
-		checkEntrySize(0, scanner.tscanner.getDTypes().get(0).entries);
-		checkDType(scanner.tscanner.getDTypes().get(0), "int", "Timeout");
-		assertNotNull(null, scanner.dloader);
+	private void checkSizes(TomlOverallFileScanner scanner, int dsize, int tsize) {
+		assertEquals(dsize, scanner.getDloader().getDataL().size());
+		assertEquals(tsize, scanner.getTscanner().getDTypes().size());
 	}
-	@Test
-	public void testF2() {
-		List<String> fileL = buildFile(2);
-
-		TomlOverallFileScanner scanner = createScanner();
-		boolean b = scanner.scan(fileL);
-		assertEquals(true, b);
-		checkSize(1, scanner.tscanner.getDTypes());
-		checkEntrySize(0, scanner.tscanner.getDTypes().get(0).entries);
-		checkDType(scanner.tscanner.getDTypes().get(0), "int", "Timeout");
-
-		assertEquals(1, scanner.dloader.getDataL().size());
-		assertEquals("size", scanner.dloader.getDataL().get(0).name);
-	}
-	@Test
-	public void testF3() {
-		List<String> fileL = buildFile(3);
-
-		TomlOverallFileScanner scanner = createScanner();
-		boolean b = scanner.scan(fileL);
-		assertEquals(true, b);
-		//		checkSize(1, scanner.tscanner.typeL);
-		//		checkEntrySize(0, scanner.tscanner.typeL.get(0).entries);
-		//		checkDType(scanner.tscanner.typeL.get(0), "int", "Timeout");
-
-		assertEquals(1, scanner.dloader.getDataL().size());
-		assertEquals("size", scanner.dloader.getDataL().get(0).name);
-	}
-	@Test
-	public void testF4() {
-		List<String> fileL = buildFile(4);
-
-		TomlOverallFileScanner scanner = createScanner();
-		boolean b = scanner.scan(fileL);
-		assertEquals(false, b);
-		checkSize(1, scanner.tscanner.getDTypes());
-		checkEntrySize(0, scanner.tscanner.getDTypes().get(0).entries);
-		checkDType(scanner.tscanner.getDTypes().get(0), "zzz", "Timeout");
-		assertNotNull(null, scanner.dloader);
-	}
-	@Test
-	public void testFile2() {
-		String path = "./test/testfiles/file2.dnal";
-		TomlOverallFileScanner scanner = createScanner();
-		boolean b = scanner.load(path);
-		assertEquals(true, b);
-	}
-	@Test
-	public void testFile3() {
-		String path = "./test/testfiles/file3.dnal";
-		TomlOverallFileScanner scanner = createScanner();
-		boolean b = scanner.load(path);
-		assertEquals(true, b);
-	}
+	
+//	@Test
+//	public void testF1() {
+//		List<String> fileL = buildFile(1);
+//
+//		TomlOverallFileScanner scanner = createScanner();
+//		boolean b = scanner.scan(fileL);
+//		assertEquals(true, b);
+//		checkSize(1, scanner.tscanner.getDTypes());
+//		checkEntrySize(0, scanner.tscanner.getDTypes().get(0).entries);
+//		checkDType(scanner.tscanner.getDTypes().get(0), "int", "Timeout");
+//		assertNotNull(null, scanner.dloader);
+//	}
+//	@Test
+//	public void testF2() {
+//		List<String> fileL = buildFile(2);
+//
+//		TomlOverallFileScanner scanner = createScanner();
+//		boolean b = scanner.scan(fileL);
+//		assertEquals(true, b);
+//		checkSize(1, scanner.tscanner.getDTypes());
+//		checkEntrySize(0, scanner.tscanner.getDTypes().get(0).entries);
+//		checkDType(scanner.tscanner.getDTypes().get(0), "int", "Timeout");
+//
+//		assertEquals(1, scanner.dloader.getDataL().size());
+//		assertEquals("size", scanner.dloader.getDataL().get(0).name);
+//	}
+//	@Test
+//	public void testF3() {
+//		List<String> fileL = buildFile(3);
+//
+//		TomlOverallFileScanner scanner = createScanner();
+//		boolean b = scanner.scan(fileL);
+//		assertEquals(true, b);
+//		//		checkSize(1, scanner.tscanner.typeL);
+//		//		checkEntrySize(0, scanner.tscanner.typeL.get(0).entries);
+//		//		checkDType(scanner.tscanner.typeL.get(0), "int", "Timeout");
+//
+//		assertEquals(1, scanner.dloader.getDataL().size());
+//		assertEquals("size", scanner.dloader.getDataL().get(0).name);
+//	}
+//	@Test
+//	public void testF4() {
+//		List<String> fileL = buildFile(4);
+//
+//		TomlOverallFileScanner scanner = createScanner();
+//		boolean b = scanner.scan(fileL);
+//		assertEquals(false, b);
+//		checkSize(1, scanner.tscanner.getDTypes());
+//		checkEntrySize(0, scanner.tscanner.getDTypes().get(0).entries);
+//		checkDType(scanner.tscanner.getDTypes().get(0), "zzz", "Timeout");
+//		assertNotNull(null, scanner.dloader);
+//	}
+//	@Test
+//	public void testFile2() {
+//		String path = "./test/testfiles/file2.dnal";
+//		TomlOverallFileScanner scanner = createScanner();
+//		boolean b = scanner.load(path);
+//		assertEquals(true, b);
+//	}
+//	@Test
+//	public void testFile3() {
+//		String path = "./test/testfiles/file3.dnal";
+//		TomlOverallFileScanner scanner = createScanner();
+//		boolean b = scanner.load(path);
+//		assertEquals(true, b);
+//	}
 
 
 	private TomlOverallFileScanner createScanner() {
@@ -288,8 +222,64 @@ public class TomlOverallParserTests extends BaseTest {
 		return gen;
 	}
 
-
+	
+	//----
+	private StringBuilder sb;
 	private List<String> buildFile(int scenario) {
+		sb = new StringBuilder();
+		switch(scenario) {
+		case 0:
+			add("");
+			break;
+		case 1:
+			add("[TYPE.Timeout]");
+			add("BASE = 'int'");
+			break;
+		case 2:
+			add("[TYPE.Position]");
+			add("a = 1");
+			add("BASE = 'struct'");
+			add("MEMBERS = [");
+			add("'int x',");
+			add("'int y'");
+			add("]");
+			break;
+		case 3:
+//			add("[TYPE]");
+			add("[TYPE.Position]");
+			add("a = 1");
+			add("BASE = 'struct'");
+			add("MEMBERS = [");
+			add("'int x',");
+			add("'int y'");
+			add("]");
+			add("");
+			add("[TYPE.Person]");
+//			add("BASE = 'struct'");
+			add("MEMBERS = [");
+			add("'string firstName',");
+			add("'string lastName'");
+			add("]");
+			break;
+		default:
+			break;
+		}
+		
+		String s = sb.toString();
+		return Collections.singletonList(s);
+	}
+	private void add(String string) {
+		sb.append(string);
+		sb.append("\n");
+	}
+
+	protected static String fix(String s)
+	{
+		s = s.replace('\'', '"');
+		return s;
+	}
+
+	private List<String> xxxxbuildFile(int scenario) {
 		List<String> L = new ArrayList<>();
 		switch(scenario) {
 		case 0:
