@@ -227,23 +227,6 @@ public class TomlDNALLoaderTests extends BaseTest {
 		checkDValBoolean(loader, 0, 2, "flag", true);
 	}
 	
-//	@Test
-//	public void testFile2() {
-//		String path = "./test/testfiles/file2.dnal";
-//		ParseErrorTracker errorTracker = new ParseErrorTracker();
-//		IDNALLoader loader = new TomlDNALLoader(errorTracker);
-//		boolean b = loader.load(path);
-//		b = doValidation(b, loader, errorTracker);
-//		assertEquals(true, b);
-//		assertEquals(3, loader.getDataL().size());
-//		assertEquals("size", loader.getDataL().get(0).name);
-//		assertEquals("firstName", loader.getDataL().get(1).name);
-//		assertEquals("flag", loader.getDataL().get(2).name);
-//
-//		checkInt(100, loader.getDataL().get(0));
-//		assertEquals("sue mary", loader.getDataL().get(1).finalValue);
-//		checkBool(true, loader.getDataL().get(2));
-//	}
 	
 	private void checkDValBoolean(IDNALLoader loader, int i, int j, String name, Boolean expected) {
 		Boolean b = (Boolean) loader.getDataL().get(i).valueList.get(j).finalValue;
