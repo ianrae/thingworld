@@ -77,9 +77,9 @@ public class RegistryTests extends BaseTest {
 
 		public TypeRegistry buildRegistry() {
 			TypeRegistry registry = new TypeRegistry();
-			registry.add("int", "PRIMITIVE", new MockIntValidator(), null);
-			registry.add("string", "PRIMITIVE", new TypeTests.MockStringValidator(), null);
-			registry.add("boolean", "PRIMITIVE", new TypeTests.MockBooleanValidator(), null);
+			registry.add("int", "SIMPLEPRIMITIVE", new MockIntValidator(), null);
+			registry.add("string", "SIMPLEPRIMITIVE", new TypeTests.MockStringValidator(), null);
+			registry.add("boolean", "SIMPLEPRIMITIVE", new TypeTests.MockBooleanValidator(), null);
 
 			//!!later support lists of other types
 			registry.add("list<string>", "PRIMITIVE", new TypeTests.MockListStringValidator(), null);
@@ -171,15 +171,17 @@ public class RegistryTests extends BaseTest {
 					ok = true;
 				} else {
 					addError(dtype, "already existing type: " + dtype.name);
+					return false;
 				}
 				
-				validator = registry.find(dtype.baseType);
+				boolean alreadyAdded = false;
+				validator = registry.find(dtype.baseType); //later need to walk back till find primitive!!
 				if (validator == null) {
 					ok = isStruct(dtype) || isEnum(dtype);
 					if (! ok) {
 						addError(dtype, "unknown base type: " + dtype.baseType);
+						return false;
 					}
-				} else {
 				}
 				
 				if (dtype.entries != null && dtype.entries.size() > 0) {
@@ -194,24 +196,34 @@ public class RegistryTests extends BaseTest {
 						addError(dtype, String.format("'%s' is not a struct", dtype.name));
 						ok = false;
 					} 
-				}
-				
+				} else {
+					if (isSimplePrimitive(dtype)) {
+						registry.add(dtype.name, dtype.baseType, validator, dtype);
+						alreadyAdded = true;
+						addedCount++;
+					}
+				}				
 				
 				if (ok) {
 					if (isList(dtype)) {
 						MockListStringValidator custom = new MockListStringValidator();
 						registry.add(dtype.name, dtype.baseType, custom, dtype);
-					} else {
+						addedCount++;
+					} else if (! alreadyAdded){
 						MockCustomTypeValidator custom = new MockCustomTypeValidator();
 						custom.registry = registry;
 						registry.add(dtype.name, dtype.baseType, custom, dtype);
+						addedCount++;
 					}
-					addedCount++;
 				}
 			}
 			return (errors.size() == 0);
 		}
 		
+		private boolean isSimplePrimitive(DType dtype) {
+			return isSomeBaseType(dtype, "SIMPLEPRIMITIVE");
+		}
+
 		private boolean isEnum(DType dtype) {
 			return isSomeBaseType(dtype, "enum");
 		}

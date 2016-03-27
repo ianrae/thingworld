@@ -150,7 +150,7 @@ public class TomlOverallParserTests extends BaseTest {
 		checkDType(scanner.tscanner.getDTypes().get(0), "int", "Timeout");
 		
 		List<DValue> list = scanner.dloader.getDataL();
-		this.checkDValInt(scanner.dloader, 0, 0, "size", 10);
+		this.checkDValInt(scanner.dloader, 0, 0, "Timeout", "size", 10);
 	}
 //	@Test
 //	public void testF3() {
@@ -215,10 +215,10 @@ public class TomlOverallParserTests extends BaseTest {
 		assertEquals("string", loader.getDataL().get(i).valueList.get(j).type);
 		assertEquals(name, loader.getDataL().get(i).valueList.get(j).name);
 	}
-	private void checkDValInt(IDNALLoader loader, int i, int j, String name, int k) {
+	private void checkDValInt(IDNALLoader loader, int i, int j, String type, String name, int k) {
 		Integer n = (Integer) loader.getDataL().get(i).valueList.get(j).finalValue;
 		assertEquals(k, n.intValue());
-		assertEquals("int", loader.getDataL().get(i).valueList.get(j).type);
+		assertEquals(type, loader.getDataL().get(i).valueList.get(j).type);
 		assertEquals(name, loader.getDataL().get(i).valueList.get(j).name);
 	}
 
