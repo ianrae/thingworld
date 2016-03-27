@@ -1,4 +1,4 @@
-package dnal;
+package dnal.myformat;
 
 import static org.junit.Assert.assertEquals;
 
@@ -12,11 +12,11 @@ import org.mef.dnal.core.ITypeFileScanner;
 import org.mef.dnal.parser.ParseErrorTracker;
 
 import testhelper.BaseTest;
+import dnal.TypeGeneratorTests;
 import dnal.TypeGeneratorTests.ITypeGenerator;
+import dnal.TypeGeneratorTests.MockTypeGenerator;
 import dnal.dio.PositionMutator;
-import dnal.myformat.DNALLoaderTests.DNALLoader;
 import dnal.myformat.OverallParserTests.OverallFileScanner;
-import dnal.myformat.TypeParserTests.TypeFileScanner;
 
 public class FinalTests extends BaseTest {
 
@@ -105,9 +105,9 @@ public class FinalTests extends BaseTest {
 	private IOverallFileScanner createScanner() {
 		ITypeGenerator gen = createGenerator();
 		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		IDNALLoader dloader = new DNALLoader(errorTracker);
-		ITypeFileScanner tscanner = new TypeFileScanner(errorTracker);
-		OverallFileScanner scanner = new OverallFileScanner(errorTracker, dloader, gen, tscanner);
+		IDNALLoader dloader = new DNALLoaderTests.DNALLoader(errorTracker);
+		ITypeFileScanner tscanner = new TypeParserTests.TypeFileScanner(errorTracker);
+		OverallFileScanner scanner = new OverallParserTests.OverallFileScanner(errorTracker, dloader, gen, tscanner);
 		return scanner;
 	}
 

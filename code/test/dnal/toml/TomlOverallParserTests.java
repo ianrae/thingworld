@@ -162,20 +162,13 @@ public class TomlOverallParserTests extends BaseTest {
 		checkSizes(scanner, 0, 1);
 		this.checkDValInt(scanner.dloader, 0, 0, "int", "size", 10);
 	}
-//	@Test
-//	public void testFile2() {
-//		String path = "./test/testfiles/file2.dnal";
-//		TomlOverallFileScanner scanner = createScanner();
-//		boolean b = scanner.load(path);
-//		assertEquals(true, b);
-//	}
-//	@Test
-//	public void testFile3() {
-//		String path = "./test/testfiles/file3.dnal";
-//		TomlOverallFileScanner scanner = createScanner();
-//		boolean b = scanner.load(path);
-//		assertEquals(true, b);
-//	}
+	@Test
+	public void testFile2() {
+		String path = "./test/testfiles/file2.toml";
+		TomlOverallFileScanner scanner = createScanner();
+		boolean b = scanner.load(path);
+		assertEquals(true, b);
+	}
 
 
 	private TomlOverallFileScanner createScanner() {
