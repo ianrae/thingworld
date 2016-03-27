@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import org.junit.Test;
 import org.mef.dnal.core.DType;
 import org.mef.dnal.core.DTypeEntry;
+import org.mef.dnal.core.DValue;
 import org.mef.dnal.core.IDNALLoader;
 import org.mef.dnal.core.IOverallFileScanner;
 import org.mef.dnal.core.ITypeFileScanner;
@@ -121,37 +122,36 @@ public class TomlOverallParserTests extends BaseTest {
 		checkSizes(scanner, 0, 0);
 	}
 	
-	private void checkSizes(TomlOverallFileScanner scanner, int dsize, int tsize) {
+	private void checkSizes(TomlOverallFileScanner scanner, int tsize, int dsize) {
 		assertEquals(dsize, scanner.getDloader().getDataL().size());
 		assertEquals(tsize, scanner.getTscanner().getDTypes().size());
 	}
 	
-//	@Test
-//	public void testF1() {
-//		List<String> fileL = buildFile(1);
-//
-//		TomlOverallFileScanner scanner = createScanner();
-//		boolean b = scanner.scan(fileL);
-//		assertEquals(true, b);
-//		checkSize(1, scanner.tscanner.getDTypes());
-//		checkEntrySize(0, scanner.tscanner.getDTypes().get(0).entries);
-//		checkDType(scanner.tscanner.getDTypes().get(0), "int", "Timeout");
-//		assertNotNull(null, scanner.dloader);
-//	}
-//	@Test
-//	public void testF2() {
-//		List<String> fileL = buildFile(2);
-//
-//		TomlOverallFileScanner scanner = createScanner();
-//		boolean b = scanner.scan(fileL);
-//		assertEquals(true, b);
-//		checkSize(1, scanner.tscanner.getDTypes());
-//		checkEntrySize(0, scanner.tscanner.getDTypes().get(0).entries);
-//		checkDType(scanner.tscanner.getDTypes().get(0), "int", "Timeout");
-//
-//		assertEquals(1, scanner.dloader.getDataL().size());
-//		assertEquals("size", scanner.dloader.getDataL().get(0).name);
-//	}
+	@Test
+	public void testF1() {
+		List<String> fileL = buildFile(1);
+
+		TomlOverallFileScanner scanner = createScanner();
+		boolean b = scanner.scan(fileL);
+		assertEquals(true, b);
+		checkSizes(scanner, 1, 0);
+		checkEntrySize(0, scanner.tscanner.getDTypes().get(0).entries);
+		checkDType(scanner.tscanner.getDTypes().get(0), "int", "Timeout");
+	}
+	@Test
+	public void testF2() {
+		List<String> fileL = buildFile(2);
+
+		TomlOverallFileScanner scanner = createScanner();
+		boolean b = scanner.scan(fileL);
+		assertEquals(true, b);
+		checkSizes(scanner, 1, 1);
+		checkEntrySize(0, scanner.tscanner.getDTypes().get(0).entries);
+		checkDType(scanner.tscanner.getDTypes().get(0), "int", "Timeout");
+		
+		List<DValue> list = scanner.dloader.getDataL();
+		this.checkDValInt(scanner.dloader, 0, 0, "size", 10);
+	}
 //	@Test
 //	public void testF3() {
 //		List<String> fileL = buildFile(3);
@@ -203,14 +203,31 @@ public class TomlOverallParserTests extends BaseTest {
 		return scanner;
 	}
 
-	private void checkSize(int expectedSize, List<DType> list) {
-		assertEquals(expectedSize, list.size());
+	private void checkDValBoolean(IDNALLoader loader, int i, int j, String name, Boolean expected) {
+		Boolean b = (Boolean) loader.getDataL().get(i).valueList.get(j).finalValue;
+		assertEquals(expected, b);
+		assertEquals("boolean", loader.getDataL().get(i).valueList.get(j).type);
+		assertEquals(name, loader.getDataL().get(i).valueList.get(j).name);
+	}
+	private void checkDValString(IDNALLoader loader, int i, int j, String name, String expected) {
+		String s = (String) loader.getDataL().get(i).valueList.get(j).finalValue;
+		assertEquals(expected, s);
+		assertEquals("string", loader.getDataL().get(i).valueList.get(j).type);
+		assertEquals(name, loader.getDataL().get(i).valueList.get(j).name);
+	}
+	private void checkDValInt(IDNALLoader loader, int i, int j, String name, int k) {
+		Integer n = (Integer) loader.getDataL().get(i).valueList.get(j).finalValue;
+		assertEquals(k, n.intValue());
+		assertEquals("int", loader.getDataL().get(i).valueList.get(j).type);
+		assertEquals(name, loader.getDataL().get(i).valueList.get(j).name);
+	}
+
+	private void checkStructVal(IDNALLoader loader, int i, String string) {
+		assertEquals(string, loader.getDataL().get(i).name);
+		assertEquals("struct", loader.getDataL().get(i).type);
 	}
 	private void checkEntrySize(int expectedSize, List<DTypeEntry> list) {
 		assertEquals(expectedSize, list.size());
-	}
-	private void checkPackage(DType dValue, String string) {
-		assertEquals(string, dValue.packageName);
 	}
 	private void checkDType(DType dtype, String type, String name) {
 		assertEquals(type, dtype.baseType);
@@ -236,31 +253,38 @@ public class TomlOverallParserTests extends BaseTest {
 			add("BASE = 'int'");
 			break;
 		case 2:
-			add("[TYPE.Position]");
-			add("a = 1");
-			add("BASE = 'struct'");
-			add("MEMBERS = [");
-			add("'int x',");
-			add("'int y'");
-			add("]");
-			break;
-		case 3:
-//			add("[TYPE]");
-			add("[TYPE.Position]");
-			add("a = 1");
-			add("BASE = 'struct'");
-			add("MEMBERS = [");
-			add("'int x',");
-			add("'int y'");
-			add("]");
+			add("[TYPE.Timeout]");
+			add("BASE = 'int'");
 			add("");
-			add("[TYPE.Person]");
-//			add("BASE = 'struct'");
-			add("MEMBERS = [");
-			add("'string firstName',");
-			add("'string lastName'");
-			add("]");
+			add("[Foo]");
+			add("Timeout__size = 10");
 			break;
+//		case 2:
+//			add("[TYPE.Position]");
+//			add("a = 1");
+//			add("BASE = 'struct'");
+//			add("MEMBERS = [");
+//			add("'int x',");
+//			add("'int y'");
+//			add("]");
+//			break;
+//		case 3:
+////			add("[TYPE]");
+//			add("[TYPE.Position]");
+//			add("a = 1");
+//			add("BASE = 'struct'");
+//			add("MEMBERS = [");
+//			add("'int x',");
+//			add("'int y'");
+//			add("]");
+//			add("");
+//			add("[TYPE.Person]");
+////			add("BASE = 'struct'");
+//			add("MEMBERS = [");
+//			add("'string firstName',");
+//			add("'string lastName'");
+//			add("]");
+//			break;
 		default:
 			break;
 		}

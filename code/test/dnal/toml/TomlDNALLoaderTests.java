@@ -56,6 +56,9 @@ public class TomlDNALLoaderTests extends BaseTest {
 			
 			for(Entry<String, Object> entry: toml.entrySet()) {
 				log(entry.getKey());
+				if (entry.getKey().startsWith("TYPE")) {
+					continue;
+				}
 				createDValue(toml, entry);
 			}
 			
