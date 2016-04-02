@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.mef.dnal.core.DType;
+import org.mef.dnal.core.DTypeEntry;
 import org.mef.dnal.core.DValue;
 import org.mef.dnal.validation.ValidationError;
 
@@ -181,10 +183,24 @@ public class TypeTests {
 	}
 	
 	public static class MockEnumValidator extends SimpleValidatorBase {
+		public TypeRegistry registry;
 
 		@Override
 		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
+			DType enumDType = registry.findCustomDType(dval.type);
 			
+			boolean found = false;
+			for(DTypeEntry entry : enumDType.entries) {
+				if (entry.name.equals(inputObj)) {
+					found = true;
+					break;
+				}
+			}
+			
+			result.isValid = found;
+			if (! found) {
+				addError(result, dval, String.format("%s is not one of the enum values", inputObj));
+			}
 		}
 
 		@Override

@@ -91,7 +91,7 @@ public class RegistryTests extends BaseTest {
 			registry.add("struct", "PRIMITIVE", structVal, null);
 
 			MockEnumValidator enumVal = new MockEnumValidator();
-			structVal.registry = registry;
+			enumVal.registry = registry;
 			registry.add("enum", "PRIMITIVE", enumVal, null);
 			return registry;
 		}
