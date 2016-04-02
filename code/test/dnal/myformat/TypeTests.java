@@ -179,6 +179,23 @@ public class TypeTests {
 			super.doSubValue(result, dval);
 		}
 	}
+	
+	public static class MockEnumValidator extends SimpleValidatorBase {
+
+		@Override
+		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
+			
+		}
+
+		@Override
+		protected void prepareForSubObj(DValue dval) {
+		}
+
+		@Override
+		protected void buildSubObj(DValue dval) {
+		}
+
+	}
 
 	@Test
 	public void test() {

@@ -24,6 +24,7 @@ import dnal.myformat.TypeTests;
 import dnal.myformat.DNALLoaderTests.DNALLoader;
 import dnal.myformat.DNALParserTests.FileScanner;
 import dnal.myformat.TypeTests.ITypeValidator;
+import dnal.myformat.TypeTests.MockEnumValidator;
 import dnal.myformat.TypeTests.MockIntValidator;
 import dnal.myformat.TypeTests.MockListStringValidator;
 import dnal.myformat.TypeTests.MockStructValidator;
@@ -88,6 +89,10 @@ public class RegistryTests extends BaseTest {
 			MockStructValidator structVal = new MockStructValidator();
 			structVal.registry = registry;
 			registry.add("struct", "PRIMITIVE", structVal, null);
+
+			MockEnumValidator enumVal = new MockEnumValidator();
+			structVal.registry = registry;
+			registry.add("enum", "PRIMITIVE", enumVal, null);
 			return registry;
 		}
 	}
@@ -192,6 +197,9 @@ public class RegistryTests extends BaseTest {
 							}
 						}
 					} else if (isEnum(dtype)) {
+						registry.add(dtype.name, dtype.baseType, validator, dtype);
+						alreadyAdded = true;
+						addedCount++;
 					} else {
 						addError(dtype, String.format("'%s' is not a struct", dtype.name));
 						ok = false;

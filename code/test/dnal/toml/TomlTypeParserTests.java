@@ -75,19 +75,22 @@ public class TomlTypeParserTests extends BaseTest {
 					DTypeEntry entry = parseEntry(field);
 					dtype.entries.add(entry);
 				}
+			} else {
+				membL = toml.getList("ENUM");
+				if (membL != null) {
+					if (baseType == null) {
+						dtype.baseType = "enum";
+					}
+					
+					for(String field: membL) {
+						DTypeEntry entry = parseEntry(field);
+						entry.name = entry.type;
+						entry.type = "enumvalue";
+						dtype.entries.add(entry);
+					}
+				}
 			}
 			
-			membL = toml.getList("ENUM");
-			if (membL != null) {
-				if (baseType == null) {
-					dtype.baseType = "enum";
-				}
-				
-				for(String field: membL) {
-					DTypeEntry entry = parseEntry(field);
-					dtype.entries.add(entry);
-				}
-			}
 			
 			this.typeL.add(dtype);
 		}
@@ -200,6 +203,8 @@ public class TomlTypeParserTests extends BaseTest {
 		checkEntrySize(2, scanner.getDTypes().get(0).entries);
 		int i = 0;
 		checkDType(scanner, i, "enum", "Colour");
+		checkEntry(scanner, i, 0, "enumvalue", "RED");
+		checkEntry(scanner, i, 1, "enumvalue", "BLACK");
 	}
 	
 	private void checkEntry(ITypeFileScanner scanner, int i, int j,
