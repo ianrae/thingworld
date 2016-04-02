@@ -105,8 +105,9 @@ public class RegistryTests extends BaseTest {
 		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
 			try {
 				result.isValid = true;
-				result.validObj = inputObj.toString();
-				dval.finalValue = result.validObj;
+				result.validObj = dval.finalValue;
+//				result.validObj = inputObj.toString();
+//				dval.finalValue = result.validObj;
 			} catch(NumberFormatException e) {
 				addError(result, dval, "not an string");
 			}

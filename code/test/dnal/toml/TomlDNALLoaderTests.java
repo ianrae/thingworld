@@ -126,6 +126,11 @@ public class TomlDNALLoaderTests extends BaseTest {
 				return Long.valueOf(d.longValue());
 			}
 			
+			if (obj instanceof Map) {
+				Map xmap = (Map) obj;
+				return xmap;
+			}
+			
 			return obj;
 		}
 		private String getAsString(Toml toml, Map<String, Object> map, String key) {
