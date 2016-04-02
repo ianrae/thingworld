@@ -30,7 +30,7 @@ public class TomlTests extends BaseTest {
 		long n = toml.getLong("TYPE.Position.a");
 		assertEquals(1, n);
 		
-		List<String> membL = toml.getList("TYPE.Position.MEMBERS");
+		List<String> membL = toml.getList("TYPE.Position.CONTAINS");
 		assertEquals(2, membL.size());
 		assertEquals("int x", membL.get(0));
 	}
@@ -40,11 +40,11 @@ public class TomlTests extends BaseTest {
 		long n = toml.getLong("TYPE.Position.a");
 		assertEquals(1, n);
 		
-		List<String> membL = toml.getList("TYPE.Position.MEMBERS");
+		List<String> membL = toml.getList("TYPE.Position.CONTAINS");
 		assertEquals(2, membL.size());
 		assertEquals("int x", membL.get(0));
 		
-		membL = toml.getList("TYPE.Person.MEMBERS");
+		membL = toml.getList("TYPE.Person.CONTAINS");
 		assertEquals(2, membL.size());
 		assertEquals("string firstName", membL.get(0));
 
@@ -73,7 +73,7 @@ public class TomlTests extends BaseTest {
 			add("[TYPE.Position]");
 			add("a = 1");
 			add("BASE = 'struct'");
-			add("MEMBERS = [");
+			add("CONTAINS = [");
 			add("'int x',");
 			add("'int y'");
 			add("]");
@@ -83,14 +83,14 @@ public class TomlTests extends BaseTest {
 			add("[TYPE.Position]");
 			add("a = 1");
 			add("BASE = 'struct'");
-			add("MEMBERS = [");
+			add("CONTAINS = [");
 			add("'int x',");
 			add("'int y'");
 			add("]");
 			add("");
 			add("[TYPE.Person]");
 			add("BASE = 'struct'");
-			add("MEMBERS = [");
+			add("CONTAINS = [");
 			add("'string firstName',");
 			add("'string lastName'");
 			add("]");

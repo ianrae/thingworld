@@ -69,7 +69,7 @@ public class TomlTypeParserTests extends BaseTest {
 			String baseType = toml.getString("BASE");
 			dtype.baseType = (baseType == null) ? "struct" : baseType;
 
-			List<String> membL = toml.getList("MEMBERS");
+			List<String> membL = toml.getList("CONTAINS");
 			if (membL != null) {
 				for(String field: membL) {
 					DTypeEntry entry = parseEntry(field);
@@ -238,7 +238,7 @@ public class TomlTypeParserTests extends BaseTest {
 			add("[TYPE.Position]");
 			add("a = 1");
 			add("BASE = 'struct'");
-			add("MEMBERS = [");
+			add("CONTAINS = [");
 			add("'int x',");
 			add("'int y'");
 			add("]");
@@ -248,14 +248,14 @@ public class TomlTypeParserTests extends BaseTest {
 			add("[TYPE.Position]");
 			add("a = 1");
 			add("BASE = 'struct'");
-			add("MEMBERS = [");
+			add("CONTAINS = [");
 			add("'int x',");
 			add("'int y'");
 			add("]");
 			add("");
 			add("[TYPE.Person]");
 //			add("BASE = 'struct'");
-			add("MEMBERS = [");
+			add("CONTAINS = [");
 			add("'string firstName',");
 			add("'string lastName'");
 			add("]");

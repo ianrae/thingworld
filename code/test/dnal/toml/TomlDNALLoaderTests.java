@@ -336,14 +336,14 @@ public class TomlDNALLoaderTests extends BaseTest {
 //			add("[TYPE.Position]");
 //			add("a = 1");
 //			add("BASE = 'struct'");
-//			add("MEMBERS = [");
+//			add("CONTAINS = [");
 //			add("'int x',");
 //			add("'int y'");
 //			add("]");
 //			add("");
 //			add("[TYPE.Person]");
 ////			add("BASE = 'struct'");
-//			add("MEMBERS = [");
+//			add("CONTAINS = [");
 //			add("'string firstName',");
 //			add("'string lastName'");
 //			add("]");
