@@ -105,9 +105,9 @@ public class RegistryTests extends BaseTest {
 		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
 			try {
 				result.isValid = true;
-				result.validObj = dval.finalValue;
-//				result.validObj = inputObj.toString();
-//				dval.finalValue = result.validObj;
+//				result.validObj = dval.finalValue;
+				result.validObj = inputObj.toString();
+				dval.finalValue = result.validObj;
 			} catch(NumberFormatException e) {
 				addError(result, dval, "not an string");
 			}
@@ -146,7 +146,7 @@ public class RegistryTests extends BaseTest {
 			
 			ITypeValidator subval = registry.find(subType);
 			if (subval == null) {
-				this.addError(result, dval, "missing val for sub: " + dval.name);
+				this.addError(result, dval, String.format("missing val for sub: '%s' %s", dval.type, dval.name));
 			} else {
 				
 				ValidationResult tmp = subval.validate(dval, dval.rawValue);
@@ -196,6 +196,12 @@ public class RegistryTests extends BaseTest {
 							if (! ensureExists(dtype, sub.type)) {
 								ok = false;
 							}
+						}
+						
+						if (ok) {
+							registry.add(dtype.name, dtype.baseType, validator, dtype);
+							alreadyAdded = true;
+							addedCount++;
 						}
 					} else if (isEnum(dtype)) {
 						registry.add(dtype.name, dtype.baseType, validator, dtype);

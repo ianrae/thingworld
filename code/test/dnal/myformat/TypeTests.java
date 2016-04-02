@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.mef.dnal.core.DType;
@@ -158,7 +159,7 @@ public class TypeTests {
 		protected void doSubValue(ValidationResult result, DValue dval) {
 			ITypeValidator subval = registry.find(dval.type);
 			if (subval == null) {
-				this.addError(result, dval, "missing val for sub: " + dval.name);
+				this.addError(result, dval, String.format("missing val for sub: '%s' %s", dval.type, dval.name));
 			} else {
 				ValidationResult tmp = subval.validate(dval, dval.rawValue);
 				result.isValid = tmp.isValid;
@@ -178,7 +179,30 @@ public class TypeTests {
 		@Override
 		protected void doValue(ValidationResult result, DValue dval,
 				Object inputObj) {
-			super.doSubValue(result, dval);
+//			super.doSubValue(result, dval);
+			if (dval.finalValue instanceof Map) {
+				DType customDType = registry.findCustomDType(dval.type);
+				Map map = (Map) dval.finalValue;
+				for(Object key: map.keySet()) {
+					System.out.println("ss " + key.toString());
+					DTypeEntry entry = findInType(customDType, key.toString());
+					if (entry == null) {
+						this.addError(result, dval, String.format("Type %s doesn't have field %s", dval.type, key));
+					} else {
+						//create a dvalue
+					}
+				}
+				
+			}
+		}
+
+		private DTypeEntry findInType(DType customDType, String fieldName) {
+			for(DTypeEntry entry: customDType.entries) {
+				if (entry.name.equals(fieldName)) {
+					return entry;
+				}
+			}
+			return null;
 		}
 	}
 	
