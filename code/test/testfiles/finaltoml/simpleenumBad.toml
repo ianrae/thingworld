@@ -5,5 +5,5 @@
   ENUM = [ 'RED', 'BLACK' ]
   
 [Foo]
- Colour__col = 'RED'
+ Colour__col = 'YELLOW'
   

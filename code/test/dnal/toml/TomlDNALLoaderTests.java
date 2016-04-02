@@ -148,6 +148,7 @@ public class TomlDNALLoaderTests extends BaseTest {
 		
 		private DValue parseEntry(String input) {
 			input = input.replace("__", " "); //!!
+			input = input.replace("\"", "");
 			Scanner scan = new Scanner(input);
 			DValue dval = new DValue();
 			
@@ -159,12 +160,12 @@ public class TomlDNALLoaderTests extends BaseTest {
 				tok = tok.trim();
 				switch(state) {
 				case 0:
-					if (tok.startsWith("list_")) {
-						String elType = StringUtils.substringAfter(tok, "list_");
-						dval.type = String.format("list<%s>", elType);
-					} else {
+//					if (tok.startsWith("list_")) {
+//						String elType = StringUtils.substringAfter(tok, "list_");
+//						dval.type = String.format("list<%s>", elType);
+//					} else {
 						dval.type = tok;
-					}
+//					}
 					state = 1;
 					break;
 				case 1:

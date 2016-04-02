@@ -1,5 +1,5 @@
 #a basic dnal TOML file
 
 [Foo]
-  list_string__prov = [ "ont", "que", "bc" ]
+  "list<string> prov" = [ "ont", "que", "bc" ]
 

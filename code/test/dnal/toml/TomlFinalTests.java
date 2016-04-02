@@ -82,29 +82,46 @@ public class TomlFinalTests extends BaseTest {
 		return null;
 	}
 	
-//	@Test
-//	public void testSimpleList() {
-//		String path = buildPath("simplelist.toml");
-//		IOverallFileScanner scanner = createScanner();
-//		boolean b = scanner.load(path);
-//		assertEquals(true, b);
-//		List<DValue> dataL = scanner.getDloader().getDataL();
-//		assertEquals(1, dataL.size());
-//		assertEquals("prov", dataL.get(0).name);
-//		assertEquals("on", dataL.get(0).tmplist.get(0));
-//	}
-//	@Test
-//	public void testSimpleEnum() {
-//		String path = buildPath("simpleenum.toml");
-//		IOverallFileScanner scanner = createScanner();
-//		boolean b = scanner.load(path);
-//		assertEquals(true, b);
-//		List<DValue> dataL = scanner.getDloader().getDataL();
-//		assertEquals(1, dataL.size());
-//		assertEquals("col", dataL.get(0).name);
-//		assertEquals("RED", dataL.get(0).finalValue);
-//	}
-//
+	@Test
+	public void testSimpleList() {
+		String path = buildPath("simplelist.toml");
+		IOverallFileScanner scanner = createScanner();
+		boolean b = scanner.load(path);
+		assertEquals(true, b);
+		List<DValue> dataL = scanner.getDloader().getDataL();
+		assertEquals(1, dataL.size());
+		DValue dval = dataL.get(0);
+		assertEquals(1, dval.valueList.size());
+		
+		DValue sub = dval.valueList.get(0);
+		assertEquals("prov", sub.name);
+		assertEquals("on", sub.tmplist.get(0));
+	}
+	@Test
+	public void testSimpleEnum() {
+		String path = buildPath("simpleenum.toml");
+		IOverallFileScanner scanner = createScanner();
+		boolean b = scanner.load(path);
+		assertEquals(true, b);
+		List<DValue> dataL = scanner.getDloader().getDataL();
+		assertEquals(1, dataL.size());
+		DValue dval = dataL.get(0);
+		assertEquals(1, dval.valueList.size());
+		DValue sub = dval.valueList.get(0);
+		
+		//!!add validation. right now there is no check that RED is a enum value
+		assertEquals("col", sub.name);
+		assertEquals("RED", sub.finalValue);
+		assertEquals("Colour", sub.type);
+	}
+	@Test
+	public void testSimpleEnumBad() {
+		String path = buildPath("simpleenumBad.toml");
+		IOverallFileScanner scanner = createScanner();
+		boolean b = scanner.load(path);
+		assertEquals(false, b);
+	}
+
 //	@Test
 //	public void testStruct() {
 //		String path = buildPath("struct.toml");

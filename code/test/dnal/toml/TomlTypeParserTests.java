@@ -38,7 +38,16 @@ public class TomlTypeParserTests extends BaseTest {
 				sb.append("\n");
 			}
 			String input = sb.toString();
-			Toml toml = new Toml().read(input);
+			Toml toml = null;
+			try {
+				toml = new Toml().read(input);
+			} catch (IllegalStateException e) {
+				errorTracker.addError("TOML error:" + e.getMessage());
+			}
+			
+			if (toml == null) {
+				return true; //may not have been a syntax error in TYPEs. fix later!!
+			}
 			
 			Toml toml2 = toml.getTable("TYPE");
 			if (toml2 != null) {
@@ -57,11 +66,23 @@ public class TomlTypeParserTests extends BaseTest {
 			
 			String key = "TYPE." + dtype.name;
 			Toml toml = rootToml.getTable(key);
-			String s = toml.getString("BASE");
-			dtype.baseType = (s == null) ? "struct" : s;
+			String baseType = toml.getString("BASE");
+			dtype.baseType = (baseType == null) ? "struct" : baseType;
 
 			List<String> membL = toml.getList("MEMBERS");
 			if (membL != null) {
+				for(String field: membL) {
+					DTypeEntry entry = parseEntry(field);
+					dtype.entries.add(entry);
+				}
+			}
+			
+			membL = toml.getList("ENUM");
+			if (membL != null) {
+				if (baseType == null) {
+					dtype.baseType = "enum";
+				}
+				
 				for(String field: membL) {
 					DTypeEntry entry = parseEntry(field);
 					dtype.entries.add(entry);
@@ -168,6 +189,18 @@ public class TomlTypeParserTests extends BaseTest {
 		int i = 0;
 		checkDType(scanner, i, "int", "Timeout");
 	}
+	@Test
+	public void testF4() {
+		List<String> fileL = buildFile(4);
+
+		ITypeFileScanner scanner = createScanner();
+		boolean b = scanner.scan(fileL);
+		assertEquals(true, b);
+		checkSize(1, scanner.getDTypes());
+		checkEntrySize(2, scanner.getDTypes().get(0).entries);
+		int i = 0;
+		checkDType(scanner, i, "enum", "Colour");
+	}
 	
 	private void checkEntry(ITypeFileScanner scanner, int i, int j,
 			String string, String string2) {
@@ -230,6 +263,11 @@ public class TomlTypeParserTests extends BaseTest {
 		case 3:
 			add("[TYPE.Timeout]");
 			add("BASE = 'int'");
+			break;
+		case 4:
+			add("[TYPE.Colour]");
+			add("BASE = 'enum'");
+			add("ENUM = [ 'RED', 'BLACK' ]");
 			break;
 		default:
 			break;
