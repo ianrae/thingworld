@@ -51,7 +51,12 @@ public class TomlDNALLoaderTests extends BaseTest {
 		@Override
 		public boolean load(List<String> lines) {
 
-			String input = lines.get(0);
+			StringBuilder sb = new StringBuilder();
+			for(String tmp: lines) {
+				sb.append(tmp);
+				sb.append("\n");
+			}
+			String input = sb.toString();
 			Toml toml = new Toml().read(input);
 			
 			for(Entry<String, Object> entry: toml.entrySet()) {

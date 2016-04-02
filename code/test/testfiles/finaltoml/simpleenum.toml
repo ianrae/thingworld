@@ -1,0 +1,11 @@
+//a basic dnal file
+TYPES
+ type Colour extends enum
+   RED
+   BLUE
+ end
+ENDTYPES
+
+package a.b.c
+ Colour col: RED
+end

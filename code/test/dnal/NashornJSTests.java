@@ -34,13 +34,28 @@ public class NashornJSTests extends BaseTest {
 	public static class ExpressionEval {
 
 		public EvalResult evalInt(int value, String expr) {
+			ScriptEngine engine = createEngine(value);
 
-			ScriptEngineManager engineManager = new ScriptEngineManager();
-			ScriptEngine engine = engineManager.getEngineByName("nashorn");
+			if (! expr.endsWith(";")) {
+				expr += ";";
+			}
+			
+			EvalResult result = doEval(engine, expr);
+			return result;
+		}
+		public EvalResult evalString(String value, String expr) {
+			ScriptEngine engine = createEngine(value);
 
-			ScriptContext context = engine.getContext();
-			context.setAttribute("value", value, ScriptContext.ENGINE_SCOPE);
-
+			if (! expr.endsWith(";")) {
+				expr += ";";
+			}
+			
+			EvalResult result = doEval(engine, expr);
+			return result;
+		}
+		
+		
+		private EvalResult doEval(ScriptEngine engine, String expr) {
 			if (! expr.endsWith(";")) {
 				expr += ";";
 			}
@@ -60,6 +75,16 @@ public class NashornJSTests extends BaseTest {
 			}
 			
 			return result;
+		}
+		
+		private ScriptEngine createEngine(Object value) {
+
+			ScriptEngineManager engineManager = new ScriptEngineManager();
+			ScriptEngine engine = engineManager.getEngineByName("nashorn");
+
+			ScriptContext context = engine.getContext();
+			context.setAttribute("value", value, ScriptContext.ENGINE_SCOPE);
+			return engine;
 		}
 	}
 
@@ -94,8 +119,7 @@ public class NashornJSTests extends BaseTest {
 	}
 
 	@Test
-	public void test2() throws Exception {
-
+	public void testInt() throws Exception {
 		ExpressionEval eval = new ExpressionEval();
 
 		checkEval(true, eval, 45, "value > 0");
@@ -103,9 +127,19 @@ public class NashornJSTests extends BaseTest {
 		checkEval(false, eval , 45, "value > 100");
 
 		checkEvalFail(false, eval , 45, "value >>>> 100");
-		
+	}
+	@Test
+	public void testString() throws Exception {
+		ExpressionEval eval = new ExpressionEval();
+
+		checkEvalStr(true, eval, "abc", "value.length > 0");
+		checkEvalStr(false, eval, "abcdef", "value.length < 3");
 	}
 	
+	private void checkEvalStr(boolean expected, ExpressionEval eval, String val, String expr) {
+		EvalResult result = eval.evalString(val, expr);
+		assertEquals(expected, result.result);
+	}
 	private void checkEval(boolean expected, ExpressionEval eval, int val, String expr) {
 		EvalResult result = eval.evalInt(val, expr);
 		assertEquals(expected, result.result);

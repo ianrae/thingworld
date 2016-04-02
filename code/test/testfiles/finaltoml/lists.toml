@@ -1,0 +1,4 @@
+//a basic dnal file
+package a.b.c
+  list<string> prov: [ "ont", "que", "bc" ]
+end
