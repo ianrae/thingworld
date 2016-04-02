@@ -1,4 +1,5 @@
-//a basic dnal file
-package a.b.c
-  list<string> prov: [ "ont", "que", "bc" ]
-end
+#a basic dnal TOML file
+
+[Foo]
+  list_string__prov = [ "ont", "que", "bc" ]
+

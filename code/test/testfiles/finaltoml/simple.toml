@@ -1,10 +1,10 @@
-//a basic dnal file
-TYPES
- type Timeout extends int
- end
-ENDTYPES
+#a basic dnal TOML file
 
-package a.b.c
-  int 		size: 100
-  Timeout 	time: 4000
-end
+[TYPE.Timeout]
+  BASE = 'int'
+
+  
+[Foo]
+ int__size = 100
+ Timeout__time = 4000
+  

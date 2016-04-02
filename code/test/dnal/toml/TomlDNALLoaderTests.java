@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.mef.dnal.core.DValue;
 import org.mef.dnal.core.IDNALLoader;
@@ -57,7 +58,16 @@ public class TomlDNALLoaderTests extends BaseTest {
 				sb.append("\n");
 			}
 			String input = sb.toString();
-			Toml toml = new Toml().read(input);
+			Toml toml = null;
+			try {
+				toml = new Toml().read(input);
+			} catch (IllegalStateException e) {
+				errorTracker.addError("TOML error:" + e.getMessage());
+			}
+			
+			if (toml == null) {
+				return false;
+			}
 			
 			for(Entry<String, Object> entry: toml.entrySet()) {
 				log(entry.getKey());
@@ -87,7 +97,7 @@ public class TomlDNALLoaderTests extends BaseTest {
 		
 				String raw = getAsString(toml, map, key);
 				dvalx.rawValue = raw;
-				dvalx.finalValue = getAsFinalValue(toml, map, key);
+				dvalx.finalValue = getAsFinalValue(toml, map, key, dvalx);
 				dval.valueList.add(dvalx);
 			}
 			dataL.add(dval);
@@ -95,9 +105,19 @@ public class TomlDNALLoaderTests extends BaseTest {
 		
 		
 		private Object getAsFinalValue(Toml toml, Map<String, Object> map,
-				String key) {
+				String key, DValue dval) {
 			Object obj = map.get(key);
 			if (obj == null) {
+				return null;
+			}
+			
+			if (obj instanceof ArrayList) {
+				dval.tmplist = new ArrayList<>();
+				ArrayList L = (ArrayList) obj;
+				for(Object el: L) {
+					System.out.println(el);
+					dval.tmplist.add(el.toString());
+				}
 				return null;
 			}
 			
@@ -139,7 +159,12 @@ public class TomlDNALLoaderTests extends BaseTest {
 				tok = tok.trim();
 				switch(state) {
 				case 0:
-					dval.type = tok;
+					if (tok.startsWith("list_")) {
+						String elType = StringUtils.substringAfter(tok, "list_");
+						dval.type = String.format("list<%s>", elType);
+					} else {
+						dval.type = tok;
+					}
 					state = 1;
 					break;
 				case 1:

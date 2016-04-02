@@ -1,6 +1,7 @@
-//a basic dnal file
-package a.b.c
-  int 		size: abc
-  string 	firstName: x
-  boolean 	flag: truex
-end
+#a basic dnal TOML file
+
+[Foo]
+ int__size = 100
+ string__firstName = "sue mary"
+ boolean__flag = truex
+

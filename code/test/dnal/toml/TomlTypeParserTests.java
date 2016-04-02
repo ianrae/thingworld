@@ -15,6 +15,7 @@ import org.mef.dnal.core.ITypeFileScanner;
 import org.mef.dnal.parser.ParseErrorTracker;
 
 import com.moandjiezana.toml.Toml;
+
 import testhelper.BaseTest;
 
 
@@ -30,7 +31,13 @@ public class TomlTypeParserTests extends BaseTest {
 
 		@Override
 		public boolean scan(List<String> fileL) {
-			String input = fileL.get(0);
+			
+			StringBuilder sb = new StringBuilder();
+			for(String tmp: fileL) {
+				sb.append(tmp);
+				sb.append("\n");
+			}
+			String input = sb.toString();
 			Toml toml = new Toml().read(input);
 			
 			Toml toml2 = toml.getTable("TYPE");

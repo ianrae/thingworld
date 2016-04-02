@@ -31,36 +31,57 @@ public class TomlFinalTests extends BaseTest {
 		assertEquals(3, dval.valueList.size());
 		assertEquals("firstName", dval.valueList.get(1).name);
 	}
-//	@Test
-//	public void testPrimitivesBad() {
-//		String path = buildPath("primitivesBad.toml");
-//		IOverallFileScanner scanner = createScanner();
-//		boolean b = scanner.load(path);
-//		assertEquals(false, b);
-//		scanner.dumpErrors();
-//	}
-//	@Test
-//	public void testList() {
-//		String path = buildPath("lists.toml");
-//		IOverallFileScanner scanner = createScanner();
-//		boolean b = scanner.load(path);
-//		assertEquals(true, b);
-//		List<DValue> dataL = scanner.getDloader().getDataL();
-//		assertEquals(1, dataL.size());
-//		assertEquals("prov", dataL.get(0).name);
-//		assertEquals("ont", dataL.get(0).tmplist.get(0));
-//	}
-//	
-//	@Test
-//	public void testSimple() {
-//		String path = buildPath("simple.toml");
-//		IOverallFileScanner scanner = createScanner();
-//		boolean b = scanner.load(path);
-//		assertEquals(true, b);
-//		List<DValue> dataL = scanner.getDloader().getDataL();
-//		assertEquals(2, dataL.size());
-//		assertEquals("time", dataL.get(1).name);
-//	}
+	@Test
+	public void testPrimitivesBad() {
+		String path = buildPath("primitivesBad.toml");
+		IOverallFileScanner scanner = createScanner();
+		boolean b = scanner.load(path);
+		assertEquals(false, b);
+		scanner.dumpErrors();
+	}
+	@Test
+	public void testList() {
+		String path = buildPath("lists.toml");
+		IOverallFileScanner scanner = createScanner();
+		boolean b = scanner.load(path);
+		assertEquals(true, b);
+		List<DValue> dataL = scanner.getDloader().getDataL();
+		assertEquals(1, dataL.size());
+		DValue dval = dataL.get(0);
+		assertEquals(1, dval.valueList.size());
+		
+		assertEquals("prov", dval.valueList.get(0).name);
+		assertEquals("ont", dval.valueList.get(0).tmplist.get(0));
+	}
+	
+	@Test
+	public void testSimple() {
+		String path = buildPath("simple.toml");
+		IOverallFileScanner scanner = createScanner();
+		boolean b = scanner.load(path);
+		assertEquals(true, b);
+		List<DValue> dataL = scanner.getDloader().getDataL();
+		assertEquals(1, dataL.size());
+		DValue dval = dataL.get(0);
+		assertEquals(2, dval.valueList.size());
+		
+		//TOML entries are randomly ordered
+		DValue sub = findSubValue(dval, "time");
+		assertEquals("time", sub.name);
+		assertEquals(4000, sub.finalValue);
+		sub = findSubValue(dval, "size");
+		assertEquals(100, sub.finalValue);
+	}
+	
+	private DValue findSubValue(DValue dval, String targetName) {
+		for(DValue sub: dval.valueList) {
+			if (sub.name.equals(targetName)) {
+				return sub;
+			}
+		}
+		return null;
+	}
+	
 //	@Test
 //	public void testSimpleList() {
 //		String path = buildPath("simplelist.toml");
