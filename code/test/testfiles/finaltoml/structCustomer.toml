@@ -14,6 +14,9 @@
     ]
 
   
-#[Foo]
-#Position__pos = { x = 100, y = 200 }
+[Foo]
+Address__pos = { 
+ street1 = "abc", 
+ street2 = "def",
+ postalCode = "k0g" }
   
