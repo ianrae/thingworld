@@ -167,6 +167,7 @@ public class RegistryTests extends BaseTest {
 		}
 
 		public boolean validate(List<DType> typeL) {
+			ArrayList<DType> newL = new ArrayList<>();
 			for(DType dtype: typeL) {
 				boolean ok = false;
 				
@@ -178,7 +179,6 @@ public class RegistryTests extends BaseTest {
 					return false;
 				}
 				
-				boolean alreadyAdded = false;
 				validator = registry.find(dtype.baseType); //later need to walk back till find primitive!!
 				if (validator == null) {
 					ok = isStruct(dtype) || isEnum(dtype);
@@ -188,49 +188,96 @@ public class RegistryTests extends BaseTest {
 					}
 				}
 				
-				if (dtype.entries != null && dtype.entries.size() > 0) {
-					if (isStruct(dtype)) {
-						for(DTypeEntry sub: dtype.entries) {
-							if (! ensureExists(dtype, sub.type)) {
-								ok = false;
-							}
-						}
-						
-						if (ok) {
-							registry.add(dtype.name, dtype.baseType, validator, dtype);
-							alreadyAdded = true;
-							addedCount++;
-						}
-					} else if (isEnum(dtype)) {
-						registry.add(dtype.name, dtype.baseType, validator, dtype);
-						alreadyAdded = true;
-						addedCount++;
-					} else {
-						addError(dtype, String.format("'%s' is not a struct", dtype.name));
-						ok = false;
-					} 
+				newL.add(dtype);
+			}
+			
+			int i = 0;
+			for(i = 0; i < 100; i++) {
+				DType candidate = findCandidate(newL);
+				if (candidate == null) {
+					break;
 				} else {
-					if (isSimplePrimitive(dtype)) {
-						registry.add(dtype.name, dtype.baseType, validator, dtype);
-						alreadyAdded = true;
-						addedCount++;
-					}
-				}				
-				
-				if (ok) {
-					if (isList(dtype)) {
-						MockListStringValidator custom = new MockListStringValidator();
-						registry.add(dtype.name, dtype.baseType, custom, dtype);
-						addedCount++;
-					} else if (! alreadyAdded){
-						MockCustomTypeValidator custom = new MockCustomTypeValidator();
-						custom.registry = registry;
-						registry.add(dtype.name, dtype.baseType, custom, dtype);
-						addedCount++;
-					}
+					addCandidate(candidate);
 				}
 			}
+			if (i >= 100) {
+				System.out.println("RUNAWAY!!");
+			}
+			
 			return (errors.size() == 0);
+		}
+		
+		private DType findCandidate(ArrayList<DType> newL) {
+			//first simple types
+			for(DType dtype : newL) {
+				if (dtype.entries != null) {
+					continue;
+				}
+				ITypeValidator validator = registry.find(dtype.name);
+				if (validator == null) {
+					return dtype;
+				}
+			}
+			
+			for(DType dtype : newL) {
+				if (dtype.entries == null) {
+					continue;
+				}
+				ITypeValidator validator = registry.find(dtype.name);
+				if (validator == null) {
+					return dtype;
+				}
+			}
+			
+			return null;
+		}
+
+		private void addCandidate(DType dtype) {
+			boolean ok = true;
+			boolean alreadyAdded = false;
+			ITypeValidator validator = registry.find(dtype.baseType);
+
+			if (dtype.entries != null && dtype.entries.size() > 0) {
+				if (isStruct(dtype)) {
+					for(DTypeEntry sub: dtype.entries) {
+						if (! ensureExists(dtype, sub.type)) {
+							ok = false;
+						}
+					}
+					
+					if (ok) {
+						registry.add(dtype.name, dtype.baseType, validator, dtype);
+						alreadyAdded = true;
+						addedCount++;
+					}
+				} else if (isEnum(dtype)) {
+					registry.add(dtype.name, dtype.baseType, validator, dtype);
+					alreadyAdded = true;
+					addedCount++;
+				} else {
+					addError(dtype, String.format("'%s' is not a struct", dtype.name));
+					ok = false;
+				} 
+			} else {
+				if (isSimplePrimitive(dtype)) {
+					registry.add(dtype.name, dtype.baseType, validator, dtype);
+					alreadyAdded = true;
+					addedCount++;
+				}
+			}				
+			
+			if (ok) {
+				if (isList(dtype)) {
+					MockListStringValidator custom = new MockListStringValidator();
+					registry.add(dtype.name, dtype.baseType, custom, dtype);
+					addedCount++;
+				} else if (! alreadyAdded){
+					MockCustomTypeValidator custom = new MockCustomTypeValidator();
+					custom.registry = registry;
+					registry.add(dtype.name, dtype.baseType, custom, dtype);
+					addedCount++;
+				}
+			}
 		}
 		
 		private boolean isSimplePrimitive(DType dtype) {
@@ -388,6 +435,7 @@ public class RegistryTests extends BaseTest {
 			DTypeEntry entry = new DTypeEntry();
 			entry.name = "item1";
 			entry.type = sub1Type;
+			dtype.entries = new ArrayList<>();
 			dtype.entries.add(entry);
 			entry = new DTypeEntry();
 			entry.name = "item2";
