@@ -4,4 +4,5 @@
  int__size = 100
  string__firstName = "sue mary"
  boolean__flag = true
+ long__population = 1000000
 

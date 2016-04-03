@@ -29,8 +29,24 @@ public class TomlFinalTests extends BaseTest {
 		List<DValue> dataL = scanner.getDloader().getDataL();
 		assertEquals(1, dataL.size());
 		DValue dval = dataL.get(0);
-		assertEquals(3, dval.valueList.size());
-		assertEquals("firstName", dval.valueList.get(1).name);
+		assertEquals(4, dval.valueList.size());
+
+		DValue sub = findSubValue(dval, "size");
+		assertEquals("int", sub.type);
+		assertEquals(100, sub.finalValue);
+		
+		sub = findSubValue(dval, "firstName");
+		assertEquals("string", sub.type);
+		assertEquals("sue mary", sub.finalValue);
+		
+		sub = findSubValue(dval, "flag");
+		assertEquals("boolean", sub.type);
+		assertEquals(true, sub.finalValue);
+		
+		sub = findSubValue(dval, "population");
+		assertEquals("long", sub.type);
+		assertEquals(1000000L, sub.finalValue);
+		
 	}
 	@Test
 	public void testPrimitivesBad() {

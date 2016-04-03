@@ -79,6 +79,7 @@ public class RegistryTests extends BaseTest {
 		public TypeRegistry buildRegistry() {
 			TypeRegistry registry = new TypeRegistry();
 			registry.add("int", "SIMPLEPRIMITIVE", new MockIntValidator(), null);
+			registry.add("long", "SIMPLEPRIMITIVE", new TypeTests.MockLongValidator(), null);
 			registry.add("string", "SIMPLEPRIMITIVE", new TypeTests.MockStringValidator(), null);
 			registry.add("boolean", "SIMPLEPRIMITIVE", new TypeTests.MockBooleanValidator(), null);
 

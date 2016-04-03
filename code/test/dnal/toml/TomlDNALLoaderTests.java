@@ -92,12 +92,9 @@ public class TomlDNALLoaderTests extends BaseTest {
 			DValue dval = new DValue();
 			dval.type = "struct";
 			dval.name = keyx;
+			dval.valueList = new ArrayList<>();
 			for(String key: map.keySet()) {
 				log(key);
-				if (dval.valueList == null) {
-					dval.valueList = new ArrayList<>();
-				}
-
 				DValue childDVal = createDValueFromMap(key, map);
 				dval.valueList.add(childDVal);
 			}

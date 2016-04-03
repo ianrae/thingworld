@@ -94,6 +94,19 @@ public class TypeTests {
 			}
 		}
 	}
+	public static class MockLongValidator extends SimpleValidatorBase {
+
+		@Override
+		protected void doValue(ValidationResult result, DValue dval) {
+			try {
+				Long n = Long.parseLong(dval.finalValue.toString());
+				result.isValid = true;
+				dval.finalValue = n;
+			} catch(NumberFormatException e) {
+				addError(result, dval, "not a long");
+			}
+		}
+	}
 	public static class MockStringValidator extends SimpleValidatorBase {
 
 		@Override
@@ -266,6 +279,7 @@ public class TypeTests {
 		dval.packageName = "a.b.c";
 		dval.type = "int";
 		dval.rawValue = object;
+		dval.finalValue = object;
 		return dval;
 	}
 
