@@ -25,7 +25,7 @@ import dnal.RegistryTests.RegistryBuilder;
 import dnal.RegistryTests.TypeRegistry;
 
 public class TomlDNALLoaderTests extends BaseTest {
-	
+
 	public static class TomlDNALLoader implements IDNALLoader {
 		private List<DValue> dataL = new ArrayList<>();
 		private boolean success;
@@ -64,11 +64,11 @@ public class TomlDNALLoaderTests extends BaseTest {
 			} catch (IllegalStateException e) {
 				errorTracker.addError("TOML error:" + e.getMessage());
 			}
-			
+
 			if (toml == null) {
 				return false;
 			}
-			
+
 			for(Entry<String, Object> entry: toml.entrySet()) {
 				log(entry.getKey());
 				if (entry.getKey().startsWith("TYPE")) {
@@ -76,7 +76,7 @@ public class TomlDNALLoaderTests extends BaseTest {
 				}
 				createDValue(toml, entry);
 			}
-			
+
 			boolean b = true;
 			return b;
 		}
@@ -85,20 +85,20 @@ public class TomlDNALLoaderTests extends BaseTest {
 			String keyx = entry.getKey();
 			Toml toml = rootToml.getTable(keyx);
 			Map<String, Object> map = toml.to(Map.class);		
-			DValue dval = createDValueFromMap(keyx, map);
+			DValue dval = createStrutDValueFromMap(keyx, map);
 			dataL.add(dval);
 		}
-		private DValue createDValueFromMap(String keyx, Map<String, Object> map) {
+		private DValue createStrutDValueFromMap(String keyx, Map<String, Object> map) {
 			DValue dval = new DValue();
 			dval.type = "struct";
 			dval.name = keyx;
 			for(String key: map.keySet()) {
 				log(key);
-				DValue childDVal = parseEntry(key);
 				if (dval.valueList == null) {
 					dval.valueList = new ArrayList<>();
 				}
-		
+
+				DValue childDVal = parseEntry(key);
 				String raw = getAsString(map, key);
 				childDVal.rawValue = raw;
 				childDVal.finalValue = getAsFinalValue(map, key, childDVal);
@@ -106,14 +106,22 @@ public class TomlDNALLoaderTests extends BaseTest {
 			}
 			return dval;
 		}
-		
-		
+		private DValue createDValueFromMap(String keyx, Map<String, Object> map) {
+			DValue dval = parseEntry(keyx);
+
+			String raw = getAsString(map, keyx);
+			dval.rawValue = raw;
+			dval.finalValue = getAsFinalValue(map, keyx, dval);
+			return dval;
+		}
+
+
 		private Object getAsFinalValue(Map<String, Object> map, String key, DValue dval) {
 			Object obj = map.get(key);
 			if (obj == null) {
 				return null;
 			}
-			
+
 			if (obj instanceof ArrayList) {
 				dval.tmplist = new ArrayList<>();
 				ArrayList L = (ArrayList) obj;
@@ -123,17 +131,23 @@ public class TomlDNALLoaderTests extends BaseTest {
 				}
 				return null;
 			}
-			
+
 			if (obj instanceof Double) {
 				Double d = (Double) obj;
 				return Long.valueOf(d.longValue());
 			}
-			
+
 			if (obj instanceof Map) {
 				Map xmap = (Map) obj;
-				return xmap;
+				dval.valueList = new ArrayList<>();
+				for(Object keyObj : xmap.keySet()) {
+					String innerKey = keyObj.toString();
+					DValue dvalz = createStrutDValueFromMap(innerKey, xmap);
+					dval.valueList.add(dvalz);
+				}
+				return null;
 			}
-			
+
 			return obj;
 		}
 		private String getAsString(Map<String, Object> map, String key) {
@@ -141,26 +155,26 @@ public class TomlDNALLoaderTests extends BaseTest {
 			if (obj == null) {
 				return null;
 			}
-			
+
 			if (obj instanceof Double) {
 				Double d = (Double) obj;
 				return Long.valueOf(d.longValue()).toString();
 			}
-			
+
 			return obj.toString();
 		}
 		@Override
 		public List<DValue> getDataL() {
 			return dataL;
 		}
-		
+
 		private DValue parseEntry(String input) {
 			input = input.replace("__", " "); //!!
 			input = input.replace("\"", "");
 			Scanner scan = new Scanner(input);
 			DValue dval = new DValue();
-			
-			
+
+
 			int state = 0;
 			while(scan.hasNext()) {
 				String tok = scan.next();
@@ -168,12 +182,12 @@ public class TomlDNALLoaderTests extends BaseTest {
 				tok = tok.trim();
 				switch(state) {
 				case 0:
-//					if (tok.startsWith("list_")) {
-//						String elType = StringUtils.substringAfter(tok, "list_");
-//						dval.type = String.format("list<%s>", elType);
-//					} else {
-						dval.type = tok;
-//					}
+					//					if (tok.startsWith("list_")) {
+					//						String elType = StringUtils.substringAfter(tok, "list_");
+					//						dval.type = String.format("list<%s>", elType);
+					//					} else {
+					dval.type = tok;
+					//					}
 					state = 1;
 					break;
 				case 1:
@@ -251,8 +265,8 @@ public class TomlDNALLoaderTests extends BaseTest {
 		assertEquals(false, b);
 		assertEquals(1, loader.getDataL().size());
 	}
-	
-	
+
+
 	@Test
 	public void testFile2() {
 		String path = "./test/testfiles/file2.toml";
@@ -268,8 +282,8 @@ public class TomlDNALLoaderTests extends BaseTest {
 		checkDValString(loader, 0, 1, "firstName", "sue mary");
 		checkDValBoolean(loader, 0, 2, "flag", true);
 	}
-	
-	
+
+
 	private void checkDValBoolean(IDNALLoader loader, int i, int j, String name, Boolean expected) {
 		Boolean b = (Boolean) loader.getDataL().get(i).valueList.get(j).finalValue;
 		assertEquals(expected, b);
@@ -298,11 +312,11 @@ public class TomlDNALLoaderTests extends BaseTest {
 		if (!b) {
 			return false;
 		}
-		
+
 		if (loader.getDataL().size() == 0) {
 			return true;
 		}
-		
+
 		loadValidator = new DNALLoadValidator(errorTracker);
 		loadValidator.registry = buildRegistry();
 		b = loadValidator.validate(loader.getDataL());
@@ -312,8 +326,8 @@ public class TomlDNALLoaderTests extends BaseTest {
 		RegistryTests.RegistryBuilder builder = new RegistryBuilder();
 		return builder.buildRegistry();
 	}
-	
-	
+
+
 	//----
 	private StringBuilder sb;
 	private List<String> buildFile(int scenario) {
@@ -325,7 +339,7 @@ public class TomlDNALLoaderTests extends BaseTest {
 		case 1:
 			add("[Foo]");
 			add("int__size = 45");
-//			add("\"int size\" = 45");
+			//			add("\"int size\" = 45");
 			break;
 		case 2:
 			add("[Foo]");
@@ -339,31 +353,31 @@ public class TomlDNALLoaderTests extends BaseTest {
 			add("[Foo]");
 			add("int__size = 'zoo'");
 			break;
-//		case 2:
-////			add("[TYPE]");
-//			add("[TYPE.Position]");
-//			add("a = 1");
-//			add("BASE = 'struct'");
-//			add("CONTAINS = [");
-//			add("'int x',");
-//			add("'int y'");
-//			add("]");
-//			add("");
-//			add("[TYPE.Person]");
-////			add("BASE = 'struct'");
-//			add("CONTAINS = [");
-//			add("'string firstName',");
-//			add("'string lastName'");
-//			add("]");
-//			break;
-//		case 3:
-//			add("[TYPE.Timeout]");
-//			add("BASE = 'int'");
-//			break;
+			//		case 2:
+			////			add("[TYPE]");
+			//			add("[TYPE.Position]");
+			//			add("a = 1");
+			//			add("BASE = 'struct'");
+			//			add("CONTAINS = [");
+			//			add("'int x',");
+			//			add("'int y'");
+			//			add("]");
+			//			add("");
+			//			add("[TYPE.Person]");
+			////			add("BASE = 'struct'");
+			//			add("CONTAINS = [");
+			//			add("'string firstName',");
+			//			add("'string lastName'");
+			//			add("]");
+			//			break;
+			//		case 3:
+			//			add("[TYPE.Timeout]");
+			//			add("BASE = 'int'");
+			//			break;
 		default:
 			break;
 		}
-		
+
 		String s = sb.toString();
 		return Collections.singletonList(s);
 	}
@@ -377,7 +391,7 @@ public class TomlDNALLoaderTests extends BaseTest {
 		s = s.replace('\'', '"');
 		return s;
 	}
-	
+
 	private List<String> xxxbuildFile(int scenario) {
 		List<String> L = new ArrayList<>();
 		switch(scenario) {
@@ -387,7 +401,7 @@ public class TomlDNALLoaderTests extends BaseTest {
 			L.add(" int size: 45");
 			L.add("end");
 			L.add("");
-			
+
 			break;
 		case 1:
 			L.add("");
@@ -399,6 +413,6 @@ public class TomlDNALLoaderTests extends BaseTest {
 		}
 		return L;
 	}
-	
+
 
 }
