@@ -137,9 +137,10 @@ public class TomlFinalTests extends BaseTest {
 		DValue dsub = dval.valueList.get(0);
 		assertEquals("pos", dsub.name);
 		assertEquals("Position", dsub.type);
+		assertEquals(null, dsub.finalValue);
 		
-		Map map = (Map) dsub.finalValue;
-		Object x = map.get("x");  //WRONG. x should be a DValue!!
+		DValue subx = findSubValue(dsub, "x");
+		assertEquals(100, subx.finalValue);
 		
 		//we want to be able to load and validate before doing codegen, so
 		//don't have classes yet - use mock-type-gen

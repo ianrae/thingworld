@@ -36,7 +36,7 @@ public class TypeTests {
 			if (dval.finalValue != null) {
 				doValue(result, dval);
 			} else if (dval.valueList != null) {
-				prepareForSubObj(dval);
+				prepareForSubObj(result, dval);
 				boolean sav = result.isValid;
 				int failCount = 0;
 				for(DValue sub: dval.valueList) {
@@ -57,7 +57,7 @@ public class TypeTests {
 			return result;
 		}
 
-		protected abstract void prepareForSubObj(DValue dval);
+		protected abstract void prepareForSubObj(ValidationResult result, DValue dval);
 		protected abstract void buildSubObj(DValue dval);
 		protected abstract void doValue(ValidationResult result, DValue dval);
 		protected abstract void doSubValue(ValidationResult result, DValue dval);
@@ -75,7 +75,7 @@ public class TypeTests {
 		protected void doSubValue(ValidationResult result, DValue dval)
 		{}
 		@Override
-		protected void prepareForSubObj(DValue dval)
+		protected void prepareForSubObj(ValidationResult result, DValue dval)
 		{}
 		@Override
 		protected void buildSubObj(DValue dval)
@@ -160,7 +160,22 @@ public class TypeTests {
 		}
 
 		@Override
-		protected void prepareForSubObj(DValue dval) {
+		protected void prepareForSubObj(ValidationResult result, DValue dval) {
+			if (dval.type.equals("struct")) {
+				return;
+			}
+			//custom types only
+			DType customDType = registry.findCustomDType(dval.type);
+			for(DValue childdval: dval.valueList) {
+				DTypeEntry entry = findInType(customDType, childdval.name);
+				if (entry == null) {
+					this.addError(result, dval, String.format("Type %s doesn't have field %s", dval.type, childdval.name));
+				} else {
+					if (childdval.type == null) {
+						childdval.type = entry.type;
+					}
+				}
+			}
 		}
 
 		@Override
@@ -169,21 +184,6 @@ public class TypeTests {
 
 		@Override
 		protected void doValue(ValidationResult result, DValue dval) {
-//			super.doSubValue(result, dval);
-			if (dval.finalValue instanceof Map) {
-				DType customDType = registry.findCustomDType(dval.type);
-				Map map = (Map) dval.finalValue;
-				for(Object key: map.keySet()) {
-					System.out.println("ss " + key.toString());
-					DTypeEntry entry = findInType(customDType, key.toString());
-					if (entry == null) {
-						this.addError(result, dval, String.format("Type %s doesn't have field %s", dval.type, key));
-					} else {
-						//create a dvalue
-					}
-				}
-				
-			}
 		}
 
 		private DTypeEntry findInType(DType customDType, String fieldName) {
@@ -218,7 +218,7 @@ public class TypeTests {
 		}
 
 		@Override
-		protected void prepareForSubObj(DValue dval) {
+		protected void prepareForSubObj(ValidationResult result, DValue dval) {
 		}
 
 		@Override

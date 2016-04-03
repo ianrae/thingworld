@@ -150,6 +150,10 @@ public class TomlDNALLoaderTests extends BaseTest {
 				for(Object keyObj : xmap.keySet()) {
 					String innerKey = keyObj.toString();
 					DValue dvalz = createDValueFromMap(innerKey, xmap);
+					if (dvalz.type != null && dvalz.name == null) {
+						dvalz.name = dvalz.type;
+						dvalz.type = null;
+					}
 					dval.valueList.add(dvalz);
 				}
 				return null;

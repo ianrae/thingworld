@@ -113,7 +113,7 @@ public class RegistryTests extends BaseTest {
 		}
 		
 		@Override
-		protected void prepareForSubObj(DValue dval)
+		protected void prepareForSubObj(ValidationResult result, DValue dval)
 		{
 			customDType = registry.findCustomDType(dval.type);
 		}
