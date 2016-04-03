@@ -66,17 +66,17 @@ public class APITests {
 		}
 	}
 
-	@Test
-	public void test() throws Exception {
-		DNALLoader loader = buildLoader();
-		DNALAPI api = new DNALAPI(loader);
-		
-		int k = api.getInt("a.b.c.size");
-		assertEquals(100, k);
-		String s = api.getString("a.b.c.firstName");
-		assertEquals("sue mary", s);
-		assertEquals(true, api.getBoolean("a.b.c.flag"));
-	}
+//	@Test
+//	public void test() throws Exception {
+//		DNALLoader loader = buildLoader();
+//		DNALAPI api = new DNALAPI(loader);
+//		
+//		int k = api.getInt("a.b.c.size");
+//		assertEquals(100, k);
+//		String s = api.getString("a.b.c.firstName");
+//		assertEquals("sue mary", s);
+//		assertEquals(true, api.getBoolean("a.b.c.flag"));
+//	}
 	@Test
 	public void testBox() {
 		Boolean bb = Boolean.TRUE;

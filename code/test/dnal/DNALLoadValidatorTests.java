@@ -35,7 +35,7 @@ public class DNALLoadValidatorTests extends BaseTest {
 						for(ValidationError err: result.errors) {
 							addError(err);
 						}
-					} else if (dval.finalValue == null && dval.tmplist == null) {
+					} else if (dval.finalValue == null) {
 						if (dval.type.equals("struct")) {
 							//in toml even basic values are in a struct.
 						} else {

@@ -90,7 +90,12 @@ public class DNALParserTests extends BaseTest {
 			JSONStringParser jparser = new JSONStringParser();
 			String s = jparser.findJSONString(tok, 0);
 			
-			currentDValue.tmplist.add(s);
+			DValue dd = new DValue();
+			dd.name = "??";
+			dd.type = "string";
+			dd.rawValue = s;
+			dd.finalValue = dd.rawValue;
+			currentDValue.valueList.add(dd);
 			return LSState.LIST;
 		}
 		public DValue getDValue() {
@@ -142,7 +147,7 @@ public class DNALParserTests extends BaseTest {
 //				}
 				
 				if (tok.equals("[")) {
-					currentDValue.tmplist = new ArrayList<>();
+					currentDValue.valueList = new ArrayList<>();
 					return LSState.LIST;
 				}
 				
@@ -259,7 +264,7 @@ public class DNALParserTests extends BaseTest {
 		//list elements must use quotes and commas
 		DValue dval = doScan(fix("list<string> name: [ 'a', 'b', 'c' ]"));
 		checkDValList(dval, "list<string>", "name", 3, "a");
-		assertEquals("b", dval.tmplist.get(1));
+		assertEquals("b", dval.valueList.get(1));
 	}
 
 	@Test
@@ -325,9 +330,9 @@ public class DNALParserTests extends BaseTest {
 	private void checkDValList(DValue dval, String type, String name, int listlen, String val0) {
 		assertEquals(type, dval.type);
 		assertEquals(name, dval.name);
-		assertEquals(listlen, dval.tmplist.size());
+		assertEquals(listlen, dval.valueList.size());
 		if (listlen > 0) {
-			assertEquals(val0, dval.tmplist.get(0));
+			assertEquals(val0, dval.valueList.get(0));
 		}
 	}
 

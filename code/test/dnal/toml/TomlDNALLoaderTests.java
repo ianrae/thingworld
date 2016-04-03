@@ -120,12 +120,22 @@ public class TomlDNALLoaderTests extends BaseTest {
 			}
 
 			if (obj instanceof ArrayList) {
-				dval.tmplist = new ArrayList<>();
+				dval.valueList = new ArrayList<>();
 				ArrayList L = (ArrayList) obj;
+				int index = 0;
 				for(Object el: L) {
 					System.out.println(el);
-					dval.tmplist.add(el.toString());
+				
+					String innerKey = String.format("[%d]", index++);
+					//fix later!!
+					DValue dvalz = new DValue();
+					dvalz.rawValue = el.toString();
+					dvalz.name = innerKey;
+					dvalz.finalValue = dvalz.rawValue;
+					dvalz.type = "string"; //
+					dval.valueList.add(dvalz);
 				}
+				
 				return null;
 			}
 

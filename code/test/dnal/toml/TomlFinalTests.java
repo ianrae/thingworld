@@ -52,7 +52,7 @@ public class TomlFinalTests extends BaseTest {
 		assertEquals(1, dval.valueList.size());
 		
 		assertEquals("prov", dval.valueList.get(0).name);
-		assertEquals("ont", dval.valueList.get(0).tmplist.get(0));
+		assertEquals("ont", dval.valueList.get(0).valueList.get(0).finalValue);
 	}
 	
 	@Test
@@ -96,7 +96,7 @@ public class TomlFinalTests extends BaseTest {
 		
 		DValue sub = dval.valueList.get(0);
 		assertEquals("prov", sub.name);
-		assertEquals("on", sub.tmplist.get(0));
+		assertEquals("on", sub.valueList.get(0).finalValue);
 	}
 	@Test
 	public void testSimpleEnum() {

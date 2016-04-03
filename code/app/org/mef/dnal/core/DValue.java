@@ -9,6 +9,6 @@ public class DValue {
 	public String name;
 	public String rawValue;
 	public Object finalValue;
-	public List<String> tmplist; //when value is a list of things
-	public List<DValue> valueList; //either value or this
+//	public List<String> tmplist; //when value is a list of things
+	public List<DValue> valueList; //either value or this. for struct and list
 }

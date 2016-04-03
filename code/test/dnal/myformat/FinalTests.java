@@ -47,7 +47,7 @@ public class FinalTests extends BaseTest {
 		List<DValue> dataL = scanner.getDloader().getDataL();
 		assertEquals(1, dataL.size());
 		assertEquals("prov", dataL.get(0).name);
-		assertEquals("ont", dataL.get(0).tmplist.get(0));
+		assertEquals("ont", dataL.get(0).valueList.get(0));
 	}
 	
 	@Test
@@ -69,7 +69,7 @@ public class FinalTests extends BaseTest {
 		List<DValue> dataL = scanner.getDloader().getDataL();
 		assertEquals(1, dataL.size());
 		assertEquals("prov", dataL.get(0).name);
-		assertEquals("on", dataL.get(0).tmplist.get(0));
+		assertEquals("on", dataL.get(0).valueList.get(0));
 	}
 	
 //was working. fix later!!	
