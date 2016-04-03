@@ -98,10 +98,7 @@ public class TomlDNALLoaderTests extends BaseTest {
 					dval.valueList = new ArrayList<>();
 				}
 
-				DValue childDVal = parseEntry(key);
-				String raw = getAsString(map, key);
-				childDVal.rawValue = raw;
-				childDVal.finalValue = getAsFinalValue(map, key, childDVal);
+				DValue childDVal = createDValueFromMap(key, map);
 				dval.valueList.add(childDVal);
 			}
 			return dval;
@@ -142,7 +139,7 @@ public class TomlDNALLoaderTests extends BaseTest {
 				dval.valueList = new ArrayList<>();
 				for(Object keyObj : xmap.keySet()) {
 					String innerKey = keyObj.toString();
-					DValue dvalz = createStrutDValueFromMap(innerKey, xmap);
+					DValue dvalz = createDValueFromMap(innerKey, xmap);
 					dval.valueList.add(dvalz);
 				}
 				return null;
