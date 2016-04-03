@@ -23,38 +23,37 @@ public class TypeTests {
 	}
 
 	public interface ITypeValidator {
-		ValidationResult validate(DValue dval, Object inputObj);
+//		ValidationResult validate(DValue dval, Object inputObj);
+		ValidationResult validate(DValue dval);
 	}
 
 	public static abstract class ValidatorBase implements ITypeValidator {
 
 		@Override
-		public ValidationResult validate(DValue dval, Object inputObj) {
+		public ValidationResult validate(DValue dval) {
 			ValidationResult result = new ValidationResult();
 
-			if (inputObj == null) {
-				if (dval.valueList != null) {
-					prepareForSubObj(dval);
-					boolean sav = result.isValid;
-					int failCount = 0;
-					for(DValue sub: dval.valueList) {
-						//!!fix
-						result.isValid = sav;
-						doSubValue(result, sub);
-						if (! result.isValid) {
-							failCount++;
-						}
+			if (dval.finalValue != null) {
+				doValue(result, dval);
+			} else if (dval.valueList != null) {
+				prepareForSubObj(dval);
+				boolean sav = result.isValid;
+				int failCount = 0;
+				for(DValue sub: dval.valueList) {
+					//!!fix
+					result.isValid = sav;
+					doSubValue(result, sub);
+					if (! result.isValid) {
+						failCount++;
 					}
-					buildSubObj(dval);
-					
-					result.isValid = (failCount == 0);
-				} else if (dval.tmplist != null) {
-					doValue(result, dval, inputObj);
-				} else {
-					addError(result, dval, "value is null");
 				}
+				buildSubObj(dval);
+				
+				result.isValid = (failCount == 0);
+			} else if (dval.tmplist != null) {
+				doValue(result, dval);
 			} else {
-				doValue(result, dval, inputObj);
+				addError(result, dval, "value is null");
 			}
 
 			return result;
@@ -62,7 +61,7 @@ public class TypeTests {
 
 		protected abstract void prepareForSubObj(DValue dval);
 		protected abstract void buildSubObj(DValue dval);
-		protected abstract void doValue(ValidationResult result, DValue dval, Object inputObj);
+		protected abstract void doValue(ValidationResult result, DValue dval);
 		protected abstract void doSubValue(ValidationResult result, DValue dval);
 
 		protected void addError(ValidationResult result, DValue dval, String err) {
@@ -87,9 +86,9 @@ public class TypeTests {
 	public static class MockIntValidator extends SimpleValidatorBase {
 
 		@Override
-		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
+		protected void doValue(ValidationResult result, DValue dval) {
 			try {
-				Integer n = Integer.parseInt(inputObj.toString());
+				Integer n = Integer.parseInt(dval.finalValue.toString());
 				result.isValid = true;
 				result.validObj = n;
 				dval.finalValue = result.validObj;
@@ -101,11 +100,10 @@ public class TypeTests {
 	public static class MockStringValidator extends SimpleValidatorBase {
 
 		@Override
-		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
+		protected void doValue(ValidationResult result, DValue dval) {
 			try {
 				result.isValid = true;
-				result.validObj = inputObj.toString();
-				dval.finalValue = result.validObj;
+				result.validObj = dval.finalValue;
 			} catch(NumberFormatException e) {
 				addError(result, dval, "not an string");
 			}
@@ -114,17 +112,15 @@ public class TypeTests {
 	public static class MockBooleanValidator extends SimpleValidatorBase {
 
 		@Override
-		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
+		protected void doValue(ValidationResult result, DValue dval) {
 			try {
-				String s = inputObj.toString();
+				String s = dval.finalValue.toString();
 				if (s.equalsIgnoreCase("true")) {
 					result.isValid = true;
 					result.validObj = Boolean.TRUE;
-					dval.finalValue = result.validObj;
 				} else if (s.equalsIgnoreCase("false")) {
 					result.isValid = true;
 					result.validObj = Boolean.FALSE;
-					dval.finalValue = result.validObj;
 				} else {
 					addError(result, dval, String.format("%s is neither 'true' nor 'false'"));
 				}
@@ -137,14 +133,14 @@ public class TypeTests {
 	public static class MockListStringValidator extends SimpleValidatorBase {
 
 		@Override
-		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
+		protected void doValue(ValidationResult result, DValue dval) {
 			MockStringValidator inner = new MockStringValidator();
 			result.isValid = true;
 			for(String s: dval.tmplist) {
 				DValue innerdval = new DValue();
 				innerdval.type = "string";
 				innerdval.rawValue = s;
-				ValidationResult result2 =inner.validate(innerdval, s);
+				ValidationResult result2 =inner.validate(innerdval);
 				if (!result2.isValid) {
 					result.isValid = false;
 				}
@@ -161,7 +157,7 @@ public class TypeTests {
 			if (subval == null) {
 				this.addError(result, dval, String.format("missing val for sub: '%s' %s", dval.type, dval.name));
 			} else {
-				ValidationResult tmp = subval.validate(dval, dval.rawValue);
+				ValidationResult tmp = subval.validate(dval);
 				result.isValid = tmp.isValid;
 				result.errors.addAll(tmp.errors);
 //				dval.finalValue = tmp.validObj;
@@ -177,8 +173,7 @@ public class TypeTests {
 		}
 
 		@Override
-		protected void doValue(ValidationResult result, DValue dval,
-				Object inputObj) {
+		protected void doValue(ValidationResult result, DValue dval) {
 //			super.doSubValue(result, dval);
 			if (dval.finalValue instanceof Map) {
 				DType customDType = registry.findCustomDType(dval.type);
@@ -210,12 +205,12 @@ public class TypeTests {
 		public TypeRegistry registry;
 
 		@Override
-		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
+		protected void doValue(ValidationResult result, DValue dval) {
 			DType enumDType = registry.findCustomDType(dval.type);
 			
 			boolean found = false;
 			for(DTypeEntry entry : enumDType.entries) {
-				if (entry.name.equals(inputObj)) {
+				if (entry.name.equals(dval.finalValue)) {
 					found = true;
 					break;
 				}
@@ -223,7 +218,7 @@ public class TypeTests {
 			
 			result.isValid = found;
 			if (! found) {
-				addError(result, dval, String.format("%s is not one of the enum values", inputObj));
+				addError(result, dval, String.format("%s is not one of the enum values", dval.finalValue));
 			}
 		}
 
@@ -253,14 +248,14 @@ public class TypeTests {
 	private void shouldFail(String input) {
 		MockIntValidator validator = new MockIntValidator();
 		DValue dval = createDValue(input);
-		ValidationResult result = validator.validate(dval, dval.rawValue);
+		ValidationResult result = validator.validate(dval);
 		checkFail(result);
 	}
 
 	private void shouldPass(String input, Object expected) {
 		MockIntValidator validator = new MockIntValidator();
 		DValue dval = createDValue(input);
-		ValidationResult result = validator.validate(dval, dval.rawValue);
+		ValidationResult result = validator.validate(dval);
 		checkPass(result, expected);
 		assertEquals(expected, dval.finalValue);
 	}

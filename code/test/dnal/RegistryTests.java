@@ -102,12 +102,11 @@ public class RegistryTests extends BaseTest {
 		private DType customDType;
 		
 		@Override
-		protected void doValue(ValidationResult result, DValue dval, Object inputObj) {
+		protected void doValue(ValidationResult result, DValue dval) {
 			try {
 				result.isValid = true;
 //				result.validObj = dval.finalValue;
-				result.validObj = inputObj.toString();
-				dval.finalValue = result.validObj;
+				result.validObj = dval.finalValue;
 			} catch(NumberFormatException e) {
 				addError(result, dval, "not an string");
 			}
@@ -149,7 +148,7 @@ public class RegistryTests extends BaseTest {
 				this.addError(result, dval, String.format("missing val for sub: '%s' %s", dval.type, dval.name));
 			} else {
 				
-				ValidationResult tmp = subval.validate(dval, dval.rawValue);
+				ValidationResult tmp = subval.validate(dval);
 				result.isValid = tmp.isValid;
 //				dval.finalValue = tmp.validObj;
 			}
