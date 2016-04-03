@@ -1,0 +1,19 @@
+#a basic dnal TOML file
+
+[TYPE.Street]
+  BASE = 'string'
+
+[TYPE.PostalCode]
+  BASE = 'string'
+
+[TYPE.Address]
+  CONTAINS = [
+    'Street street1',
+    'Street street2',
+    'PostalCode postalCode'
+    ]
+
+  
+#[Foo]
+#Position__pos = { x = 100, y = 200 }
+  

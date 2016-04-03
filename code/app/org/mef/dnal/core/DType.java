@@ -8,5 +8,5 @@ public class DType{
 	public String packageName;
 	public String name;
 	public String baseType;
-	public List<DTypeEntry> entries = new ArrayList<>();
+	public List<DTypeEntry> entries; // = new ArrayList<>();
 }

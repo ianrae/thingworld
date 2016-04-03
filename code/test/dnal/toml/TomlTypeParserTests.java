@@ -71,6 +71,7 @@ public class TomlTypeParserTests extends BaseTest {
 
 			List<String> membL = toml.getList("CONTAINS");
 			if (membL != null) {
+				dtype.entries = new ArrayList<>();
 				for(String field: membL) {
 					DTypeEntry entry = parseEntry(field);
 					dtype.entries.add(entry);
@@ -81,6 +82,7 @@ public class TomlTypeParserTests extends BaseTest {
 					if (baseType == null) {
 						dtype.baseType = "enum";
 					}
+					dtype.entries = new ArrayList<>();
 					
 					for(String field: membL) {
 						DTypeEntry entry = parseEntry(field);

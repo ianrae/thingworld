@@ -83,12 +83,14 @@ public class TomlOverallParserTests extends BaseTest {
 			if (!b) {
 				return b;
 			}
+			this.log(String.format("%d types found", tscanner.getDTypes().size()));
 			RegistryTests.TypeValidator typeValidator = new TypeValidator(errorTracker, registry);
 			b = typeValidator.validate(tscanner.getDTypes());
 			if (!b) {
 				return b;
 			}
 			
+			log("load data..");
 			b = dloader.load(fileL);
 			if (!b) {
 				return b;

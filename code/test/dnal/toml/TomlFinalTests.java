@@ -166,6 +166,33 @@ public class TomlFinalTests extends BaseTest {
 		String fakepos = (String) dataL.get(0).finalValue;
 		log(fakepos);
 	}
+	@Test
+	public void testCustomer() {
+		String path = buildPath("structCustomer.toml");
+		IOverallFileScanner scanner = createScanner();
+		boolean b = scanner.load(path);
+		assertEquals(true, b);
+//		List<DValue> dataL = scanner.getDloader().getDataL();
+//		assertEquals(1, dataL.size());
+//		DValue dval = dataL.get(0);
+//		assertEquals("Foo", dval.name);
+//		
+//		DValue dsub = dval.valueList.get(0);
+//		assertEquals("pos", dsub.name);
+//		assertEquals("Position", dsub.type);
+//		assertEquals(null, dsub.finalValue);
+//		
+//		DValue subx = findSubValue(dsub, "x");
+//		assertEquals(100, subx.finalValue);
+//		
+//		//we want to be able to load and validate before doing codegen, so
+//		//don't have classes yet - use mock-type-gen
+////		PositionDIO pos = (PositionDIO) dataL.get(0).finalValue;
+////		assertEquals(10, pos.getX());
+////		assertEquals(20, pos.getY());
+//		String fakepos = (String) dataL.get(0).finalValue;
+//		log(fakepos);
+	}
 	
 	private IOverallFileScanner createScanner() {
 		ITypeGenerator gen = createGenerator();
