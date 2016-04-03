@@ -18,7 +18,7 @@ public class TypeTests {
 
 	public static class ValidationResult {
 		public boolean isValid;
-		public Object validObj;
+//		public Object validObj;
 		public List<ValidationError> errors = new ArrayList<>();
 	}
 
@@ -88,8 +88,7 @@ public class TypeTests {
 			try {
 				Integer n = Integer.parseInt(dval.finalValue.toString());
 				result.isValid = true;
-				result.validObj = n;
-				dval.finalValue = result.validObj;
+				dval.finalValue = n;
 			} catch(NumberFormatException e) {
 				addError(result, dval, "not an integer");
 			}
@@ -101,7 +100,6 @@ public class TypeTests {
 		protected void doValue(ValidationResult result, DValue dval) {
 			try {
 				result.isValid = true;
-				result.validObj = dval.finalValue;
 			} catch(NumberFormatException e) {
 				addError(result, dval, "not an string");
 			}
@@ -115,10 +113,8 @@ public class TypeTests {
 				String s = dval.finalValue.toString();
 				if (s.equalsIgnoreCase("true")) {
 					result.isValid = true;
-					result.validObj = Boolean.TRUE;
 				} else if (s.equalsIgnoreCase("false")) {
 					result.isValid = true;
-					result.validObj = Boolean.FALSE;
 				} else {
 					addError(result, dval, String.format("%s is neither 'true' nor 'false'"));
 				}
@@ -257,7 +253,6 @@ public class TypeTests {
 
 	private void checkPass(ValidationResult result, Object object) {
 		assertEquals(true, result.isValid);
-		assertEquals(object, result.validObj);
 		assertTrue(result.errors.size() == 0);
 	}
 	private void checkFail(ValidationResult result) {
