@@ -22,7 +22,6 @@ import dnal.TypeGeneratorTests.TypeGenerator;
 import dnal.dio.PositionDIO;
 import dnal.myformat.TypeTests;
 import dnal.myformat.DNALLoaderTests.DNALLoader;
-import dnal.myformat.DNALParserTests.FileScanner;
 import dnal.myformat.TypeTests.ITypeValidator;
 import dnal.myformat.TypeTests.MockEnumValidator;
 import dnal.myformat.TypeTests.MockIntValidator;

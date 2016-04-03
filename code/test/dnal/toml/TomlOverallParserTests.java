@@ -206,6 +206,10 @@ public class TomlOverallParserTests extends BaseTest {
 		assertEquals("struct", loader.getDataL().get(i).type);
 	}
 	private void checkEntrySize(int expectedSize, List<DTypeEntry> list) {
+		if (expectedSize == 0) {
+			assertNull(list);
+			return;
+		}
 		assertEquals(expectedSize, list.size());
 	}
 	private void checkDType(DType dtype, String type, String name) {

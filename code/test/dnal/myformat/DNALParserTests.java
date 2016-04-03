@@ -209,151 +209,151 @@ public class DNALParserTests extends BaseTest {
 
 	}
 
-	@Test
-	public void test() {
-		Scanner scan = new Scanner("a b cd e;\r\nf");
-		while(scan.hasNext()) {
-			String tok = scan.next();
-			log(tok);
-		}
-		scan.close();
-	}
-
-	@Test
-	public void testLineScanner() {
-		DValue dval = doScan("int size: 5");
-		checkDVal(dval, "int", "size", "5");
-
-		//, and ; allowed but ignored
-		dval = doScan("int size: 5,");
-		checkDVal(dval, "int", "size", "5");
-
-		dval = doScan("int size: 5;");
-		checkDVal(dval, "int", "size", "5");
-	}
-	@Test
-	public void testStringWithQuotes() {
-		DValue dval = doScan("string name: \"a big taxi\"");
-		checkDVal(dval, "string", "name", "a big taxi");
-
-		dval = doScan("string name: \"a big taxi\";");
-		checkDVal(dval, "string", "name", "a big taxi");
-
-		String s = fix("string name: 'bob \\'jim\\' smith' //comment");
-		dval = doScan(s);
-		checkDVal(dval, "string", "name", "bob \\\"jim\\\" smith");
-	}
-	@Test
-	public void testStringWithoutQuotes() {
-		DValue dval = doScan("string name: a big taxi");
-		checkDVal(dval, "string", "name", "a big taxi");
-
-		dval = doScan("string name:   a big  taxi ");
-		checkDVal(dval, "string", "name", "a big  taxi");
-
-		dval = doScan("string name:   a big  taxi, ");
-		checkDVal(dval, "string", "name", "a big  taxi");
-
-		dval = doScan("string name:   a big  taxi, //a comment ");
-		checkDVal(dval, "string", "name", "a big  taxi");
-	}
-
-	@Test
-	public void testStringList() {
-		//for now list must be on one list with [ ] as separate tokens
-		//list elements must use quotes and commas
-		DValue dval = doScan(fix("list<string> name: [ 'a', 'b', 'c' ]"));
-		checkDValList(dval, "list<string>", "name", 3, "a");
-		assertEquals("b", dval.valueList.get(1));
-	}
-
-	@Test
-	public void testLineScanner2() {
-		checkScanFail("int size 5");
-		checkScanFail("int size ");
-	}
-
-	//THIS ONE!!
-	@Test
-	public void testLineScanner3() {
-		DValue dval = doScan("Position pos: {");
-		checkDVal(dval, "Position", "pos", null);
-		assertTrue(dval.valueList != null);
-		continueScan(dval, "x: 45 }", false);
-		checkDVal(dval, "Position", "pos", null);
-		assertEquals(1, dval.valueList.size());
-		checkDVal(dval.valueList.get(0), null, "x", "45");
-	}
-
-	@Test
-	public void testLineScanner4() {
-		DValue dval = doScan("Position pos: {");
-		checkDVal(dval, "Position", "pos", null);
-		assertTrue(dval.valueList != null);
-		continueScan(dval, "x: 45 ", true);
-		checkDVal(dval, "Position", "pos", null);
-		assertEquals(1, dval.valueList.size());
-		checkDVal(dval.valueList.get(0), null, "x", "45");
-
-		continueScan(dval, "y: 14 }", false);
-		checkDVal(dval, "Position", "pos", null);
-		assertEquals(2, dval.valueList.size());
-		checkDVal(dval.valueList.get(1), null, "y", "14");
-
-	}
-
-	@Test
-	public void testLineScanner3Missing() {
-		DValue dval = doScan("Position pos: {");
-		checkDVal(dval, "Position", "pos", null);
-		assertTrue(dval.valueList != null);
-		continueScan(dval, " col: 45 ", true);
-		checkDVal(dval, "Position", "pos", null);
-		assertEquals(1, dval.valueList.size());
-	}
-
-	//--helpers
-	private void checkScanFail(String input) {
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		LineScanner scanner = new LineScanner(null, errorTracker);
-		boolean b = scanner.scan(input);
-		assertEquals(false, b);
-		DValue dval = scanner.getDValue();
-		assertEquals(null, dval);
-	}
-
-	private void checkDVal(DValue dval, String type, String name, String val) {
-		assertEquals(type, dval.type);
-		assertEquals(name, dval.name);
-		assertEquals(val, dval.rawValue);
-	}
-	private void checkDValList(DValue dval, String type, String name, int listlen, String val0) {
-		assertEquals(type, dval.type);
-		assertEquals(name, dval.name);
-		assertEquals(listlen, dval.valueList.size());
-		if (listlen > 0) {
-			assertEquals(val0, dval.valueList.get(0));
-		}
-	}
-
-	private DValue doScan(String input) {
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		LineScanner scanner = new LineScanner(null, errorTracker);
-		boolean b = scanner.scan(input);
-		assertEquals(true, b);
-		DValue dval = scanner.getDValue();
-		return dval;
-	}
-
-	private void continueScan(DValue dval, String input, boolean expectedContFlag) {
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		LineScanner scanner = new LineScanner(null, dval, errorTracker);
-		boolean b = scanner.scan(input);
-		assertEquals(true, b);
-		assertEquals(expectedContFlag, scanner.isContinueFlag());
-	}
-
-
+//	@Test
+//	public void test() {
+//		Scanner scan = new Scanner("a b cd e;\r\nf");
+//		while(scan.hasNext()) {
+//			String tok = scan.next();
+//			log(tok);
+//		}
+//		scan.close();
+//	}
+//
+//	@Test
+//	public void testLineScanner() {
+//		DValue dval = doScan("int size: 5");
+//		checkDVal(dval, "int", "size", "5");
+//
+//		//, and ; allowed but ignored
+//		dval = doScan("int size: 5,");
+//		checkDVal(dval, "int", "size", "5");
+//
+//		dval = doScan("int size: 5;");
+//		checkDVal(dval, "int", "size", "5");
+//	}
+//	@Test
+//	public void testStringWithQuotes() {
+//		DValue dval = doScan("string name: \"a big taxi\"");
+//		checkDVal(dval, "string", "name", "a big taxi");
+//
+//		dval = doScan("string name: \"a big taxi\";");
+//		checkDVal(dval, "string", "name", "a big taxi");
+//
+//		String s = fix("string name: 'bob \\'jim\\' smith' //comment");
+//		dval = doScan(s);
+//		checkDVal(dval, "string", "name", "bob \\\"jim\\\" smith");
+//	}
+//	@Test
+//	public void testStringWithoutQuotes() {
+//		DValue dval = doScan("string name: a big taxi");
+//		checkDVal(dval, "string", "name", "a big taxi");
+//
+//		dval = doScan("string name:   a big  taxi ");
+//		checkDVal(dval, "string", "name", "a big  taxi");
+//
+//		dval = doScan("string name:   a big  taxi, ");
+//		checkDVal(dval, "string", "name", "a big  taxi");
+//
+//		dval = doScan("string name:   a big  taxi, //a comment ");
+//		checkDVal(dval, "string", "name", "a big  taxi");
+//	}
+//
+//	@Test
+//	public void testStringList() {
+//		//for now list must be on one list with [ ] as separate tokens
+//		//list elements must use quotes and commas
+//		DValue dval = doScan(fix("list<string> name: [ 'a', 'b', 'c' ]"));
+//		checkDValList(dval, "list<string>", "name", 3, "a");
+//		assertEquals("b", dval.valueList.get(1));
+//	}
+//
+//	@Test
+//	public void testLineScanner2() {
+//		checkScanFail("int size 5");
+//		checkScanFail("int size ");
+//	}
+//
+//	//THIS ONE!!
+//	@Test
+//	public void testLineScanner3() {
+//		DValue dval = doScan("Position pos: {");
+//		checkDVal(dval, "Position", "pos", null);
+//		assertTrue(dval.valueList != null);
+//		continueScan(dval, "x: 45 }", false);
+//		checkDVal(dval, "Position", "pos", null);
+//		assertEquals(1, dval.valueList.size());
+//		checkDVal(dval.valueList.get(0), null, "x", "45");
+//	}
+//
+//	@Test
+//	public void testLineScanner4() {
+//		DValue dval = doScan("Position pos: {");
+//		checkDVal(dval, "Position", "pos", null);
+//		assertTrue(dval.valueList != null);
+//		continueScan(dval, "x: 45 ", true);
+//		checkDVal(dval, "Position", "pos", null);
+//		assertEquals(1, dval.valueList.size());
+//		checkDVal(dval.valueList.get(0), null, "x", "45");
+//
+//		continueScan(dval, "y: 14 }", false);
+//		checkDVal(dval, "Position", "pos", null);
+//		assertEquals(2, dval.valueList.size());
+//		checkDVal(dval.valueList.get(1), null, "y", "14");
+//
+//	}
+//
+//	@Test
+//	public void testLineScanner3Missing() {
+//		DValue dval = doScan("Position pos: {");
+//		checkDVal(dval, "Position", "pos", null);
+//		assertTrue(dval.valueList != null);
+//		continueScan(dval, " col: 45 ", true);
+//		checkDVal(dval, "Position", "pos", null);
+//		assertEquals(1, dval.valueList.size());
+//	}
+//
+//	//--helpers
+//	private void checkScanFail(String input) {
+//		ParseErrorTracker errorTracker = new ParseErrorTracker();
+//		LineScanner scanner = new LineScanner(null, errorTracker);
+//		boolean b = scanner.scan(input);
+//		assertEquals(false, b);
+//		DValue dval = scanner.getDValue();
+//		assertEquals(null, dval);
+//	}
+//
+//	private void checkDVal(DValue dval, String type, String name, String val) {
+//		assertEquals(type, dval.type);
+//		assertEquals(name, dval.name);
+//		assertEquals(val, dval.rawValue);
+//	}
+//	private void checkDValList(DValue dval, String type, String name, int listlen, String val0) {
+//		assertEquals(type, dval.type);
+//		assertEquals(name, dval.name);
+//		assertEquals(listlen, dval.valueList.size());
+//		if (listlen > 0) {
+//			assertEquals(val0, dval.valueList.get(0));
+//		}
+//	}
+//
+//	private DValue doScan(String input) {
+//		ParseErrorTracker errorTracker = new ParseErrorTracker();
+//		LineScanner scanner = new LineScanner(null, errorTracker);
+//		boolean b = scanner.scan(input);
+//		assertEquals(true, b);
+//		DValue dval = scanner.getDValue();
+//		return dval;
+//	}
+//
+//	private void continueScan(DValue dval, String input, boolean expectedContFlag) {
+//		ParseErrorTracker errorTracker = new ParseErrorTracker();
+//		LineScanner scanner = new LineScanner(null, dval, errorTracker);
+//		boolean b = scanner.scan(input);
+//		assertEquals(true, b);
+//		assertEquals(expectedContFlag, scanner.isContinueFlag());
+//	}
+//
+//
 	///////////////////////////////////
 	public static enum FSState {
 		WANT_PACKAGE,
@@ -484,189 +484,189 @@ public class DNALParserTests extends BaseTest {
 		}
 
 	}
-
-	@Test
-	public void testF0() {
-		List<String> fileL = buildFile(0);
-
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		FileScanner scanner = new FileScanner(errorTracker);
-		boolean b = scanner.scan(fileL);
-		assertEquals(false, b);
-	}
-
-	@Test
-	public void testF1() {
-		List<String> fileL = buildFile(1);
-
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		FileScanner scanner = new FileScanner(errorTracker);
-		boolean b = scanner.scan(fileL);
-		assertEquals(true, b);
-		checkSize(0, scanner.valueL);
-	}
-	@Test
-	public void testF2() {
-		List<String> fileL = buildFile(2);
-
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		FileScanner scanner = new FileScanner(errorTracker);
-		boolean b = scanner.scan(fileL);
-		assertEquals(true, b);
-		checkSize(1, scanner.valueL);
-		checkDVal(scanner.valueL.get(0), "int", "size", "45");
-	}
-	
-	@Test
-	public void testF3() {
-		List<String> fileL = buildFile(3);
-
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		FileScanner scanner = new FileScanner(errorTracker);
-		boolean b = scanner.scan(fileL);
-		assertEquals(true, b);
-		checkSize(1, scanner.valueL);
-		checkDVal(scanner.valueL.get(0), "int", "size", null);
-		checkDVal(scanner.valueL.get(0).valueList.get(0), null, "wid", "45");
-		assertEquals(1, scanner.valueL.get(0).valueList.size());
-	}
-	@Test
-	public void testF4() {
-		List<String> fileL = buildFile(4);
-
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		FileScanner scanner = new FileScanner(errorTracker);
-		boolean b = scanner.scan(fileL);
-		assertEquals(true, b);
-		checkSize(2, scanner.valueL);
-		checkDVal(scanner.valueL.get(0), "int", "size", "45");
-		checkDVal(scanner.valueL.get(1), "int", "col", "145");
-		checkPackage(scanner.valueL.get(0), "a.b.c");
-		checkPackage(scanner.valueL.get(1), "a.b.c");
-	}
-	@Test
-	public void testF5() {
-		List<String> fileL = buildFile(5);
-
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		FileScanner scanner = new FileScanner(errorTracker);
-		boolean b = scanner.scan(fileL);
-		assertEquals(true, b);
-		checkSize(1, scanner.valueL);
-		checkDVal(scanner.valueL.get(0), "int", "size", null);
-		checkDVal(scanner.valueL.get(0).valueList.get(0), null, "height", "66");
-		checkSize(2, scanner.valueL.get(0).valueList);
-	}
-	@Test
-	public void testF6() {
-		List<String> fileL = buildFile(6);
-
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		FileScanner scanner = new FileScanner(errorTracker);
-		boolean b = scanner.scan(fileL);
-		assertEquals(true, b);
-		checkSize(2, scanner.valueL);
-		checkDVal(scanner.valueL.get(0), "int", "size", "45");
-		checkPackage(scanner.valueL.get(0), "a.b.c");
-		checkDVal(scanner.valueL.get(1), "int", "wid", "33");
-		checkPackage(scanner.valueL.get(1), "d.e.f");
-	}
-	@Test
-	public void testF7() {
-		List<String> fileL = buildFile(7);
-
-		ParseErrorTracker errorTracker = new ParseErrorTracker();
-		FileScanner scanner = new FileScanner(errorTracker);
-		boolean b = scanner.scan(fileL);
-		assertEquals(true, b);
-		checkSize(1, scanner.valueL);
-		checkDVal(scanner.valueL.get(0), "int", "size", "45");
-		checkPackage(scanner.valueL.get(0), "a.b.c");
-	}
-	
-	
-	
-	
-	
-	private void checkSize(int expectedSize, List<DValue> list) {
-		assertEquals(expectedSize, list.size());
-	}
-	private void checkPackage(DValue dValue, String string) {
-		assertEquals(string, dValue.packageName);
-	}
-
-
-	private List<String> buildFile(int scenario) {
-		List<String> L = new ArrayList<>();
-		switch(scenario) {
-		case 0:
-			L.add("");
-			break;
-		case 1:
-			L.add("");
-			L.add("package a.b.c");
-			L.add(" ");
-			L.add("end");
-			L.add("");
-			break;
-		case 2:
-			L.add("");
-			L.add("package a.b.c");
-			L.add(" int size: 45");
-			L.add("end");
-			L.add("");
-			break;
-		case 3:
-			L.add("");
-			L.add("package a.b.c");
-			L.add(" int size: {");
-			L.add("  wid: 45 }");
-//			L.add(" }");
-			L.add("end");
-			L.add("");
-			break;
-		case 4:
-			L.add("");
-			L.add("package a.b.c");
-			L.add(" int size: 45");
-			L.add(" int col: 145");
-			L.add("end");
-			L.add("");
-			break;
-		case 5:
-			L.add("");
-			L.add("package a.b.c");
-			L.add(" int size: {");
-			L.add("   height: 66 ");
-			L.add("   wid: 45 }");
-//			L.add(" }");
-			L.add("end");
-			L.add("");
-			break;
-		case 6:
-			L.add("");
-			L.add("package a.b.c");
-			L.add(" int size: 45");
-			L.add("end");
-			L.add("package d.e.f");
-			L.add(" int wid: 33");
-			L.add("end");
-			L.add("");
-			break;
-		case 7:
-			L.add("//a comment");
-			L.add("package a.b.c //another one");
-			L.add(" int size: 45 //third one");
-			L.add("end");
-			L.add(""); 
-			break;
-		}
-		return L;
-	}
-	protected static String fix(String s)
-	{
-		s = s.replace('\'', '"');
-		return s;
-	}
-
+//
+//	@Test
+//	public void testF0() {
+//		List<String> fileL = buildFile(0);
+//
+//		ParseErrorTracker errorTracker = new ParseErrorTracker();
+//		FileScanner scanner = new FileScanner(errorTracker);
+//		boolean b = scanner.scan(fileL);
+//		assertEquals(false, b);
+//	}
+//
+//	@Test
+//	public void testF1() {
+//		List<String> fileL = buildFile(1);
+//
+//		ParseErrorTracker errorTracker = new ParseErrorTracker();
+//		FileScanner scanner = new FileScanner(errorTracker);
+//		boolean b = scanner.scan(fileL);
+//		assertEquals(true, b);
+//		checkSize(0, scanner.valueL);
+//	}
+//	@Test
+//	public void testF2() {
+//		List<String> fileL = buildFile(2);
+//
+//		ParseErrorTracker errorTracker = new ParseErrorTracker();
+//		FileScanner scanner = new FileScanner(errorTracker);
+//		boolean b = scanner.scan(fileL);
+//		assertEquals(true, b);
+//		checkSize(1, scanner.valueL);
+//		checkDVal(scanner.valueL.get(0), "int", "size", "45");
+//	}
+//	
+//	@Test
+//	public void testF3() {
+//		List<String> fileL = buildFile(3);
+//
+//		ParseErrorTracker errorTracker = new ParseErrorTracker();
+//		FileScanner scanner = new FileScanner(errorTracker);
+//		boolean b = scanner.scan(fileL);
+//		assertEquals(true, b);
+//		checkSize(1, scanner.valueL);
+//		checkDVal(scanner.valueL.get(0), "int", "size", null);
+//		checkDVal(scanner.valueL.get(0).valueList.get(0), null, "wid", "45");
+//		assertEquals(1, scanner.valueL.get(0).valueList.size());
+//	}
+//	@Test
+//	public void testF4() {
+//		List<String> fileL = buildFile(4);
+//
+//		ParseErrorTracker errorTracker = new ParseErrorTracker();
+//		FileScanner scanner = new FileScanner(errorTracker);
+//		boolean b = scanner.scan(fileL);
+//		assertEquals(true, b);
+//		checkSize(2, scanner.valueL);
+//		checkDVal(scanner.valueL.get(0), "int", "size", "45");
+//		checkDVal(scanner.valueL.get(1), "int", "col", "145");
+//		checkPackage(scanner.valueL.get(0), "a.b.c");
+//		checkPackage(scanner.valueL.get(1), "a.b.c");
+//	}
+//	@Test
+//	public void testF5() {
+//		List<String> fileL = buildFile(5);
+//
+//		ParseErrorTracker errorTracker = new ParseErrorTracker();
+//		FileScanner scanner = new FileScanner(errorTracker);
+//		boolean b = scanner.scan(fileL);
+//		assertEquals(true, b);
+//		checkSize(1, scanner.valueL);
+//		checkDVal(scanner.valueL.get(0), "int", "size", null);
+//		checkDVal(scanner.valueL.get(0).valueList.get(0), null, "height", "66");
+//		checkSize(2, scanner.valueL.get(0).valueList);
+//	}
+//	@Test
+//	public void testF6() {
+//		List<String> fileL = buildFile(6);
+//
+//		ParseErrorTracker errorTracker = new ParseErrorTracker();
+//		FileScanner scanner = new FileScanner(errorTracker);
+//		boolean b = scanner.scan(fileL);
+//		assertEquals(true, b);
+//		checkSize(2, scanner.valueL);
+//		checkDVal(scanner.valueL.get(0), "int", "size", "45");
+//		checkPackage(scanner.valueL.get(0), "a.b.c");
+//		checkDVal(scanner.valueL.get(1), "int", "wid", "33");
+//		checkPackage(scanner.valueL.get(1), "d.e.f");
+//	}
+//	@Test
+//	public void testF7() {
+//		List<String> fileL = buildFile(7);
+//
+//		ParseErrorTracker errorTracker = new ParseErrorTracker();
+//		FileScanner scanner = new FileScanner(errorTracker);
+//		boolean b = scanner.scan(fileL);
+//		assertEquals(true, b);
+//		checkSize(1, scanner.valueL);
+//		checkDVal(scanner.valueL.get(0), "int", "size", "45");
+//		checkPackage(scanner.valueL.get(0), "a.b.c");
+//	}
+//	
+//	
+//	
+//	
+//	
+//	private void checkSize(int expectedSize, List<DValue> list) {
+//		assertEquals(expectedSize, list.size());
+//	}
+//	private void checkPackage(DValue dValue, String string) {
+//		assertEquals(string, dValue.packageName);
+//	}
+//
+//
+//	private List<String> buildFile(int scenario) {
+//		List<String> L = new ArrayList<>();
+//		switch(scenario) {
+//		case 0:
+//			L.add("");
+//			break;
+//		case 1:
+//			L.add("");
+//			L.add("package a.b.c");
+//			L.add(" ");
+//			L.add("end");
+//			L.add("");
+//			break;
+//		case 2:
+//			L.add("");
+//			L.add("package a.b.c");
+//			L.add(" int size: 45");
+//			L.add("end");
+//			L.add("");
+//			break;
+//		case 3:
+//			L.add("");
+//			L.add("package a.b.c");
+//			L.add(" int size: {");
+//			L.add("  wid: 45 }");
+////			L.add(" }");
+//			L.add("end");
+//			L.add("");
+//			break;
+//		case 4:
+//			L.add("");
+//			L.add("package a.b.c");
+//			L.add(" int size: 45");
+//			L.add(" int col: 145");
+//			L.add("end");
+//			L.add("");
+//			break;
+//		case 5:
+//			L.add("");
+//			L.add("package a.b.c");
+//			L.add(" int size: {");
+//			L.add("   height: 66 ");
+//			L.add("   wid: 45 }");
+////			L.add(" }");
+//			L.add("end");
+//			L.add("");
+//			break;
+//		case 6:
+//			L.add("");
+//			L.add("package a.b.c");
+//			L.add(" int size: 45");
+//			L.add("end");
+//			L.add("package d.e.f");
+//			L.add(" int wid: 33");
+//			L.add("end");
+//			L.add("");
+//			break;
+//		case 7:
+//			L.add("//a comment");
+//			L.add("package a.b.c //another one");
+//			L.add(" int size: 45 //third one");
+//			L.add("end");
+//			L.add(""); 
+//			break;
+//		}
+//		return L;
+//	}
+//	protected static String fix(String s)
+//	{
+//		s = s.replace('\'', '"');
+//		return s;
+//	}
+//
 }
