@@ -82,30 +82,33 @@ public class TomlDNALLoaderTests extends BaseTest {
 		}
 
 		private void createDValue(Toml rootToml, Entry<String, Object> entry) {
-			DValue dval = new DValue();
 			String keyx = entry.getKey();
-			dval.type = "struct";
-			dval.name = keyx;
 			Toml toml = rootToml.getTable(keyx);
 			Map<String, Object> map = toml.to(Map.class);		
+			DValue dval = createDValueFromMap(keyx, map);
+			dataL.add(dval);
+		}
+		private DValue createDValueFromMap(String keyx, Map<String, Object> map) {
+			DValue dval = new DValue();
+			dval.type = "struct";
+			dval.name = keyx;
 			for(String key: map.keySet()) {
 				log(key);
-				DValue dvalx = parseEntry(key);
+				DValue childDVal = parseEntry(key);
 				if (dval.valueList == null) {
 					dval.valueList = new ArrayList<>();
 				}
 		
-				String raw = getAsString(toml, map, key);
-				dvalx.rawValue = raw;
-				dvalx.finalValue = getAsFinalValue(toml, map, key, dvalx);
-				dval.valueList.add(dvalx);
+				String raw = getAsString(map, key);
+				childDVal.rawValue = raw;
+				childDVal.finalValue = getAsFinalValue(map, key, childDVal);
+				dval.valueList.add(childDVal);
 			}
-			dataL.add(dval);
+			return dval;
 		}
 		
 		
-		private Object getAsFinalValue(Toml toml, Map<String, Object> map,
-				String key, DValue dval) {
+		private Object getAsFinalValue(Map<String, Object> map, String key, DValue dval) {
 			Object obj = map.get(key);
 			if (obj == null) {
 				return null;
@@ -133,7 +136,7 @@ public class TomlDNALLoaderTests extends BaseTest {
 			
 			return obj;
 		}
-		private String getAsString(Toml toml, Map<String, Object> map, String key) {
+		private String getAsString(Map<String, Object> map, String key) {
 			Object obj = map.get(key);
 			if (obj == null) {
 				return null;
